@@ -1,0 +1,35 @@
+{
+  "name": "safe-shape-workspace",
+  "version": "1.0.0",
+  "description": "Runtime contracts for TypeScript.",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.10"
+  },
+  "workspaces": [
+    "packages/safe-shape",
+    "packages/core",
+    "packages/http",
+    "packages/json-schema",
+    "packages/typescript",
+    "packages/validation",
+    "packages/cli"
+  ],
+  "scripts": {
+    "benchmarks:check": "node benchmarks/run.mjs",
+    "build": "npm run build --workspaces --if-present",
+    "cli:doctor": "node packages/cli/dist/cli.js --json doctor",
+    "consumer:check": "node scripts/consumer-check.mjs",
+    "examples:check": "node scripts/examples-check.mjs",
+    "link:cli": "npm run build --workspace @safe-shape/cli && npm link --workspace @safe-shape/cli",
+    "pack:check": "npm --cache ./.npm-cache pack --workspaces --dry-run",
+    "release:check": "node scripts/release-check.mjs && npm run build && npm run typecheck && npm run test && npm run examples:check && npm run benchmarks:check && npm run consumer:check && npm audit --json && npm run pack:check",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "devDependencies": {
+    "@types/node": "^24.2.1",
+    "typescript": "^5.9.2"
+  }
+}

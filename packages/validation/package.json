@@ -1,0 +1,30 @@
+{
+  "name": "@safe-shape/validation",
+  "version": "1.0.0",
+  "description": "JSON-friendly validation reports for SafeShape runtime contracts.",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20.10"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "dependencies": {
+    "@safe-shape/core": "1.0.0"
+  },
+  "scripts": {
+    "build": "npm run build --workspace @safe-shape/core && tsc -p tsconfig.build.json",
+    "typecheck": "npm run build --workspace @safe-shape/core && tsc --noEmit",
+    "test": "npm run build --workspace @safe-shape/core && npm run build && tsc -p tsconfig.test.json && node --test .tmp/test/tests/*.test.js"
+  }
+}

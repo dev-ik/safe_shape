@@ -1,0 +1,20 @@
+node_modules/
+dist/
+.tmp/
+coverage/
+.npm-cache/
+packages/*/dist/
+packages/*/.tmp/
+
+# Local owner/agent workflow files.
+.ai/
+.codex/
+templates/
+
+# Local environment and machine files.
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+*.tgz

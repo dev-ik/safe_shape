@@ -1,6 +1,6 @@
 {
   "name": "safe-shape",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Umbrella package for SafeShape runtime contracts and tooling.",
   "type": "module",
   "engines": {
@@ -17,16 +17,25 @@
     "README.md"
   ],
   "dependencies": {
-    "@safe-shape/cli": "1.0.0",
-    "@safe-shape/core": "1.0.0",
-    "@safe-shape/http": "1.0.0",
-    "@safe-shape/json-schema": "1.0.0",
-    "@safe-shape/typescript": "1.0.0",
-    "@safe-shape/validation": "1.0.0"
+    "@safe-shape/cli": "1.0.1",
+    "@safe-shape/core": "1.0.1",
+    "@safe-shape/http": "1.0.1",
+    "@safe-shape/json-schema": "1.0.1",
+    "@safe-shape/typescript": "1.0.1",
+    "@safe-shape/validation": "1.0.1"
   },
   "scripts": {
     "build": "npm run build --workspace @safe-shape/core && npm run build --workspace @safe-shape/http && npm run build --workspace @safe-shape/json-schema && npm run build --workspace @safe-shape/typescript && npm run build --workspace @safe-shape/validation && npm run build --workspace @safe-shape/cli && tsc -p tsconfig.build.json",
     "typecheck": "npm run build --workspace @safe-shape/core && npm run build --workspace @safe-shape/http && npm run build --workspace @safe-shape/json-schema && npm run build --workspace @safe-shape/typescript && npm run build --workspace @safe-shape/validation && npm run build --workspace @safe-shape/cli && tsc --noEmit",
     "test": "npm run build && tsc -p tsconfig.test.json && node --test .tmp/test/tests/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dev-ik/safe_shape.git",
+    "directory": "packages/safe-shape"
+  },
+  "homepage": "https://github.com/dev-ik/safe_shape#readme",
+  "bugs": {
+    "url": "https://github.com/dev-ik/safe_shape/issues"
   }
 }

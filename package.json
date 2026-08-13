@@ -1,6 +1,6 @@
 {
   "name": "safe-shape-workspace",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Runtime contracts for TypeScript.",
   "private": true,
   "type": "module",
@@ -31,5 +31,13 @@
   "devDependencies": {
     "@types/node": "^24.2.1",
     "typescript": "^5.9.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dev-ik/safe_shape.git"
+  },
+  "homepage": "https://github.com/dev-ik/safe_shape#readme",
+  "bugs": {
+    "url": "https://github.com/dev-ik/safe_shape/issues"
   }
 }

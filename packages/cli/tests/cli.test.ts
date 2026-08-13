@@ -13,7 +13,7 @@ const fixturePath = resolve(packageRoot, "tests", "fixtures", "user-schema.mjs")
 test("prints help", async () => {
   const { stdout } = await runCli(["--help"]);
 
-  assert.match(stdout, /safe-shape 1\.0\.0/);
+  assert.match(stdout, /safe-shape 1\.0\.1/);
   assert.match(stdout, /schema export/);
   assert.match(stdout, /schema validate/);
   assert.match(stdout, /schema types/);

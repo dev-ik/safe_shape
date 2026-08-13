@@ -10,7 +10,7 @@ const workspaceDir = resolve(rootDir, ".tmp", "consumer-check");
 const tarballDir = resolve(workspaceDir, "tarballs");
 const appDir = resolve(workspaceDir, "app");
 const npmCacheDir = resolve(rootDir, ".npm-cache");
-const version = "1.0.0";
+const version = "1.0.1";
 const packages = [
   { name: "safe-shape", tarball: `safe-shape-${version}.tgz` },
   { name: "@safe-shape/core", tarball: `safe-shape-core-${version}.tgz` },

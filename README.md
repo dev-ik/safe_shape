@@ -106,7 +106,7 @@ command results, and does not require authentication.
 
 ## Release Metrics
 
-Current `1.0.0` release gate:
+Current stable release gate:
 
 | Signal | Status |
 | --- | --- |
@@ -202,6 +202,6 @@ npm run examples:check
 
 ## Project Status
 
-SafeShape is prepared as a `1.0.0` stable API release. The release gate covers
+SafeShape is on the `1.0.x` stable API release line. The release gate covers
 metadata checks, build, typecheck, tests, examples, benchmarks, consumer tarball
 installation, npm audit, and package dry-run.

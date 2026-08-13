@@ -22,7 +22,7 @@ interface ParsedArgs {
   readonly flags: Readonly<Record<string, string | boolean>>;
 }
 
-const VERSION = "1.0.0";
+const VERSION = "1.0.1";
 const BOOLEAN_FLAGS = new Set(["h", "help", "json"]);
 const VALUE_FLAGS = new Set(["export", "input", "module", "name", "out", "schema"]);
 

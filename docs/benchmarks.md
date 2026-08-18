@@ -1,6 +1,6 @@
 # Benchmarks
 
-SafeShape `1.0.0` includes a dependency-free benchmark smoke suite.
+SafeShape includes a dependency-free benchmark smoke suite.
 
 Run:
 

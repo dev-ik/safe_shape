@@ -17,6 +17,7 @@ checklist before running `npm publish`.
 - Confirm `safe-shape` is published after all scoped packages.
 - Confirm `docs/integration.md` reflects the intended consumer integration flow.
 - Confirm `docs/migration-1-to-2.md` covers the supported 1.x upgrade path.
+- Run `npm run docs:check` and confirm local links and EN/RU navigation pass.
 - Confirm runnable examples pass.
 - Confirm benchmark smoke checks pass.
 - Confirm consumer tarball installation passes.

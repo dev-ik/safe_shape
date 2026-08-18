@@ -1,5 +1,7 @@
 # Migrating from SafeShape 1.x to 2.0
 
+**English** | [Русский](ru/migration-1-to-2.md)
+
 SafeShape 2.0 keeps the runtime-first builder API and the existing snapshot v1
 format. Most applications can upgrade incrementally: align package versions,
 compile, run contract checks against reviewed baselines, and address the

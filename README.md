@@ -1,5 +1,7 @@
 # SafeShape
 
+**English** | [Русский](README.ru.md)
+
 Runtime contracts for TypeScript: define one schema, validate unknown input at
 runtime, infer static types, and generate tooling artifacts from the same source.
 
@@ -43,10 +45,14 @@ documented, toolable, and release-tested.
 | Contract evolution | Application-specific tooling | Deterministic input/output graph snapshots, fingerprints, recursion, and conservative compatibility reports |
 | Ecosystem protocol | Standard Schema support | Native synchronous Standard Schema V1 plus side-aware Standard JSON Schema adapters and richer immutable diagnostics |
 | Tagged composition | Discriminated union validation | Selected-branch diagnostics plus first-party Contract IR, snapshots, JSON Schema, and TypeScript artifacts |
-| Failed unions | Generic union failure is the common baseline | Ordered recursive diagnostics for every failed branch, with original paths and no best-branch heuristic |
-| Cross-field rules | Custom refinement hooks | Stable-id opaque rules with relative single-issue paths or ordered multi-issue collectors preserved through Standard Schema, CLI, validation, and HTTP |
+| Failed unions | `invalid_union` issues retain branch errors | Ordered recursive branch diagnostics are preserved consistently through native errors, validation reports, CLI, HTTP, and Standard Schema |
+| Cross-field rules | Checks and refinement hooks can add issues | Stable-id opaque rules use relative paths or ordered multi-issue collectors and retain that structure across every first-party boundary |
 | Toolable constraints | Broad validation surface | Exact decimal `multipleOf`, constrained record keys, and explicit object policies retain one meaning across runtime, Contract IR, compatibility, JSON Schema, and CLI |
 | Release posture | Mature general-purpose library | Contract-first release gate with tests, examples, benchmarks, consumer install, audit, and pack dry-run |
+
+The comparison reflects the current [Zod 4 API](https://zod.dev/api),
+[JSON Schema support](https://zod.dev/json-schema), and
+[ecosystem documentation](https://zod.dev/ecosystem).
 
 Choose Zod when you need the largest ecosystem and the widest validation feature
 set. Choose SafeShape when you want a smaller contract layer with explicit
@@ -209,6 +215,8 @@ Use narrower packages when you want strict dependency boundaries:
 
 ## Documentation
 
+- [Documentation home](docs/README.md)
+- [Quick start](docs/quick-start.md)
 - [Migrating from 1.x to 2.0](docs/migration-1-to-2.md)
 - [Project integration](docs/integration.md)
 - [Core API](docs/api/core.md)
@@ -221,6 +229,7 @@ Use narrower packages when you want strict dependency boundaries:
 - [Benchmarks](docs/benchmarks.md)
 - [Release workflow](docs/release.md)
 - [Contract checks in CI](docs/ci.md)
+- [Документация на русском](docs/ru/README.md)
 
 ## Local Development
 
@@ -228,6 +237,7 @@ Use narrower packages when you want strict dependency boundaries:
 npm install
 npm run build
 npm run test
+npm run docs:check
 npm run release:check
 ```
 
@@ -245,6 +255,6 @@ npm run examples:check
 
 ## Project Status
 
-SafeShape is on the `1.0.x` stable API release line. The release gate covers
+SafeShape is on the `2.0.0` stable release line. The release gate covers
 metadata checks, build, typecheck, tests, examples, benchmarks, consumer tarball
 installation, npm audit, and package dry-run.

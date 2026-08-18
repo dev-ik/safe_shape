@@ -34,4 +34,4 @@ unions, the same prefix is applied recursively to every preserved branch issue.
 Addressable custom refinement issues retain collector order and receive the
 same section prefix.
 
-See `docs/api/http.md` for the public API.
+See the [HTTP API reference](../../docs/api/http.md) for the public API.

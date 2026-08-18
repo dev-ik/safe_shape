@@ -133,4 +133,4 @@ const userIdSchema = string().annotate({
 });
 ```
 
-See `docs/api/core.md` for the public API.
+See the [Core API reference](../../docs/api/core.md) for the public API.

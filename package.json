@@ -22,10 +22,11 @@
     "build": "npm run build --workspaces --if-present",
     "cli:doctor": "node packages/cli/dist/cli.js --json doctor",
     "consumer:check": "node scripts/consumer-check.mjs",
+    "docs:check": "node scripts/docs-check.mjs",
     "examples:check": "node scripts/examples-check.mjs",
     "link:cli": "npm run build --workspace @safe-shape/cli && npm link --workspace @safe-shape/cli",
     "pack:check": "npm --cache ./.npm-cache pack --workspaces --dry-run",
-    "release:check": "npm run build && node scripts/release-check.mjs && npm run typecheck && npm run test && npm run examples:check && npm run benchmarks:check && npm run consumer:check && npm audit --json && npm run pack:check",
+    "release:check": "npm run build && node scripts/release-check.mjs && npm run docs:check && npm run typecheck && npm run test && npm run examples:check && npm run benchmarks:check && npm run consumer:check && npm audit --json && npm run pack:check",
     "prepare:release": "npm run release:check && node scripts/pack-release.mjs",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present"

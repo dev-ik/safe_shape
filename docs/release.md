@@ -13,6 +13,7 @@ npm run release:check
 This performs:
 
 - package metadata and boundary checks;
+- local documentation links and EN/RU navigation checks;
 - build;
 - typecheck;
 - tests;

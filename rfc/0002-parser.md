@@ -1,5 +1,9 @@
 # RFC 0002: parser
 
+## Status
+
+Accepted and retained for SafeShape 2.0.
+
 ## Motivation
 
 SafeShape needs a single internal parsing pipeline so nested schemas report stable issue

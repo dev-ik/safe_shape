@@ -1,5 +1,9 @@
 # RFC 0006: diagnostics
 
+## Status
+
+Accepted and retained for SafeShape 2.0.
+
 ## Motivation
 
 Issues are structured for code. Diagnostics are formatted for people. SafeShape needs a

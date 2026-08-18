@@ -6,14 +6,17 @@ checklist before running `npm publish`.
 ## Pre-Approval Checklist
 
 - Confirm the release scope and package list.
-- Confirm the release version is `1.0.0` for all workspace packages.
+- Confirm all workspace packages use the intended release version.
 - Confirm no breaking API changes were introduced without an RFC.
 - Confirm new public APIs have docs and tests.
 - Confirm package-boundary architecture changes have an ADR.
 - Confirm package versions are aligned with the root version.
 - Confirm package dependency direction still matches `docs/package-architecture.md`.
+- Confirm the new `@safe-shape/compat` package is published manually before
+  GitHub Actions publishes CLI and umbrella packages that depend on it.
 - Confirm `safe-shape` is published after all scoped packages.
 - Confirm `docs/integration.md` reflects the intended consumer integration flow.
+- Confirm `docs/migration-1-to-2.md` covers the supported 1.x upgrade path.
 - Confirm runnable examples pass.
 - Confirm benchmark smoke checks pass.
 - Confirm consumer tarball installation passes.
@@ -36,7 +39,11 @@ consumer project, and verifies the installed CLI binary.
 
 Only after approval:
 
-1. Re-run `npm run release:check`.
-2. Publish packages in dependency order from `docs/release.md`.
+1. Run `npm run prepare:release`.
+2. Commit the release version and push its `v<version>` tag.
+3. Run the `Publish npm packages` GitHub Actions workflow on that tag with
+   phase `bootstrap-core`.
+4. Manually publish the generated `@safe-shape/compat` archive.
+5. Rerun the workflow with phase `release`.
 
 Do not publish unrelated packages.

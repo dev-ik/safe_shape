@@ -1,5 +1,9 @@
 # RFC 0003: errors
 
+## Status
+
+Accepted and retained for SafeShape 2.0.
+
 ## Motivation
 
 SafeShape validation failures need a stable data model that can support programmatic

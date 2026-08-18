@@ -1,5 +1,9 @@
 # RFC 0005: transforms
 
+## Status
+
+Accepted and retained for SafeShape 2.0.
+
 ## Motivation
 
 Some boundary data needs explicit mapping after validation. SafeShape needs transforms

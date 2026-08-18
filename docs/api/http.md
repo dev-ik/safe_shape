@@ -41,6 +41,13 @@ input.headers.authorization
 input.cookies.session
 ```
 
+For failed ordinary unions, section prefixes are applied recursively to every
+issue in the preserved `branches` tree as well as to the root issue.
+
+Addressable custom diagnostics keep collector order and receive the same
+section prefix. For example, a body refinement issue with relative path
+`["end"]` is returned at `["body", "end"]`.
+
 ## Response Parsing
 
 Contracts expose:
@@ -70,6 +77,31 @@ const response = contract.parseResponse({ id: "user_1" }, 200);
 
 If `status` is provided and no status schema exists, `response` is used as a fallback
 when configured. Without a fallback response schema, parsing fails at `input.response.status`.
+
+## Compatibility Presentation
+
+`@safe-shape/http` remains a runtime-only package. For contract evolution,
+compare the relevant request or response schema with `@safe-shape/compat`, then
+create an HTTP-specific presentation:
+
+```ts
+import {
+  compareContractsV2,
+  createHttpCompatibilityPresentation,
+} from "@safe-shape/compat";
+
+const report = compareContractsV2(previousResponse, nextResponse, {
+  compatibility: "forward",
+});
+const presentation = createHttpCompatibilityPresentation(report, {
+  exchange: "response",
+});
+```
+
+Request producers are clients and request consumers are servers. Response
+producers are servers and response consumers are clients. Backward containment
+is presented as consumer compatibility; forward containment is presented as
+producer compatibility. Full mode covers both roles.
 
 ## Example
 

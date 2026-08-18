@@ -1,5 +1,9 @@
 # RFC 0007: core-schema-extensions
 
+## Status
+
+Accepted and retained for SafeShape 2.0.
+
 ## Motivation
 
 SafeShape core needs explicit schemas for common boundary shapes before framework-specific

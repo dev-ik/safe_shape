@@ -1,6 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { ValidationError, formatIssuePath, number, object, string, type Infer } from "@safe-shape/core";
+import {
+  ValidationError,
+  formatIssuePath,
+  literal,
+  number,
+  object,
+  string,
+  union,
+  type Infer,
+} from "@safe-shape/core";
 import {
   httpContract,
   parseHttpRequest,
@@ -72,6 +81,45 @@ test("http request failures prefix issue paths with section names", () => {
       ["invalid_type", ["cookies", "session"], "input.cookies.session"],
     ],
   );
+});
+
+test("http boundaries preserve addressable custom issue paths and order", () => {
+  const contract = httpContract({
+    body: object({ start: number(), end: number() }).refineWithIssues((value, context) => {
+      if (value.start > value.end) {
+        context.addIssue({ path: ["start"], message: "Start must not exceed end." });
+        context.addIssue({ path: ["end"], message: "End must not precede start." });
+      }
+    }, { id: "ordered-period/v1" }),
+  });
+
+  const result = contract.safeParseRequest({ body: { start: 5, end: 2 } });
+
+  assert.equal(result.success, false);
+  assert.deepEqual(result.error.issues.map((issue) => [issue.code, issue.path]), [
+    ["custom", ["body", "start"]],
+    ["custom", ["body", "end"]],
+  ]);
+  assert.equal(Object.isFrozen(result.error.issues[0]?.path), true);
+});
+
+test("http request failures prefix recursive union branch paths", () => {
+  const contract = httpContract({
+    body: object({
+      role: union([literal("admin"), literal("member")]),
+    }),
+  });
+  const result = contract.safeParseRequest({ body: { role: "owner" } });
+
+  assert.equal(result.success, false);
+  const issue = result.error.issues[0]!;
+  assert.deepEqual(issue.path, ["body", "role"]);
+  assert.deepEqual(issue.branches?.map((branch) => branch.issues[0]?.path), [
+    ["body", "role"],
+    ["body", "role"],
+  ]);
+  assert.equal(Object.isFrozen(issue.branches), true);
+  assert.equal(Object.isFrozen(issue.branches?.[0]?.issues), true);
 });
 
 test("http contracts parse and validate responses", () => {

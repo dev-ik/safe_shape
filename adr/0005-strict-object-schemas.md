@@ -1,5 +1,9 @@
 # ADR 0005: Strict Object Schemas
 
+## Status
+
+Accepted and retained for SafeShape 2.0.
+
 ## Context
 
 SafeShape validates external data at application boundaries. Object schemas must define

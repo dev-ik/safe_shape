@@ -1,5 +1,9 @@
 # RFC 0008: tuples
 
+## Status
+
+Accepted and retained for SafeShape 2.0.
+
 ## Motivation
 
 External data sometimes uses fixed-position arrays such as coordinates, date parts, and

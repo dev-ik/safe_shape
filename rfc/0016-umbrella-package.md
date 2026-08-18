@@ -1,5 +1,9 @@
 # RFC 0016: umbrella package
 
+## Status
+
+Accepted and retained for SafeShape 2.0.
+
 ## Motivation
 
 Some projects should be able to install SafeShape with one package:

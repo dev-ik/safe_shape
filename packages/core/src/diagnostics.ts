@@ -8,6 +8,12 @@ export interface Diagnostic {
   readonly expected: string;
   readonly received: string;
   readonly suggestion?: string;
+  readonly branches?: readonly DiagnosticBranch[];
+}
+
+export interface DiagnosticBranch {
+  readonly index: number;
+  readonly issues: readonly Diagnostic[];
 }
 
 export function createDiagnostic(issue: Issue): Diagnostic {
@@ -18,6 +24,14 @@ export function createDiagnostic(issue: Issue): Diagnostic {
     expected: issue.expected,
     received: issue.received,
     ...(issue.suggestion === undefined ? {} : { suggestion: issue.suggestion }),
+    ...(issue.branches === undefined
+      ? {}
+      : {
+          branches: Object.freeze(issue.branches.map((branch) => Object.freeze({
+            index: branch.index,
+            issues: createDiagnostics(branch.issues),
+          }))),
+        }),
   };
 
   return Object.freeze(diagnostic);
@@ -46,10 +60,24 @@ export function formatIssuePath(path: readonly IssuePathSegment[]): string {
 }
 
 export function formatDiagnostic(diagnostic: Diagnostic): string {
+  return formatDiagnosticWithIndent(diagnostic, "");
+}
+
+function formatDiagnosticWithIndent(diagnostic: Diagnostic, indent: string): string {
   const suggestion =
     diagnostic.suggestion === undefined ? "" : ` Suggestion: ${diagnostic.suggestion}`;
+  const summary = `${indent}${diagnostic.path}: ${diagnostic.message} Expected ${diagnostic.expected}; received ${diagnostic.received}.${suggestion} (${diagnostic.code})`;
 
-  return `${diagnostic.path}: ${diagnostic.message} Expected ${diagnostic.expected}; received ${diagnostic.received}.${suggestion} (${diagnostic.code})`;
+  if (diagnostic.branches === undefined) {
+    return summary;
+  }
+
+  const branchLines = diagnostic.branches.flatMap((branch) => [
+    `${indent}  Union branch ${branch.index}:`,
+    ...branch.issues.map((issue) => formatDiagnosticWithIndent(issue, `${indent}    `)),
+  ]);
+
+  return [summary, ...branchLines].join("\n");
 }
 
 export function formatIssues(issues: readonly Issue[]): readonly string[] {

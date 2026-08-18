@@ -1,5 +1,9 @@
 # ADR 0006: HTTP as Separate Package
 
+## Status
+
+Accepted and retained for SafeShape 2.0.
+
 ## Context
 
 SafeShape core defines runtime schemas, parsing, results, errors, and diagnostics.

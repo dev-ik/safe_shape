@@ -1,5 +1,9 @@
 # RFC 0009: http-boundary-helpers
 
+## Status
+
+Accepted and retained for SafeShape 2.0.
+
 ## Motivation
 
 Applications validate external HTTP data at request and response boundaries. SafeShape

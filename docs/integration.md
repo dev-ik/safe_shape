@@ -3,6 +3,10 @@
 This guide shows how to use SafeShape as packages inside another TypeScript
 project.
 
+Upgrading an existing 1.x consumer? Follow the
+[1.x to 2.0 migration guide](migration-1-to-2.md) before replacing reviewed
+contract baselines.
+
 ## Requirements
 
 - Node.js `>=20.10`
@@ -60,6 +64,12 @@ For HTTP boundary helpers:
 npm install @safe-shape/core @safe-shape/http
 ```
 
+For contract snapshots and compatibility analysis:
+
+```sh
+npm install --save-dev @safe-shape/core @safe-shape/compat
+```
+
 For build-time tooling:
 
 ```sh
@@ -75,16 +85,16 @@ Create a schema module that can be imported by application code and by the CLI:
 
 ```ts
 // src/contracts/user.ts
-import { literal, number, object, string, union, type Infer } from "@safe-shape/core";
+import { integer, literal, object, string, union, type Infer } from "@safe-shape/core";
 
 export const userSchema = object({
-  id: string().annotate({
+  id: string({ minLength: 1, maxLength: 100 }).annotate({
     title: "User id",
     description: "Stable public user identifier.",
     examples: ["user_1"],
   }),
   role: union([literal("admin"), literal("member")]),
-  age: number().optional(),
+  age: integer({ minimum: 0, maximum: 150 }).optional(),
 }).annotate({
   title: "User",
   description: "User resource.",
@@ -95,6 +105,13 @@ export type User = Infer<typeof userSchema>;
 
 SafeShape validates runtime inputs without hidden coercion. If input should be
 changed, use an explicit `transform()`.
+
+For a single cross-field error, attach a relative path through
+`refine(predicate, { id, path, message })`. When one synchronous rule can emit
+several errors, use `refineWithIssues(collector, { id })`; collected paths are
+relative, ordered, immutable, and preserved by Standard Schema, validation
+reports, CLI validation, and HTTP helpers. Custom rules remain opaque to
+artifact tooling and are rejected during JSON Schema export.
 
 ## Validate At Boundaries
 
@@ -134,6 +151,49 @@ import { userSchema } from "./contracts/user.js";
 
 const report = validateSchema(userSchema, input);
 ```
+
+## Standard Schema Integration
+
+SafeShape schemas can be passed directly to libraries accepting Standard
+Schema V1. No adapter or additional runtime dependency is required:
+
+```ts
+import type { StandardSchemaV1 } from "@safe-shape/core";
+
+function acceptsStandardSchema(schema: StandardSchemaV1, input: unknown) {
+  return schema["~standard"].validate(input);
+}
+
+acceptsStandardSchema(userSchema, input);
+```
+
+SafeShape validation is synchronous. Standard failures expose message and path
+while retaining the richer native SafeShape issue fields at runtime. Import
+`type StandardSchemaV1` from `@safe-shape/core` when local Standard Schema types
+are useful; structural compatibility also works with
+`@standard-schema/spec`.
+
+For consumers requiring Standard JSON Schema V1, explicitly add the exporter
+capability without changing the original schema:
+
+```ts
+import { createStandardJsonSchema } from "@safe-shape/json-schema";
+
+const standardArtifact = createStandardJsonSchema(userSchema);
+const inputJsonSchema = standardArtifact["~standard"].jsonSchema.input({
+  target: "draft-2020-12",
+  libraryOptions: { id: "https://example.com/contracts/user-input" },
+});
+```
+
+The adapter also retains Standard Schema validation and type inference. Input
+and output conversion are independent. Draft 2020-12 and Draft 7 are supported;
+other targets, refinements, and opaque outputs throw `JsonSchemaExportError`
+with machine-readable issues.
+
+Build tools can avoid exceptions and inspect all detected issues with
+`safeToJsonSchema(schema, options)`. A failed result contains no partial schema,
+so it is safe to use as a CI gate.
 
 ## HTTP Integration
 
@@ -175,15 +235,19 @@ Expose contract tooling from your project scripts:
 {
   "scripts": {
     "contracts:doctor": "safe-shape --json doctor",
-    "contracts:schema": "safe-shape --json schema export --module ./dist/contracts/user.js --export userSchema --schema https://json-schema.org/draft/2020-12/schema --out ./dist/contracts/user.schema.json",
+    "contracts:schema": "safe-shape --json schema export --module ./dist/contracts/user.js --export userSchema --schema https://json-schema.org/draft/2020-12/schema --id https://example.com/contracts/user --out ./dist/contracts/user.schema.json",
     "contracts:types": "safe-shape --json schema types --module ./dist/contracts/user.js --export userSchema --name User --out ./dist/contracts/user.d.ts",
-    "contracts:validate": "safe-shape --json schema validate --module ./dist/contracts/user.js --export userSchema --input ./fixtures/user.json"
+    "contracts:validate": "safe-shape --json schema validate --module ./dist/contracts/user.js --export userSchema --input ./fixtures/user.json",
+    "contracts:snapshot": "safe-shape contract snapshot --module ./dist/contracts/user.js --export userSchema --id user --format v2 --out ./.safe-shape/user.contract.json",
+    "contracts:check": "safe-shape --json contract check --module ./dist/contracts/user.js --export userSchema --against ./.safe-shape/user.contract.json --side input --compatibility backward"
   }
 }
 ```
 
 The CLI loads JavaScript ESM modules by file path. Compile TypeScript contract
-modules before running CLI commands against them.
+modules before running CLI commands against them. Snapshot v1 remains the
+default; v2 is explicit and supports recursive contracts plus independent input
+and output checks. JSON compatibility results include migration diagnostics.
 
 ## CI Checklist
 
@@ -195,7 +259,12 @@ npm run contracts:doctor
 npm run contracts:schema
 npm run contracts:types
 npm run contracts:validate
+npm run contracts:check
 ```
+
+Keep reviewed snapshots in version control and never regenerate them inside
+the check job. See [Contract Checks in CI](ci.md) for portable shell, GitHub
+Actions, and GitLab CI examples, exit codes, artifacts, and baseline policy.
 
 For package maintainers in this repository, `npm run release:check` already
 runs build, typecheck, tests, runnable examples, benchmarks, consumer install
@@ -206,6 +275,7 @@ checks, npm audit, and package dry-run checks.
 Install only the packages needed by the target project:
 
 - `@safe-shape/core` for schemas, parsing, diagnostics, and type inference.
+- `@safe-shape/compat` for snapshots, fingerprints, and compatibility reports.
 - `@safe-shape/validation` for JSON-friendly reports.
 - `@safe-shape/http` for framework-neutral HTTP request/response boundaries.
 - `@safe-shape/json-schema` for JSON Schema export tooling.

@@ -2,6 +2,15 @@ name: Publish npm packages
 
 on:
   workflow_dispatch:
+    inputs:
+      phase:
+        description: Publish core for compat bootstrap, or finish the release
+        required: true
+        default: release
+        type: choice
+        options:
+          - bootstrap-core
+          - release
 
 permissions:
   contents: write
@@ -17,13 +26,15 @@ jobs:
     runs-on: ubuntu-latest
     environment: npm
     env:
-      REQUIRE_RELEASE_TAG: "true"
+      REQUIRE_RELEASE_TAG: 'true'
+      ALLOW_ALREADY_PUBLISHED_RELEASE_PACKAGES: 'true'
+      RELEASE_PHASE: ${{ inputs.phase }}
     steps:
       - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v6
         with:
-          node-version: "24"
+          node-version: '24'
           registry-url: https://registry.npmjs.org
           cache: npm
 
@@ -35,31 +46,68 @@ jobs:
       - run: npm ci
       - run: npm run prepare:release
 
-      - name: Publish core package
-        run: npm publish "./release-artifacts/safe-shape-core-${VERSION}.tgz" --access public
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: safe-shape-release-${{ env.VERSION }}
+          path: release-artifacts/*.tgz
+          if-no-files-found: error
+          retention-days: 7
 
-      - name: Publish compatibility package
-        run: npm publish "./release-artifacts/safe-shape-compat-${VERSION}.tgz" --access public
+      - name: Publish established packages
+        shell: bash
+        run: |
+          set -euo pipefail
 
-      - name: Publish HTTP package
-        run: npm publish "./release-artifacts/safe-shape-http-${VERSION}.tgz" --access public
+          publish_if_missing() {
+            local package_name="$1"
+            local artifact_path="$2"
 
-      - name: Publish JSON Schema package
-        run: npm publish "./release-artifacts/safe-shape-json-schema-${VERSION}.tgz" --access public
+            if npm view "${package_name}@${VERSION}" version >/dev/null 2>&1; then
+              echo "::notice::Skipping ${package_name}@${VERSION}; it is already published."
+              return
+            fi
 
-      - name: Publish TypeScript package
-        run: npm publish "./release-artifacts/safe-shape-typescript-${VERSION}.tgz" --access public
+            npm publish "${artifact_path}" --access public
+          }
 
-      - name: Publish validation package
-        run: npm publish "./release-artifacts/safe-shape-validation-${VERSION}.tgz" --access public
+          publish_if_missing \
+            "@safe-shape/core" \
+            "./release-artifacts/safe-shape-core-${VERSION}.tgz"
 
-      - name: Publish CLI package
-        run: npm publish "./release-artifacts/safe-shape-cli-${VERSION}.tgz" --access public
+          if [[ "${RELEASE_PHASE}" == "bootstrap-core" ]]; then
+            echo "::notice::Core bootstrap is complete. Publish @safe-shape/compat@${VERSION} manually before running the release phase."
+            exit 0
+          fi
 
-      - name: Publish umbrella package
-        run: npm publish "./release-artifacts/safe-shape-${VERSION}.tgz" --access public
+          COMPAT_VERSION="$(npm view "@safe-shape/compat@${VERSION}" version 2>/dev/null || true)"
+          if [[ "${COMPAT_VERSION}" != "${VERSION}" ]]; then
+            echo "::error::Publish @safe-shape/compat@${VERSION} manually, then rerun this workflow."
+            exit 1
+          fi
+          echo "::notice::Using manually published @safe-shape/compat@${VERSION}."
+
+          publish_if_missing \
+            "@safe-shape/http" \
+            "./release-artifacts/safe-shape-http-${VERSION}.tgz"
+          publish_if_missing \
+            "@safe-shape/json-schema" \
+            "./release-artifacts/safe-shape-json-schema-${VERSION}.tgz"
+          publish_if_missing \
+            "@safe-shape/typescript" \
+            "./release-artifacts/safe-shape-typescript-${VERSION}.tgz"
+          publish_if_missing \
+            "@safe-shape/validation" \
+            "./release-artifacts/safe-shape-validation-${VERSION}.tgz"
+          publish_if_missing \
+            "@safe-shape/cli" \
+            "./release-artifacts/safe-shape-cli-${VERSION}.tgz"
+          publish_if_missing \
+            "safe-shape" \
+            "./release-artifacts/safe-shape-${VERSION}.tgz"
 
       - name: Create GitHub release
+        if: inputs.phase == 'release'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

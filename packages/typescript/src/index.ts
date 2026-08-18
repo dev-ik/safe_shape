@@ -5,7 +5,7 @@ export interface TypeScriptTypeOptions {
 }
 
 export function toTypeScriptType(
-  schema: Schema<any>,
+  schema: Schema<any, any>,
   options: TypeScriptTypeOptions = {},
 ): string {
   const typeName = options.name ?? "SchemaOutput";
@@ -27,12 +27,22 @@ function definitionToTypeScript(definition: SchemaDefinition, indent: number): s
       return "boolean";
     case "literal":
       return literalToTypeScript(definition.value);
+    case "enum":
+      return definition.values.map(literalToTypeScript).join(" | ");
+    case "unknown":
+      return "unknown";
+    case "never":
+      return "never";
     case "array":
       return `ReadonlyArray<${definitionToTypeScript(definition.item, indent)}>`;
     case "tuple":
       return `readonly [${definition.items.map((item) => definitionToTypeScript(item, indent)).join(", ")}]`;
     case "union":
       return definition.choices.map((choice) => definitionToTypeScript(choice, indent)).join(" | ");
+    case "discriminatedUnion":
+      return definition.choices.map((choice) => definitionToTypeScript(choice, indent)).join(" | ");
+    case "intersection":
+      return `(${definitionToTypeScript(definition.left, indent)}) & (${definitionToTypeScript(definition.right, indent)})`;
     case "object":
       return objectToTypeScript(definition, indent);
     case "record":
@@ -43,6 +53,12 @@ function definitionToTypeScript(definition: SchemaDefinition, indent: number): s
       return `${definitionToTypeScript(definition.inner, indent)} | undefined`;
     case "transform":
       return "unknown";
+    case "reference":
+      throw new TypeError(
+        "TypeScript generation does not support schema references yet.",
+      );
+    case "opaque":
+      return "unknown";
   }
 }
 
@@ -52,7 +68,7 @@ function objectToTypeScript(
 ): string {
   const entries = Object.entries(definition.shape);
 
-  if (entries.length === 0) {
+  if (entries.length === 0 && definition.unknownProperties !== "passthrough") {
     return "{}";
   }
 
@@ -66,6 +82,9 @@ function objectToTypeScript(
       : propertyDefinition;
     return `${propertyIndent}${formatPropertyKey(key)}${optional ? "?" : ""}: ${definitionToTypeScript(valueDefinition, indent + 2)};`;
   });
+  if (definition.unknownProperties === "passthrough") {
+    lines.push(`${propertyIndent}readonly [key: string]: unknown;`);
+  }
 
   return `{\n${lines.join("\n")}\n${currentIndent}}`;
 }

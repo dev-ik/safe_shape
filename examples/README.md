@@ -47,6 +47,25 @@ node packages/cli/dist/cli.js --json schema types \
   --name User
 ```
 
+Create and check a v2 contract baseline:
+
+```sh
+node packages/cli/dist/cli.js contract snapshot \
+  --module examples/user-schema.mjs \
+  --export userSchema \
+  --id user \
+  --format v2 \
+  --out ./.tmp/user.contract.json
+
+node packages/cli/dist/cli.js --json contract check \
+  --module examples/user-schema.mjs \
+  --export userSchema \
+  --against ./.tmp/user.contract.json \
+  --side input
+```
+
+The JSON check result includes a migration decision and actionable diagnostics.
+
 Run the example smoke check:
 
 ```sh

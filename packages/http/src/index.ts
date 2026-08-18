@@ -8,15 +8,15 @@ import {
   type Schema,
 } from "@safe-shape/core";
 
-type MaybeSchema = Schema<any> | undefined;
-type MaybeResponseMap = Readonly<Record<number, Schema<any>>> | undefined;
+type MaybeSchema = Schema<any, any> | undefined;
+type MaybeResponseMap = Readonly<Record<number, Schema<any, any>>> | undefined;
 
 type Expand<T> = {
   [Key in keyof T]: T[Key];
 } & {};
 
 type SectionOutput<TKey extends string, TSchema extends MaybeSchema> =
-  TSchema extends Schema<any> ? { readonly [Key in TKey]: Infer<TSchema> } : {};
+  TSchema extends Schema<any, any> ? { readonly [Key in TKey]: Infer<TSchema> } : {};
 
 export type HttpRequestData<
   TParams extends MaybeSchema,
@@ -33,17 +33,17 @@ export type HttpRequestData<
 >;
 
 export type HttpResponseData<TResponse extends MaybeSchema> =
-  TResponse extends Schema<any> ? Infer<TResponse> : unknown;
+  TResponse extends Schema<any, any> ? Infer<TResponse> : unknown;
 
 export type HttpMappedResponseData<TResponses extends MaybeResponseMap> =
-  TResponses extends Readonly<Record<number, Schema<any>>>
+  TResponses extends Readonly<Record<number, Schema<any, any>>>
     ? Infer<TResponses[Extract<keyof TResponses, number>]>
     : never;
 
 export type HttpAnyResponseData<
   TResponse extends MaybeSchema,
   TResponses extends MaybeResponseMap,
-> = TResponses extends Readonly<Record<number, Schema<any>>>
+> = TResponses extends Readonly<Record<number, Schema<any, any>>>
   ? HttpMappedResponseData<TResponses>
   : HttpResponseData<TResponse>;
 
@@ -260,14 +260,22 @@ function safeParseResponse<TResponse extends MaybeSchema, TResponses extends May
 }
 
 function prefixIssues(section: RequestSection, issues: readonly Issue[]): readonly Issue[] {
-  return Object.freeze(
-    issues.map((issue) =>
-      Object.freeze({
-        ...issue,
-        path: Object.freeze([section, ...issue.path]),
-      }),
-    ),
-  );
+  return Object.freeze(issues.map((issue) => prefixIssue(section, issue)));
+}
+
+function prefixIssue(section: RequestSection, issue: Issue): Issue {
+  return Object.freeze({
+    ...issue,
+    path: Object.freeze([section, ...issue.path]),
+    ...(issue.branches === undefined
+      ? {}
+      : {
+          branches: Object.freeze(issue.branches.map((branch) => Object.freeze({
+            index: branch.index,
+            issues: prefixIssues(section, branch.issues),
+          }))),
+        }),
+  });
 }
 
 function freezeHttpContractConfig<
@@ -291,7 +299,7 @@ function selectResponseSchema<TResponse extends MaybeSchema, TResponses extends 
   schema: TResponse,
   responses: TResponses,
   status: number | undefined,
-): Schema<any> | undefined {
+): Schema<any, any> | undefined {
   if (status !== undefined && responses !== undefined && Object.prototype.hasOwnProperty.call(responses, status)) {
     return responses[status];
   }
@@ -299,7 +307,10 @@ function selectResponseSchema<TResponse extends MaybeSchema, TResponses extends 
   return schema;
 }
 
-function createUnexpectedStatusIssue(status: number, responses: Readonly<Record<number, Schema<any>>>): Issue {
+function createUnexpectedStatusIssue(
+  status: number,
+  responses: Readonly<Record<number, Schema<any, any>>>,
+): Issue {
   const expectedStatuses = Object.keys(responses).sort((left, right) => Number(left) - Number(right));
 
   return Object.freeze({

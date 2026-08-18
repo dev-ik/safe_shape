@@ -12,7 +12,10 @@ export interface ValidationFailure {
   readonly issues: readonly Issue[];
 }
 
-export function validateSchema<T>(schema: Schema<T>, input: unknown): ValidationReport<T> {
+export function validateSchema<TOutput, TInput>(
+  schema: Schema<TOutput, TInput>,
+  input: unknown,
+): ValidationReport<TOutput> {
   const result = schema.safeParse(input);
 
   if (result.success) {

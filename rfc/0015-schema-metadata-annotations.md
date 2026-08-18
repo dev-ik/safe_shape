@@ -1,5 +1,9 @@
 # RFC 0015: Schema metadata annotations
 
+## Status
+
+Accepted and retained for SafeShape 2.0.
+
 ## Motivation
 
 SafeShape tooling needs schema metadata for generated artifacts without changing

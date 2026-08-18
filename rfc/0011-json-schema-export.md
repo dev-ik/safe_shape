@@ -1,5 +1,9 @@
 # RFC 0011: json-schema-export
 
+## Status
+
+Accepted and retained for SafeShape 2.0.
+
 ## Motivation
 
 SafeShape runtime contracts should be exportable to JSON Schema for documentation,

@@ -31,6 +31,18 @@ export type User = {
 Metadata annotations from `schema.annotate(...)` do not change generated
 TypeScript types.
 
+`enum()` generates a literal union, `unknown()` generates `unknown`, and
+`never()` generates `never`.
+
+`discriminatedUnion()` generates the union of its object choices.
+`intersection()` generates a parenthesized TypeScript intersection.
+String length, pattern, and format constraints remain the static type `string`.
+Numeric `multipleOf` remains `number`, and record key constraints remain
+`Readonly<Record<string, Value>>`; these rules affect runtime acceptance, not
+the representable TypeScript primitive.
+Object `reject` and `strip` output only declared properties. `passthrough`
+adds `readonly [key: string]: unknown` without weakening known properties.
+
 ## Transform Types
 
 `transform()` output types are emitted as `unknown` because mapper return types
@@ -39,9 +51,13 @@ are not available through runtime schema introspection.
 ## API
 
 ```ts
-function toTypeScriptType(schema: Schema<any>, options?: TypeScriptTypeOptions): string;
+function toTypeScriptType(schema: Schema<any, any>, options?: TypeScriptTypeOptions): string;
 
 interface TypeScriptTypeOptions {
   readonly name?: string;
 }
 ```
+
+Recursive `lazy()` references are rejected until graph-aware declaration
+generation is implemented. The generator does not silently replace recursive
+definitions with `unknown`.

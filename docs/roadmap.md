@@ -2,6 +2,9 @@
 
 SafeShape `1.0.0` is the first stable API release.
 
+The proposed product and release plan for the next major version is documented
+in [roadmap-2.0.md](roadmap-2.0.md).
+
 Included:
 
 - runtime schemas and parser APIs;

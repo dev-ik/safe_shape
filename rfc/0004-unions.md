@@ -1,5 +1,9 @@
 # RFC 0004: unions
 
+## Status
+
+Accepted and retained for SafeShape 2.0.
+
 ## Motivation
 
 External data often supports a bounded set of valid shapes or primitive alternatives.

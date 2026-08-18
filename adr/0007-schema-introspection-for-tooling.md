@@ -1,5 +1,9 @@
 # ADR 0007: Schema Introspection for Tooling
 
+## Status
+
+Accepted and retained for SafeShape 2.0.
+
 ## Context
 
 SafeShape packages such as `@safe-shape/json-schema` need to inspect schemas without

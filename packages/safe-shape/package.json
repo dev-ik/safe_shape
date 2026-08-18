@@ -1,6 +1,6 @@
 {
   "name": "safe-shape",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Umbrella package for SafeShape runtime contracts and tooling.",
   "type": "module",
   "engines": {
@@ -17,16 +17,17 @@
     "README.md"
   ],
   "dependencies": {
-    "@safe-shape/cli": "1.0.1",
-    "@safe-shape/core": "1.0.1",
-    "@safe-shape/http": "1.0.1",
-    "@safe-shape/json-schema": "1.0.1",
-    "@safe-shape/typescript": "1.0.1",
-    "@safe-shape/validation": "1.0.1"
+    "@safe-shape/cli": "2.0.0",
+    "@safe-shape/compat": "2.0.0",
+    "@safe-shape/core": "2.0.0",
+    "@safe-shape/http": "2.0.0",
+    "@safe-shape/json-schema": "2.0.0",
+    "@safe-shape/typescript": "2.0.0",
+    "@safe-shape/validation": "2.0.0"
   },
   "scripts": {
-    "build": "npm run build --workspace @safe-shape/core && npm run build --workspace @safe-shape/http && npm run build --workspace @safe-shape/json-schema && npm run build --workspace @safe-shape/typescript && npm run build --workspace @safe-shape/validation && npm run build --workspace @safe-shape/cli && tsc -p tsconfig.build.json",
-    "typecheck": "npm run build --workspace @safe-shape/core && npm run build --workspace @safe-shape/http && npm run build --workspace @safe-shape/json-schema && npm run build --workspace @safe-shape/typescript && npm run build --workspace @safe-shape/validation && npm run build --workspace @safe-shape/cli && tsc --noEmit",
+    "build": "npm run build --workspace @safe-shape/core && npm run build --workspace @safe-shape/compat && npm run build --workspace @safe-shape/http && npm run build --workspace @safe-shape/json-schema && npm run build --workspace @safe-shape/typescript && npm run build --workspace @safe-shape/validation && npm run build --workspace @safe-shape/cli && tsc -p tsconfig.build.json",
+    "typecheck": "npm run build --workspace @safe-shape/core && npm run build --workspace @safe-shape/compat && npm run build --workspace @safe-shape/http && npm run build --workspace @safe-shape/json-schema && npm run build --workspace @safe-shape/typescript && npm run build --workspace @safe-shape/validation && npm run build --workspace @safe-shape/cli && tsc --noEmit",
     "test": "npm run build && tsc -p tsconfig.test.json && node --test .tmp/test/tests/*.test.js"
   },
   "repository": {

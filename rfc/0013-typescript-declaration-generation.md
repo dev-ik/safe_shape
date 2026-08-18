@@ -1,5 +1,9 @@
 # RFC 0013: TypeScript declaration generation
 
+## Status
+
+Accepted and retained for SafeShape 2.0.
+
 ## Motivation
 
 SafeShape should support generated TypeScript declaration artifacts from runtime

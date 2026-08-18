@@ -40,6 +40,12 @@ documented, toolable, and release-tested.
 | Coercion | Rich convenience APIs, including coercion-oriented workflows | No hidden coercion; transforms are explicit |
 | Tooling | Large ecosystem and built-in conversion features | First-party CLI, JSON Schema export, TypeScript generation, validation reports |
 | HTTP boundaries | Usually handled through adapters or app code | First-party framework-neutral HTTP helpers |
+| Contract evolution | Application-specific tooling | Deterministic input/output graph snapshots, fingerprints, recursion, and conservative compatibility reports |
+| Ecosystem protocol | Standard Schema support | Native synchronous Standard Schema V1 plus side-aware Standard JSON Schema adapters and richer immutable diagnostics |
+| Tagged composition | Discriminated union validation | Selected-branch diagnostics plus first-party Contract IR, snapshots, JSON Schema, and TypeScript artifacts |
+| Failed unions | Generic union failure is the common baseline | Ordered recursive diagnostics for every failed branch, with original paths and no best-branch heuristic |
+| Cross-field rules | Custom refinement hooks | Stable-id opaque rules with relative single-issue paths or ordered multi-issue collectors preserved through Standard Schema, CLI, validation, and HTTP |
+| Toolable constraints | Broad validation surface | Exact decimal `multipleOf`, constrained record keys, and explicit object policies retain one meaning across runtime, Contract IR, compatibility, JSON Schema, and CLI |
 | Release posture | Mature general-purpose library | Contract-first release gate with tests, examples, benchmarks, consumer install, audit, and pack dry-run |
 
 Choose Zod when you need the largest ecosystem and the widest validation feature
@@ -58,11 +64,11 @@ npm install safe-shape
 Define a schema and validate unknown input:
 
 ```ts
-import { number, object, string, type Infer } from "safe-shape";
+import { integer, object, string, type Infer } from "safe-shape";
 
 const User = object({
-  id: string(),
-  age: number().optional(),
+  id: string({ minLength: 1, maxLength: 100 }),
+  age: integer({ minimum: 0, maximum: 150 }).optional(),
 });
 
 type User = Infer<typeof User>;
@@ -101,8 +107,28 @@ safe-shape --json schema types \
   --out ./dist/contracts/user.d.ts
 ```
 
+Store a reviewable contract baseline and block incompatible changes in CI:
+
+```sh
+safe-shape contract snapshot \
+  --module ./dist/contracts/user.js \
+  --export User \
+  --id user \
+  --format v2 \
+  --out ./.safe-shape/user.contract.json
+
+safe-shape --json contract check \
+  --module ./dist/contracts/user.js \
+  --export User \
+  --against ./.safe-shape/user.contract.json \
+  --side input \
+  --compatibility backward
+```
+
 The CLI is machine-readable under `--json`, treats validation failures as
-command results, and does not require authentication.
+command results, includes migration decisions in compatibility reports, and
+does not require authentication. Snapshot v1 remains the default; v2 is
+explicit for recursive and input/output graph contracts.
 
 ## Release Metrics
 
@@ -110,23 +136,36 @@ Current stable release gate:
 
 | Signal | Status |
 | --- | --- |
-| Packages | 7 publishable packages |
-| Unit tests | 69 passing tests |
+| Packages | 8 publishable packages |
+| Unit tests | 205 passing tests |
 | Consumer install | Tarball install smoke check passes |
 | Examples | Runnable examples pass |
 | Security audit | 0 known vulnerabilities |
-| Benchmarks | 5 runtime parse scenarios |
+| Benchmarks | 18 runtime and compatibility scenarios |
 | Package dry run | `npm pack --workspaces --dry-run` passes |
 
 Sample local benchmark run on Node.js `v20.10.0` / macOS arm64:
 
 | Scenario | Throughput |
 | --- | ---: |
-| Primitive string `safeParse` valid | 9,107,731 ops/sec |
-| Object user `safeParse` valid | 269,899 ops/sec |
-| Union event `safeParse` valid | 38,447 ops/sec |
-| Array users `safeParse` valid | 11,389 ops/sec |
-| Object user `safeParse` invalid | 78,017 ops/sec |
+| Primitive string `safeParse` valid | 8,987,633 ops/sec |
+| Formatted email string `safeParse` valid | 5,208,752 ops/sec |
+| Decimal `multipleOf` `safeParse` valid | 2,551,484 ops/sec |
+| Constrained record `safeParse` valid | 1,212,756 ops/sec |
+| Strip object `safeParse` valid | 1,198,829 ops/sec |
+| Passthrough object `safeParse` valid | 741,364 ops/sec |
+| Object user `safeParse` valid | 208,957 ops/sec |
+| Standard Schema user `validate` valid | 213,828 ops/sec |
+| Union event `safeParse` valid | 38,315 ops/sec |
+| Union event `safeParse` invalid with branch diagnostics | 14,564 ops/sec |
+| Discriminated union event `safeParse` valid | 697,471 ops/sec |
+| Intersection string `safeParse` valid | 3,867,499 ops/sec |
+| Array users `safeParse` valid | 8,703 ops/sec |
+| Object user `safeParse` invalid | 71,471 ops/sec |
+| Recursive tree `safeParse` valid | 376,573 ops/sec |
+| Contract compatibility widening safe | 41,236 ops/sec |
+| Contract compatibility narrowing breaking | 40,276 ops/sec |
+| Recursive contract v2 compatibility widening safe | 11,131 ops/sec |
 
 Benchmark results are execution evidence, not fixed release thresholds. Re-run
 them locally with:
@@ -151,6 +190,7 @@ Use narrower packages when you want strict dependency boundaries:
 | --- | --- |
 | `safe-shape` | Umbrella package that re-exports runtime and tooling APIs |
 | `@safe-shape/core` | Runtime schemas, parsing, diagnostics, and type inference |
+| `@safe-shape/compat` | Deterministic snapshots and compatibility analysis |
 | `@safe-shape/http` | Framework-neutral HTTP boundary helpers |
 | `@safe-shape/json-schema` | JSON Schema export |
 | `@safe-shape/typescript` | TypeScript declaration generation |
@@ -169,8 +209,10 @@ Use narrower packages when you want strict dependency boundaries:
 
 ## Documentation
 
+- [Migrating from 1.x to 2.0](docs/migration-1-to-2.md)
 - [Project integration](docs/integration.md)
 - [Core API](docs/api/core.md)
+- [Contract compatibility](docs/api/compat.md)
 - [CLI API](docs/api/cli.md)
 - [HTTP helpers](docs/api/http.md)
 - [JSON Schema export](docs/api/json-schema.md)
@@ -178,6 +220,7 @@ Use narrower packages when you want strict dependency boundaries:
 - [Validation reports](docs/api/validation.md)
 - [Benchmarks](docs/benchmarks.md)
 - [Release workflow](docs/release.md)
+- [Contract checks in CI](docs/ci.md)
 
 ## Local Development
 

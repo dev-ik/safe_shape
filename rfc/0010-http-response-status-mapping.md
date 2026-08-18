@@ -1,5 +1,9 @@
 # RFC 0010: http-response-status-mapping
 
+## Status
+
+Accepted and retained for SafeShape 2.0.
+
 ## Motivation
 
 HTTP responses can have different valid shapes for different status codes. SafeShape needs

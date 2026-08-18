@@ -3,26 +3,46 @@ import test from "node:test";
 import {
   array,
   boolean,
+  discriminatedUnion,
+  enum as enumSchema,
   literal,
+  lazy,
+  intersection,
   nullable,
+  never as neverSchema,
   number,
   object,
   record,
   string,
   tuple,
   union,
+  unknown as unknownSchema,
+  type Schema,
 } from "@safe-shape/core";
 import { toTypeScriptType } from "../src/index.js";
 
 test("generates primitive literal array tuple union record and nullable types", () => {
   assert.equal(toTypeScriptType(string()), "export type SchemaOutput = string;\n");
-  assert.equal(toTypeScriptType(number(), { name: "Amount" }), "export type Amount = number;\n");
+  assert.equal(
+    toTypeScriptType(string({ pattern: "^[a-z]+$", format: "email" })),
+    "export type SchemaOutput = string;\n",
+  );
+  assert.equal(
+    toTypeScriptType(number({ multipleOf: 0.01 }), { name: "Amount" }),
+    "export type Amount = number;\n",
+  );
   assert.equal(toTypeScriptType(boolean()), "export type SchemaOutput = boolean;\n");
   assert.equal(toTypeScriptType(literal("ok")), "export type SchemaOutput = \"ok\";\n");
+  assert.equal(toTypeScriptType(enumSchema(["draft", "published", 1])), "export type SchemaOutput = \"draft\" | \"published\" | 1;\n");
+  assert.equal(toTypeScriptType(unknownSchema()), "export type SchemaOutput = unknown;\n");
+  assert.equal(toTypeScriptType(neverSchema()), "export type SchemaOutput = never;\n");
   assert.equal(toTypeScriptType(array(string())), "export type SchemaOutput = ReadonlyArray<string>;\n");
   assert.equal(toTypeScriptType(tuple([string(), number()])), "export type SchemaOutput = readonly [string, number];\n");
   assert.equal(toTypeScriptType(union([literal("admin"), literal("member")])), "export type SchemaOutput = \"admin\" | \"member\";\n");
-  assert.equal(toTypeScriptType(record(nullable(string()))), "export type SchemaOutput = Readonly<Record<string, string | null>>;\n");
+  assert.equal(
+    toTypeScriptType(record(nullable(string()), { key: { pattern: "^[a-z]+$" } })),
+    "export type SchemaOutput = Readonly<Record<string, string | null>>;\n",
+  );
 });
 
 test("generates object types with required and optional properties", () => {
@@ -40,6 +60,44 @@ test("generates object types with required and optional properties", () => {
   age?: number;
 };
 `);
+});
+
+test("generates an unknown index for passthrough object output only", () => {
+  assert.equal(toTypeScriptType(object(
+    { id: string() },
+    { unknownProperties: "passthrough" },
+  ), { name: "OpenObject" }), `export type OpenObject = {
+  id: string;
+  readonly [key: string]: unknown;
+};
+`);
+  assert.equal(toTypeScriptType(object(
+    { id: string() },
+    { unknownProperties: "strip" },
+  ), { name: "StrippedObject" }), `export type StrippedObject = {
+  id: string;
+};
+`);
+});
+
+test("generates discriminated union and intersection types", () => {
+  const eventSchema = discriminatedUnion("type", [
+    object({ type: literal("created"), id: string() }),
+    object({ type: literal("deleted"), id: string() }),
+  ] as const);
+
+  assert.equal(toTypeScriptType(eventSchema, { name: "Event" }), `export type Event = {
+  type: "created";
+  id: string;
+} | {
+  type: "deleted";
+  id: string;
+};
+`);
+  assert.equal(
+    toTypeScriptType(intersection(string(), literal("ready")), { name: "Ready" }),
+    'export type Ready = (string) & ("ready");\n',
+  );
 });
 
 test("generates types through annotated nullable and optional schemas", () => {
@@ -74,5 +132,22 @@ test("rejects invalid TypeScript type names", () => {
   assert.throws(
     () => toTypeScriptType(string(), { name: "not-valid" }),
     /Invalid TypeScript type name/,
+  );
+});
+
+test("rejects recursive references until graph type generation is implemented", () => {
+  interface TreeNode {
+    readonly children: readonly TreeNode[];
+  }
+
+  let treeSchema: Schema<TreeNode>;
+  treeSchema = lazy(
+    () => object({ children: array(treeSchema) }),
+    { id: "TreeNode" },
+  );
+
+  assert.throws(
+    () => toTypeScriptType(treeSchema),
+    /does not support schema references yet/,
   );
 });

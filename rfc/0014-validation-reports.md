@@ -1,5 +1,9 @@
 # RFC 0014: Validation reports
 
+## Status
+
+Accepted and retained for SafeShape 2.0.
+
 ## Motivation
 
 SafeShape core already exposes `safeParse`, but tooling and generated artifacts

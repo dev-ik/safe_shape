@@ -1,5 +1,9 @@
 # RFC 0001: schema-api
 
+## Status
+
+Accepted and retained for SafeShape 2.0.
+
 ## Motivation
 
 SafeShape needs a minimal public schema API before implementation so runtime behavior,

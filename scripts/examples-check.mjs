@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
+import { mkdir, rm } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -9,6 +10,11 @@ const cliPath = resolve(rootDir, "packages/cli/dist/cli.js");
 const schemaModulePath = resolve(rootDir, "examples/user-schema.mjs");
 const validUserPath = resolve(rootDir, "examples/valid-user.json");
 const invalidUserPath = resolve(rootDir, "examples/invalid-user.json");
+const workspaceDir = resolve(rootDir, ".tmp", "examples-check");
+const contractPath = resolve(workspaceDir, "user.contract.json");
+
+await rm(workspaceDir, { force: true, recursive: true });
+await mkdir(workspaceDir, { recursive: true });
 
 const exported = await runCli([
   "--json",
@@ -100,6 +106,46 @@ assert.deepEqual(parseJson(types.stdout), {
 };
 `,
 });
+
+const snapshot = await runCli([
+  "--json",
+  "contract",
+  "snapshot",
+  "--module",
+  schemaModulePath,
+  "--export",
+  "userSchema",
+  "--id",
+  "user",
+  "--format",
+  "v2",
+  "--out",
+  contractPath,
+]);
+
+assert.equal(snapshot.code, 0);
+assert.equal(parseJson(snapshot.stdout).format, "safe-shape.contract/v2");
+
+const compatibility = await runCli([
+  "--json",
+  "contract",
+  "check",
+  "--module",
+  schemaModulePath,
+  "--export",
+  "userSchema",
+  "--against",
+  contractPath,
+  "--side",
+  "input",
+]);
+
+assert.equal(compatibility.code, 0);
+const compatibilityPayload = parseJson(compatibility.stdout);
+assert.equal(compatibilityPayload.status, "safe");
+assert.equal(compatibilityPayload.migration.decision, "compatible");
+
+await rm(workspaceDir, { force: true, recursive: true });
 
 console.log("examples-check: ok");
 

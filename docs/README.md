@@ -10,6 +10,8 @@ SafeShape documentation is organized by the task you need to complete.
   diagnostics, and create a contract baseline.
 - [Project integration](integration.md): package choices, TypeScript setup,
   Standard Schema, HTTP, CLI, and CI integration.
+- [Production response recovery](production-response-recovery.md): report
+  deployed response drift and degrade safely through validated fallbacks.
 - [Migrating from 1.x to 2.0](migration-1-to-2.md): source-sensitive changes
   and the recommended upgrade order.
 

@@ -1,6 +1,6 @@
 {
   "name": "@safe-shape/validation",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "JSON-friendly validation reports for SafeShape runtime contracts.",
   "type": "module",
   "publishConfig": {
@@ -20,7 +20,7 @@
     "README.md"
   ],
   "dependencies": {
-    "@safe-shape/core": "2.0.0"
+    "@safe-shape/core": "2.0.1"
   },
   "scripts": {
     "build": "npm run build --workspace @safe-shape/core && tsc -p tsconfig.build.json",

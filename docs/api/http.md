@@ -78,6 +78,17 @@ const response = contract.parseResponse({ id: "user_1" }, 200);
 If `status` is provided and no status schema exists, `response` is used as a fallback
 when configured. Without a fallback response schema, parsing fails at `input.response.status`.
 
+## Production Response Recovery
+
+`safeParseHttpResponse()` reports invalid deployed responses without throwing.
+Recovery policy remains application-owned: report the immutable issues,
+validate any cached or constructed fallback through the same contract, and
+render an explicit unavailable state if recovery also fails. Do not cast the
+invalid network payload to the inferred response type.
+
+See [Production response recovery](../production-response-recovery.md) for a
+typed pattern, a runnable example, and telemetry safety guidance.
+
 ## Compatibility Presentation
 
 `@safe-shape/http` remains a runtime-only package. For contract evolution,

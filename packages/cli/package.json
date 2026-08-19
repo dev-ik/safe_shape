@@ -1,6 +1,6 @@
 {
   "name": "@safe-shape/cli",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Command-line tools for SafeShape runtime contracts.",
   "type": "module",
   "publishConfig": {
@@ -17,11 +17,11 @@
     "README.md"
   ],
   "dependencies": {
-    "@safe-shape/compat": "2.0.0",
-    "@safe-shape/core": "2.0.0",
-    "@safe-shape/json-schema": "2.0.0",
-    "@safe-shape/typescript": "2.0.0",
-    "@safe-shape/validation": "2.0.0"
+    "@safe-shape/compat": "2.0.1",
+    "@safe-shape/core": "2.0.1",
+    "@safe-shape/json-schema": "2.0.1",
+    "@safe-shape/typescript": "2.0.1",
+    "@safe-shape/validation": "2.0.1"
   },
   "scripts": {
     "build": "npm run build --workspace @safe-shape/core && npm run build --workspace @safe-shape/compat && npm run build --workspace @safe-shape/json-schema && npm run build --workspace @safe-shape/typescript && npm run build --workspace @safe-shape/validation && tsc -p tsconfig.build.json",

@@ -227,6 +227,12 @@ if (!result.success) {
 The HTTP package is framework-neutral. Map your framework request object into
 the contract sections you want to validate.
 
+For deployed response drift, keep validation strict while changing only the
+application failure policy. The [production response recovery
+guide](production-response-recovery.md) shows how to report immutable issues,
+revalidate stale cache data through the same contract, and render a local
+unavailable state instead of returning invalid network data as a typed value.
+
 ## CLI Integration
 
 Expose contract tooling from your project scripts:

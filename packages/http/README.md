@@ -34,4 +34,10 @@ unions, the same prefix is applied recursively to every preserved branch issue.
 Addressable custom refinement issues retain collector order and receive the
 same section prefix.
 
+For production response drift, `safeParseHttpResponse()` can feed an
+application-owned telemetry and recovery policy without weakening validation.
+See [Production response recovery](../../docs/production-response-recovery.md)
+for a typed, fallback-validating pattern. Raw failed payloads must not be cast
+to the inferred response type.
+
 See the [HTTP API reference](../../docs/api/http.md) for the public API.

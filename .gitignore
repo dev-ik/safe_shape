@@ -5,6 +5,7 @@ coverage/
 .npm-cache/
 packages/*/dist/
 packages/*/.tmp/
+.history/
 
 # Local owner/agent workflow files.
 .ai/

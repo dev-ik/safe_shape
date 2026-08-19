@@ -255,6 +255,6 @@ npm run examples:check
 
 ## Project Status
 
-SafeShape is on the `2.0.0` stable release line. The release gate covers
+SafeShape is on the `2.0.1` stable release line. The release gate covers
 metadata checks, build, typecheck, tests, examples, benchmarks, consumer tarball
 installation, npm audit, and package dry-run.

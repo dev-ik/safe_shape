@@ -66,6 +66,21 @@ node packages/cli/dist/cli.js --json contract check \
 
 The JSON check result includes a migration decision and actionable diagnostics.
 
+Validate a production response, report contract drift, and recover only from a
+separately validated fallback:
+
+```js
+import { readUserResponse } from "./resilient-http-response.mjs";
+
+const state = readUserResponse(responseBody, responseStatus, {
+  fallback: () => cachedResponse,
+  report: (event) => telemetry.capture("contract_violation", event),
+});
+```
+
+See [Production response recovery](../docs/production-response-recovery.md) for
+the typed integration pattern and telemetry guidance.
+
 Run the example smoke check:
 
 ```sh

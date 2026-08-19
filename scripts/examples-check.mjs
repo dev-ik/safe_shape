@@ -145,6 +145,42 @@ const compatibilityPayload = parseJson(compatibility.stdout);
 assert.equal(compatibilityPayload.status, "safe");
 assert.equal(compatibilityPayload.migration.decision, "compatible");
 
+const {
+  readUserResponse,
+} = await import("../examples/resilient-http-response.mjs");
+const violations = [];
+const driftedPayload = { id: 42, name: "Dev" };
+const recoveredResponse = readUserResponse(driftedPayload, 200, {
+  fallback: () => ({ id: "user_cached", name: "Cached Dev" }),
+  report: (event) => violations.push(event),
+});
+
+assert.equal(recoveredResponse.kind, "recovered");
+assert.deepEqual(recoveredResponse.data, {
+  id: "user_cached",
+  name: "Cached Dev",
+});
+assert.equal(recoveredResponse.error.issues[0].code, "invalid_type");
+assert.equal(violations.length, 1);
+assert.deepEqual(violations[0].diagnostics, [{ code: "invalid_type", path: ["id"] }]);
+assert.equal(Object.hasOwn(violations[0], "input"), false);
+assert.equal(Object.hasOwn(violations[0], "issues"), false);
+
+const unavailableResponse = readUserResponse(driftedPayload, 200, {
+  fallback: () => ({ id: 99, name: "Broken cache" }),
+});
+
+assert.equal(unavailableResponse.kind, "unavailable");
+
+const validResponse = readUserResponse({ id: "user_1", name: "Dev" }, 200, {
+  fallback: () => {
+    throw new Error("fallback must not run for a valid response");
+  },
+});
+
+assert.equal(validResponse.kind, "valid");
+assert.equal(validResponse.data.id, "user_1");
+
 await rm(workspaceDir, { force: true, recursive: true });
 
 console.log("examples-check: ok");

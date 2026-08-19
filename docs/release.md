@@ -85,21 +85,13 @@ Use [publish-readiness.md](publish-readiness.md) before publishing packages.
 Releases are published by the `Publish npm packages` workflow. It is started
 manually on a Git tag whose name is exactly `v<version>`. The workflow runs the
 full release checks, creates deterministic release archives, publishes the
-established packages in dependency order, and attaches every archive to a
-GitHub Release. Before npm publication, it also uploads the archives as a
-seven-day GitHub Actions artifact for the manual new-package bootstrap.
-
-`@safe-shape/compat` is excluded from automatic npm publication while it is a
-new package. The workflow publishes `@safe-shape/core` first and then requires
-the exact `@safe-shape/compat@<version>` to exist in npm before it publishes
-CLI and umbrella packages that depend on it. Publication steps are idempotent:
-rerunning the tagged workflow skips package versions already present in npm.
-The normal release check continues to reject an already published version;
-only this controlled bootstrap workflow enables resumable publication.
+packages in dependency order, and attaches every archive to a GitHub Release.
+Before npm publication, it also uploads the archives as a seven-day GitHub
+Actions artifact. Publication steps are idempotent: rerunning the tagged
+workflow skips package versions already present in npm.
 
 Before using the workflow, create a GitHub Environment named `npm` and
-configure an npm trusted publisher for every automatically published package
-except `@safe-shape/compat`:
+configure an npm trusted publisher for every published package:
 
 ```text
 GitHub owner/repository: dev-ik/safe_shape
@@ -125,25 +117,12 @@ Then open GitHub Actions, choose `Publish npm packages`, select the release tag,
 and run the workflow. The tag/version gate stops the job if the selected ref
 does not match the root and workspace package version.
 
-For the initial 2.0 bootstrap:
-
-1. Run the workflow with phase `bootstrap-core`. It publishes
-   `@safe-shape/core@2.0.0`, uploads all archives, and finishes successfully
-   without creating the GitHub Release.
-2. Download the `safe-shape-release-2.0.0` artifact from that workflow run (or
-   use the approved local artifacts), then publish the new package manually:
-
-   ```sh
-   npm publish ./release-artifacts/safe-shape-compat-2.0.0.tgz --access public
-   ```
-
-3. Rerun the same tagged workflow with phase `release`. It verifies the manual
-   package, skips the already published core version, publishes the remaining
-   packages, and creates the GitHub Release.
-
-An npm trusted publisher can only be configured after a package exists in npm.
-After the first manual `@safe-shape/compat` release, configure its trusted
-publisher before adding it to a future automatic publish scope.
+The `compat-only` phase is a recovery path for a tag whose core package was
+already published before compat automation was enabled. Run it from the
+default branch with `release_ref` set to the exact existing `v<version>` tag.
+The workflow checks out that tag, verifies its package version, publishes only
+missing core/compat artifacts through trusted publishing, and does not create a
+GitHub Release. Normal releases use only the tagged `release` phase.
 
 ## Local CLI
 

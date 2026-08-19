@@ -208,12 +208,13 @@ function checkPublishWorkflow() {
 
   const workflow = readFileSync(join(root, workflowPath), "utf8");
   assert(
-    workflow.includes('npm view "@safe-shape/compat@${VERSION}" version'),
-    "publish workflow must verify the manually published compatibility package",
+    workflow.includes('"@safe-shape/compat"')
+      && workflow.includes('"./release-artifacts/safe-shape-compat-${VERSION}.tgz"'),
+    "publish workflow must publish the compatibility package artifact",
   );
   assert(
-    !/npm publish[^\n]*safe-shape-compat/.test(workflow),
-    "publish workflow must not automatically publish the new compatibility package",
+    !workflow.includes("Using manually published @safe-shape/compat"),
+    "publish workflow must not require manual compatibility package publication",
   );
   assert(
     workflow.includes("publish_if_missing"),
@@ -221,16 +222,17 @@ function checkPublishWorkflow() {
   );
   assert(
     workflow.includes("uses: actions/upload-artifact@v4"),
-    "publish workflow must retain bootstrap release artifacts",
+    "publish workflow must retain release artifacts",
   );
   assert(
     workflow.includes("ALLOW_ALREADY_PUBLISHED_RELEASE_PACKAGES: 'true'"),
-    "publish workflow must allow its tagged bootstrap rerun after publishing core",
+    "publish workflow must allow idempotent tagged release reruns",
   );
   assert(
-    workflow.includes("- bootstrap-core")
+    workflow.includes("- compat-only")
+      && workflow.includes("release_ref:")
       && workflow.includes("if: inputs.phase == 'release'"),
-    "publish workflow must separate core bootstrap from final release publication",
+    "publish workflow must separate compat recovery from final release publication",
   );
 }
 

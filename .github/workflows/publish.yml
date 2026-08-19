@@ -4,13 +4,17 @@ on:
   workflow_dispatch:
     inputs:
       phase:
-        description: Publish core for compat bootstrap, or finish the release
+        description: Publish a tagged release, or recover compat for an existing tag
         required: true
         default: release
         type: choice
         options:
-          - bootstrap-core
+          - compat-only
           - release
+      release_ref:
+        description: Existing v<version> tag required only for compat-only recovery
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -26,11 +30,14 @@ jobs:
     runs-on: ubuntu-latest
     environment: npm
     env:
-      REQUIRE_RELEASE_TAG: 'true'
+      REQUIRE_RELEASE_TAG: ${{ inputs.phase == 'compat-only' && 'false' || 'true' }}
       ALLOW_ALREADY_PUBLISHED_RELEASE_PACKAGES: 'true'
       RELEASE_PHASE: ${{ inputs.phase }}
+      RELEASE_REF: ${{ inputs.release_ref }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.phase == 'compat-only' && inputs.release_ref || github.ref }}
 
       - uses: actions/setup-node@v6
         with:
@@ -42,6 +49,18 @@ jobs:
         run: |
           VERSION="$(node -p 'require("./package.json").version')"
           echo "VERSION=${VERSION}" >> "${GITHUB_ENV}"
+
+      - name: Verify release ref
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${RELEASE_PHASE}" == "compat-only" ]]; then
+            if [[ -z "${RELEASE_REF}" || "${RELEASE_REF}" != "v${VERSION}" ]]; then
+              echo "::error::compat-only requires release_ref=v${VERSION}."
+              exit 1
+            fi
+          fi
 
       - run: npm ci
       - run: npm run prepare:release
@@ -75,17 +94,14 @@ jobs:
             "@safe-shape/core" \
             "./release-artifacts/safe-shape-core-${VERSION}.tgz"
 
-          if [[ "${RELEASE_PHASE}" == "bootstrap-core" ]]; then
-            echo "::notice::Core bootstrap is complete. Publish @safe-shape/compat@${VERSION} manually before running the release phase."
+          publish_if_missing \
+            "@safe-shape/compat" \
+            "./release-artifacts/safe-shape-compat-${VERSION}.tgz"
+
+          if [[ "${RELEASE_PHASE}" == "compat-only" ]]; then
+            echo "::notice::Compatibility package recovery is complete for ${RELEASE_REF}."
             exit 0
           fi
-
-          COMPAT_VERSION="$(npm view "@safe-shape/compat@${VERSION}" version 2>/dev/null || true)"
-          if [[ "${COMPAT_VERSION}" != "${VERSION}" ]]; then
-            echo "::error::Publish @safe-shape/compat@${VERSION} manually, then rerun this workflow."
-            exit 1
-          fi
-          echo "::notice::Using manually published @safe-shape/compat@${VERSION}."
 
           publish_if_missing \
             "@safe-shape/http" \

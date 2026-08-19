@@ -136,6 +136,20 @@ command results, includes migration decisions in compatibility reports, and
 does not require authentication. Snapshot v1 remains the default; v2 is
 explicit for recursive and input/output graph contracts.
 
+## Production Response Recovery
+
+Use `safeParseHttpResponse()` at deployed HTTP boundaries to detect an invalid
+response without throwing or treating untrusted data as the inferred response
+type. When validation fails, the application can report redacted diagnostics,
+validate a cached or constructed fallback through the same contract, and render
+an explicit unavailable state if recovery also fails.
+
+SafeShape keeps recovery policy in application code: it never silently accepts
+the invalid network payload or weakens the production schema. See the
+[Production Response Recovery guide](docs/production-response-recovery.md) for
+the typed flow, telemetry guidance, CI compatibility check, and a runnable
+example.
+
 ## Release Metrics
 
 Current stable release gate:
@@ -223,6 +237,7 @@ Use narrower packages when you want strict dependency boundaries:
 - [Contract compatibility](docs/api/compat.md)
 - [CLI API](docs/api/cli.md)
 - [HTTP helpers](docs/api/http.md)
+- [Production Response Recovery](docs/production-response-recovery.md)
 - [JSON Schema export](docs/api/json-schema.md)
 - [TypeScript generation](docs/api/typescript.md)
 - [Validation reports](docs/api/validation.md)
@@ -255,6 +270,6 @@ npm run examples:check
 
 ## Project Status
 
-SafeShape is on the `2.0.1` stable release line. The release gate covers
+SafeShape is on the `2.0.2` stable release line. The release gate covers
 metadata checks, build, typecheck, tests, examples, benchmarks, consumer tarball
 installation, npm audit, and package dry-run.

@@ -40,6 +40,18 @@ Standard JSON Schema V1 input/output conversion.
 Use `safeToJsonSchema()` when build tooling needs structured diagnostics for
 unrepresentable refinements or opaque output without catching exceptions.
 
+## Production Response Recovery
+
+Use the re-exported `safeParseHttpResponse()` helper to detect deployed
+response drift without throwing or treating the failed payload as trusted
+application data. Recovery remains application-owned: report redacted
+diagnostics, validate cached or constructed fallback data through the same HTTP
+contract, and return an explicit unavailable state if the fallback also fails.
+
+See the [Production Response Recovery
+guide](../../docs/production-response-recovery.md) for the typed flow,
+telemetry guidance, and runnable example.
+
 The package re-exports:
 
 - `@safe-shape/core`

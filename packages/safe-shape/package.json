@@ -1,6 +1,6 @@
 {
   "name": "safe-shape",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Umbrella package for SafeShape runtime contracts and tooling.",
   "type": "module",
   "engines": {
@@ -17,13 +17,13 @@
     "README.md"
   ],
   "dependencies": {
-    "@safe-shape/cli": "2.0.1",
-    "@safe-shape/compat": "2.0.1",
-    "@safe-shape/core": "2.0.1",
-    "@safe-shape/http": "2.0.1",
-    "@safe-shape/json-schema": "2.0.1",
-    "@safe-shape/typescript": "2.0.1",
-    "@safe-shape/validation": "2.0.1"
+    "@safe-shape/cli": "2.0.2",
+    "@safe-shape/compat": "2.0.2",
+    "@safe-shape/core": "2.0.2",
+    "@safe-shape/http": "2.0.2",
+    "@safe-shape/json-schema": "2.0.2",
+    "@safe-shape/typescript": "2.0.2",
+    "@safe-shape/validation": "2.0.2"
   },
   "scripts": {
     "build": "npm run build --workspace @safe-shape/core && npm run build --workspace @safe-shape/compat && npm run build --workspace @safe-shape/http && npm run build --workspace @safe-shape/json-schema && npm run build --workspace @safe-shape/typescript && npm run build --workspace @safe-shape/validation && npm run build --workspace @safe-shape/cli && tsc -p tsconfig.build.json",

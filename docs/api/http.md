@@ -25,6 +25,8 @@ Contracts expose:
 
 - `safeParseRequest(input)`
 - `parseRequest(input)`
+- `safeParseRequestAsync(input)`
+- `parseRequestAsync(input)`
 
 `safeParseRequest` returns a core `ParseResult`.
 
@@ -32,6 +34,8 @@ Standalone helpers are also available for adapter-style code:
 
 - `safeParseHttpRequest(contract, input)`
 - `parseHttpRequest(contract, input)`
+- `safeParseHttpRequestAsync(contract, input)`
+- `parseHttpRequestAsync(contract, input)`
 
 Request failures prefix issue paths with the section name:
 
@@ -47,6 +51,7 @@ issue in the preserved `branches` tree as well as to the root issue.
 Addressable custom diagnostics keep collector order and receive the same
 section prefix. For example, a body refinement issue with relative path
 `["end"]` is returned at `["body", "end"]`.
+Warnings use the same prefix and remain non-fatal.
 
 ## Response Parsing
 
@@ -54,11 +59,15 @@ Contracts expose:
 
 - `safeParseResponse(input, status?)`
 - `parseResponse(input, status?)`
+- `safeParseResponseAsync(input, status?)`
+- `parseResponseAsync(input, status?)`
 
 Standalone helpers are also available:
 
 - `safeParseHttpResponse(contract, input, status?)`
 - `parseHttpResponse(contract, input, status?)`
+- `safeParseHttpResponseAsync(contract, input, status?)`
+- `parseHttpResponseAsync(contract, input, status?)`
 
 If no response schema is configured, response parsing returns the input unchanged.
 
@@ -80,11 +89,38 @@ when configured. Without a fallback response schema, parsing fails at `input.res
 
 ## Production Response Recovery
 
-`safeParseHttpResponse()` reports invalid deployed responses without throwing.
-Recovery policy remains application-owned: report the immutable issues,
-validate any cached or constructed fallback through the same contract, and
-render an explicit unavailable state if recovery also fails. Do not cast the
-invalid network payload to the inferred response type.
+`recoverHttpResponse()` (or `recoverHttpResponseAsync()` for async contracts)
+validates a network value and, only after failure, an
+eager or lazy fallback through the same contract and status:
+
+```ts
+const state = recoverHttpResponse(contract, networkPayload, {
+  status: 200,
+  getFallback: () => readCachedValue(),
+});
+
+switch (state.kind) {
+  case "valid":
+  case "recovered":
+    render(state.data);
+    break;
+  case "unavailable":
+    renderUnavailable();
+}
+```
+
+Use `fallback: unknown` for an eager value or `getFallback: () => unknown` for
+a lazy value. Exactly one is required. A valid network response never invokes
+`getFallback`. `recovered` retains `networkError`; `unavailable` retains both
+`networkError` and `fallbackError`. All states are frozen, and neither invalid
+payload is exposed as inferred response data.
+The returned valid value's warnings are preserved on `valid` and `recovered`
+states.
+
+Fallback callbacks are application code; thrown exceptions propagate. Catch
+fallible cache/storage work inside the callback and return an `unknown` value
+for validation. Telemetry, redaction, retries, and UI policy remain outside the
+helper.
 
 See [Production response recovery](../production-response-recovery.md) for a
 typed pattern, a runnable example, and telemetry safety guidance.

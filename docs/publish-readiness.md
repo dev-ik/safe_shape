@@ -1,7 +1,7 @@
 # Publish Readiness
 
 SafeShape packages are published only after explicit release approval. Use this
-checklist before running `npm publish`.
+checklist before running the trusted-publishing workflow.
 
 ## Pre-Approval Checklist
 
@@ -12,11 +12,12 @@ checklist before running `npm publish`.
 - Confirm package-boundary architecture changes have an ADR.
 - Confirm package versions are aligned with the root version.
 - Confirm package dependency direction still matches `docs/package-architecture.md`.
-- Confirm the new `@safe-shape/compat` package is published manually before
-  GitHub Actions publishes CLI and umbrella packages that depend on it.
+- Confirm the workflow publishes every package in dependency order and skips
+  versions that are already present in npm.
 - Confirm `safe-shape` is published after all scoped packages.
 - Confirm `docs/integration.md` reflects the intended consumer integration flow.
 - Confirm `docs/migration-1-to-2.md` covers the supported 1.x upgrade path.
+- Confirm `docs/migration-2-to-3.md` covers the supported 2.x upgrade path.
 - Run `npm run docs:check` and confirm local links and EN/RU navigation pass.
 - Confirm runnable examples pass.
 - Confirm benchmark smoke checks pass.
@@ -41,10 +42,12 @@ consumer project, and verifies the installed CLI binary.
 Only after approval:
 
 1. Run `npm run prepare:release`.
-2. Commit the release version and push its `v<version>` tag.
-3. Run the `Publish npm packages` GitHub Actions workflow on that tag with
-   phase `bootstrap-core`.
-4. Manually publish the generated `@safe-shape/compat` archive.
-5. Rerun the workflow with phase `release`.
+2. Commit the release version and push the default branch.
+3. Create and push its annotated `v<version>` tag.
+4. Run the `Publish npm packages` GitHub Actions workflow on that tag with
+   phase `release`.
+
+The `compat-only` phase is reserved for recovery of an older partially
+published tag and is not part of a normal release.
 
 Do not publish unrelated packages.

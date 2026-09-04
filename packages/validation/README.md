@@ -6,7 +6,7 @@ JSON-friendly validation reports for SafeShape runtime contracts.
 
 ```ts
 import { object, string } from "@safe-shape/core";
-import { validateSchema } from "@safe-shape/validation";
+import { validateSchema, validateSchemaAsync } from "@safe-shape/validation";
 
 const userSchema = object({
   id: string(),
@@ -14,6 +14,8 @@ const userSchema = object({
 
 const report = validateSchema(userSchema, { id: "user_1" });
 ```
+
+Use `validateSchemaAsync()` for schemas with explicit async rules.
 
 Success:
 
@@ -35,7 +37,8 @@ Failure:
 }
 ```
 
-Validation failures do not throw.
+Validation failures do not throw. Valid and invalid reports include `warnings`
+when non-fatal diagnostics were emitted; the field is omitted when empty.
 Native string constraints preserve `invalid_string_pattern` and
 `invalid_string_format` issue codes in failure reports.
 Exact numeric multiples preserve `not_multiple_of`; constrained record keys

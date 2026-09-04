@@ -33,11 +33,17 @@ Request issue paths are prefixed with their HTTP section. For failed ordinary
 unions, the same prefix is applied recursively to every preserved branch issue.
 Addressable custom refinement issues retain collector order and receive the
 same section prefix.
+Warnings retain the section prefix without changing success. Async schemas use
+the contract or standalone `safeParseRequestAsync()` /
+`safeParseResponseAsync()` families.
 
-For production response drift, `safeParseHttpResponse()` can feed an
-application-owned telemetry and recovery policy without weakening validation.
-See [Production response recovery](../../docs/production-response-recovery.md)
-for a typed, fallback-validating pattern. Raw failed payloads must not be cast
-to the inferred response type.
+For production response drift, `recoverHttpResponse()` (or
+`recoverHttpResponseAsync()`) returns an immutable
+`valid`, `recovered`, or `unavailable` state. Eager and lazy fallbacks are
+validated through the same response contract and status; invalid network and
+fallback payloads are never returned as inferred data. Telemetry, storage, and
+UI policy remain application-owned. See [Production response
+recovery](../../docs/production-response-recovery.md) for the typed flow and
+telemetry guidance.
 
 See the [HTTP API reference](../../docs/api/http.md) for the public API.

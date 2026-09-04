@@ -172,6 +172,8 @@ import {
   array,
   discriminatedUnion,
   enum as enumSchema,
+  formatDiagnostics,
+  groupIssuesByPath,
   intersection,
   lazy,
   literal,
@@ -181,6 +183,7 @@ import {
   record,
   string,
   tuple,
+  toFieldErrors,
   unknown as unknownSchema,
 } from "@safe-shape/core";
 import {
@@ -192,14 +195,20 @@ import {
   createContractSnapshotV2,
   parseContractSnapshotV2,
 } from "@safe-shape/compat";
-import { httpContract, safeParseHttpRequest } from "@safe-shape/http";
+import {
+  httpContract,
+  recoverHttpResponse,
+  recoverHttpResponseAsync,
+  safeParseHttpRequest,
+  safeParseHttpRequestAsync,
+} from "@safe-shape/http";
 import {
   createStandardJsonSchema,
   safeToJsonSchema,
   toJsonSchema,
 } from "@safe-shape/json-schema";
 import { toTypeScriptType } from "@safe-shape/typescript";
-import { validateSchema } from "@safe-shape/validation";
+import { validateSchema, validateSchemaAsync } from "@safe-shape/validation";
 import {
   createContractSnapshot as umbrellaCreateContractSnapshot,
   object as umbrellaObject,
@@ -217,6 +226,23 @@ const standardResult = userSchema["~standard"].validate({
   role: "owner",
 });
 assert.equal(standardResult instanceof Promise, false);
+
+const asyncWarningSchema = object({
+  name: string().warnAsync(async (value) => value.length >= 3, {
+    id: "name.short/v1",
+    message: "Name is unusually short.",
+    params: { recommended_minimum: 3 },
+  }),
+});
+assert.throws(() => asyncWarningSchema.safeParse({ name: "x" }), /safeParseAsync/);
+const asyncWarningResult = await asyncWarningSchema.safeParseAsync({ name: "x" });
+assert.equal(asyncWarningResult.success, true);
+assert.equal(asyncWarningResult.warnings[0].severity, "warning");
+assert.equal(asyncWarningResult.warnings[0].ruleId, "name.short/v1");
+assert.match(formatDiagnostics(asyncWarningResult.warnings)[0], /unusually short/);
+const asyncValidation = await validateSchemaAsync(asyncWarningSchema, { name: "x" });
+assert.equal(asyncValidation.valid, true);
+assert.equal(asyncValidation.warnings.length, 1);
 assert.equal(standardResult.issues[0].code, "invalid_union");
 assert.deepEqual(standardResult.issues[0].branches.map((branch) => branch.index), [0, 1]);
 assert.equal(enumSchema(["draft", "published"]).parse("draft"), "draft");
@@ -273,6 +299,14 @@ assert.deepEqual(invalidPeriod.error.issues.map((issue) => issue.path), [
   ["start"],
   ["end"],
 ]);
+assert.deepEqual(groupIssuesByPath(invalidPeriod.error.issues).map((group) => group.path), [
+  ["start"],
+  ["end"],
+]);
+assert.deepEqual(toFieldErrors(invalidPeriod.error.issues), {
+  start: ["Start must not exceed end."],
+  end: ["End must not precede start."],
+});
 
 const report = validateSchema(userSchema, { id: "user_2", role: "member" });
 assert.deepEqual(report, {
@@ -429,6 +463,22 @@ const contract = httpContract({
 });
 const request = safeParseHttpRequest(contract, { params: { id: "user_1" } });
 assert.equal(request.success, true);
+
+const asyncContract = httpContract({ params: asyncWarningSchema });
+const asyncRequest = await safeParseHttpRequestAsync(asyncContract, { params: { name: "x" } });
+assert.equal(asyncRequest.success, true);
+assert.deepEqual(asyncRequest.warnings[0].path, ["params", "name"]);
+
+const responseContract = httpContract({ response: object({ id: string() }) });
+const recoveredResponse = recoverHttpResponse(responseContract, { id: 42 }, {
+  fallback: { id: "cached" },
+});
+assert.equal(recoveredResponse.kind, "recovered");
+assert.equal(recoveredResponse.data.id, "cached");
+const asyncRecoveredResponse = await recoverHttpResponseAsync(responseContract, { id: 42 }, {
+  fallback: { id: "cached" },
+});
+assert.equal(asyncRecoveredResponse.kind, "recovered");
 
 const umbrellaSchema = umbrellaObject({ id: umbrellaString() });
 assert.equal(umbrellaCreateContractSnapshot(umbrellaSchema, { id: "umbrella" }).id, "umbrella");

@@ -17,14 +17,19 @@ import {
   type ContractSnapshotV2,
   type CompatibilityMode,
 } from "@safe-shape/compat";
-import { describeSchema, formatIssues, type Schema } from "@safe-shape/core";
+import {
+  describeSchema,
+  formatIssues,
+  formatWarnings,
+  type Schema,
+} from "@safe-shape/core";
 import {
   JsonSchemaExportError,
   toJsonSchema,
   type JsonSchemaExportIssue,
 } from "@safe-shape/json-schema";
 import { toTypeScriptType } from "@safe-shape/typescript";
-import { validateSchema } from "@safe-shape/validation";
+import { validateSchemaAsync } from "@safe-shape/validation";
 
 interface CliErrorPayload {
   readonly ok: false;
@@ -322,7 +327,7 @@ async function runSchemaValidate(parsed: ParsedArgs, json: boolean): Promise<num
 
   const schema = await loadSchemaExport(modulePath, exportName);
   const input = await readJsonInput(inputPath);
-  const report = validateSchema(schema, input);
+  const report = await validateSchemaAsync(schema, input);
   const payloadBase = {
     command: "schema validate",
     module: resolveModulePath(modulePath),
@@ -348,7 +353,15 @@ async function runSchemaValidate(parsed: ParsedArgs, json: boolean): Promise<num
       return 0;
     }
 
-    writeText(outPath === undefined ? "Input is valid." : `Input is valid. Wrote validation report to ${resolveFilePath(outPath)}`);
+    const warningLines = report.warnings === undefined
+      ? []
+      : formatWarnings(report.warnings).map((warning) => `Warning: ${warning}`);
+    writeText([
+      outPath === undefined
+        ? "Input is valid."
+        : `Input is valid. Wrote validation report to ${resolveFilePath(outPath)}`,
+      ...warningLines,
+    ].join("\n"));
     return 0;
   }
 
@@ -357,11 +370,18 @@ async function runSchemaValidate(parsed: ParsedArgs, json: boolean): Promise<num
     return 1;
   }
 
-  process.stderr.write(
-    outPath === undefined
-      ? `Input is invalid:\n${formatIssues(report.issues).join("\n")}\n`
-      : `Input is invalid:\n${formatIssues(report.issues).join("\n")}\nWrote validation report to ${resolveFilePath(outPath)}\n`,
-  );
+  const warningLines = report.warnings === undefined
+    ? []
+    : formatWarnings(report.warnings).map((warning) => `Warning: ${warning}`);
+  process.stderr.write([
+    "Input is invalid:",
+    ...formatIssues(report.issues),
+    ...warningLines,
+    ...(outPath === undefined
+      ? []
+      : [`Wrote validation report to ${resolveFilePath(outPath)}`]),
+    "",
+  ].join("\n"));
   return 1;
 }
 

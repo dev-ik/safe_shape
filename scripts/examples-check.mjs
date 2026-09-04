@@ -160,7 +160,7 @@ assert.deepEqual(recoveredResponse.data, {
   id: "user_cached",
   name: "Cached Dev",
 });
-assert.equal(recoveredResponse.error.issues[0].code, "invalid_type");
+assert.equal(recoveredResponse.networkError.issues[0].code, "invalid_type");
 assert.equal(violations.length, 1);
 assert.deepEqual(violations[0].diagnostics, [{ code: "invalid_type", path: ["id"] }]);
 assert.equal(Object.hasOwn(violations[0], "input"), false);
@@ -171,6 +171,7 @@ const unavailableResponse = readUserResponse(driftedPayload, 200, {
 });
 
 assert.equal(unavailableResponse.kind, "unavailable");
+assert.equal(unavailableResponse.fallbackError.issues[0].received, "number");
 
 const validResponse = readUserResponse({ id: "user_1", name: "Dev" }, 200, {
   fallback: () => {

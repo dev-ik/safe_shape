@@ -7,6 +7,7 @@ import {
   describeContract,
   discriminatedUnion,
   enum as enumSchema,
+  formatDiagnostics,
   httpContract,
   intersection,
   lazy,
@@ -15,14 +16,19 @@ import {
   number,
   object,
   record,
+  recoverHttpResponse,
+  recoverHttpResponseAsync,
   safeToJsonSchema,
   safeParseHttpRequest,
+  safeParseHttpRequestAsync,
   string,
+  toFieldErrors,
   toJsonSchema,
   toTypeScriptType,
   union,
   unknown as unknownSchema,
   validateSchema,
+  validateSchemaAsync,
   type InferInput,
   type InferOutput,
   type StandardSchemaV1,
@@ -35,7 +41,7 @@ type Equal<Left, Right> =
 
 type Expect<Value extends true> = Value;
 
-test("umbrella package exposes runtime and tooling helpers", () => {
+test("umbrella package exposes runtime and tooling helpers", async () => {
   const userSchema = object({
     id: string().annotate({ title: "User id" }),
   }).annotate({ title: "User" });
@@ -83,6 +89,9 @@ test("umbrella package exposes runtime and tooling helpers", () => {
   assert.equal(failedUnion.success, false);
   if (!failedUnion.success) {
     assert.deepEqual(failedUnion.error.issues[0]?.branches?.map((branch) => branch.index), [0, 1]);
+    assert.deepEqual(toFieldErrors(failedUnion.error.issues), {
+      _root: ["Expected input to match one union choice."],
+    });
   }
   assert.equal(toTypeScriptType(userSchema, { name: "User" }), `export type User = {
   id: string;
@@ -95,6 +104,31 @@ test("umbrella package exposes runtime and tooling helpers", () => {
   const request = safeParseHttpRequest(contract, { params: { id: "user_1" } });
 
   assert.equal(request.success, true);
+
+  const responseContract = httpContract({ response: object({ id: string() }) });
+  const recovered = recoverHttpResponse(responseContract, { id: 42 }, {
+    fallback: { id: "cached" },
+  });
+  assert.equal(recovered.kind, "recovered");
+
+  const asyncWarning = object({
+    id: string().warnAsync(async (value) => value.startsWith("user_"), {
+      id: "user.id/v1",
+      message: "Non-standard user id.",
+    }),
+  });
+  const asyncReport = await validateSchemaAsync(asyncWarning, { id: "legacy" });
+  assert.equal(asyncReport.valid, true);
+  assert.equal(asyncReport.warnings?.[0]?.severity, "warning");
+  assert.match(formatDiagnostics(asyncReport.warnings ?? [])[0] ?? "", /Non-standard/);
+  const asyncHttp = httpContract({ params: asyncWarning });
+  assert.equal((await safeParseHttpRequestAsync(
+    asyncHttp,
+    { params: { id: "legacy" } },
+  )).success, true);
+  assert.equal((await recoverHttpResponseAsync(responseContract, { id: 42 }, {
+    fallback: { id: "cached" },
+  })).kind, "recovered");
 
   const lengthSchema = string().transform((value) => value.length);
   type LengthInput = InferInput<typeof lengthSchema>;

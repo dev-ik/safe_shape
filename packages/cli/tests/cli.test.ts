@@ -470,6 +470,30 @@ test("validates JSON input through a schema module", async () => {
   });
 });
 
+test("validates async schemas and returns warnings with exit code zero", async () => {
+  const inputPath = await writeJsonFixture("warning-user.json", { name: "x" });
+  const { stdout } = await runCli([
+    "--json",
+    "schema",
+    "validate",
+    "--module",
+    fixturePath,
+    "--export",
+    "asyncWarningSchema",
+    "--input",
+    inputPath,
+  ]);
+  const payload = JSON.parse(stdout) as {
+    readonly ok: boolean;
+    readonly valid: boolean;
+    readonly warnings: readonly { readonly severity: string; readonly ruleId: string }[];
+  };
+  assert.equal(payload.ok, true);
+  assert.equal(payload.valid, true);
+  assert.equal(payload.warnings[0]?.severity, "warning");
+  assert.equal(payload.warnings[0]?.ruleId, "name.short/v1");
+});
+
 test("validates JSON input from stdin", async () => {
   const { stdout } = await runCliWithInput(
     [
@@ -542,6 +566,7 @@ test("returns validation issues for invalid JSON input", async () => {
         {
           index: 0,
           issues: [{
+            severity: "error",
             code: "invalid_literal",
             path: ["role"],
             expected: "\"admin\"",
@@ -553,6 +578,7 @@ test("returns validation issues for invalid JSON input", async () => {
         {
           index: 1,
           issues: [{
+            severity: "error",
             code: "invalid_literal",
             path: ["role"],
             expected: "\"member\"",

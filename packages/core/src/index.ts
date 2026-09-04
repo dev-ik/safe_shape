@@ -1,12 +1,23 @@
 export {
   createDiagnostic,
+  createFormattedDiagnostic,
   createDiagnostics,
   formatDiagnostic,
+  formatDiagnostics,
   formatIssuePath,
   formatIssues,
   formatValidationError,
-  type Diagnostic,
-  type DiagnosticBranch,
+  formatWarnings,
+  groupIssuesByPath,
+  toFieldErrors,
+  type FormattedDiagnostic,
+  type FormattedDiagnosticBranch,
+  type FieldErrorOptions,
+  type DiagnosticMessageFormatter,
+  type FormatDiagnosticsOptions,
+  type FormatIssuesOptions,
+  type IssueGroup,
+  type IssueMessageFormatter,
 } from "./diagnostics.js";
 export {
   array,
@@ -41,6 +52,9 @@ export {
   type EnumValue,
   type EnumValues,
   type DiscriminatedUnionChoices,
+  type AsyncCustomRefinement,
+  type AsyncRefinement,
+  type AsyncWarningRefinement,
   type CustomIssueInput,
   type CustomRefinement,
   type CustomRefinementContext,
@@ -71,6 +85,9 @@ export {
   type TupleInput,
   type TupleOutput,
   type UnknownPropertyPolicy,
+  type WarningRefinement,
+  type WarningRefinementContext,
+  type WarningRefinementOptions,
 } from "./schema.js";
 export {
   ValidationError,
@@ -82,9 +99,17 @@ export {
 } from "./result.js";
 export { type StandardSchemaV1 } from "./standard-schema.js";
 export {
+  createIssue,
+  createWarning,
+  type Diagnostic,
+  type DiagnosticParameter,
+  type DiagnosticSeverity,
   type Issue,
   type IssueCode,
   type IssueInput,
   type IssuePathSegment,
   type UnionIssueBranch,
+  type UnionDiagnosticBranch,
+  type Warning,
+  type WarningInput,
 } from "./issue.js";

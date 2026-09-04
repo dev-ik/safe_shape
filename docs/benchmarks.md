@@ -16,6 +16,10 @@ The suite covers primitive and formatted strings, exact decimal multiples,
 constrained record keys, strict/strip/passthrough objects, ordinary and
 discriminated unions, ordinary-union failure branch collection, intersections,
 Standard Schema validation, arrays, invalid input, and recursive parse paths.
+Diagnostics v2 adds passing-warning and emitted structured-warning scenarios,
+covering the sync fast path and allocation path separately.
+It also measures lossless grouping and form projection for 200 distinct issue
+paths.
 Release-candidate coverage also measures safe widening and breaking narrowing
 through the v1 compatibility pipeline, plus recursive widening through the v2
 graph snapshot and compatibility pipeline. Compatibility cases assert their

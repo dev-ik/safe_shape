@@ -23,6 +23,7 @@ const languagePairs = [
   ["docs/README.md", "docs/ru/README.md"],
   ["docs/quick-start.md", "docs/ru/quick-start.md"],
   ["docs/migration-1-to-2.md", "docs/ru/migration-1-to-2.md"],
+  ["docs/migration-2-to-3.md", "docs/ru/migration-2-to-3.md"],
 ];
 
 for (const [englishPath, russianPath] of languagePairs) {

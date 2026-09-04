@@ -42,11 +42,11 @@ unrepresentable refinements or opaque output without catching exceptions.
 
 ## Production Response Recovery
 
-Use the re-exported `safeParseHttpResponse()` helper to detect deployed
-response drift without throwing or treating the failed payload as trusted
-application data. Recovery remains application-owned: report redacted
-diagnostics, validate cached or constructed fallback data through the same HTTP
-contract, and return an explicit unavailable state if the fallback also fails.
+Use the re-exported `recoverHttpResponse()` helper to detect deployed response
+drift and validate cached or constructed fallback data through the same HTTP
+contract. It returns an immutable `valid`, `recovered`, or `unavailable` state
+without treating either failed payload as trusted application data. Reporting,
+storage, retry, and UI policy remain application-owned.
 
 See the [Production Response Recovery
 guide](../../docs/production-response-recovery.md) for the typed flow,

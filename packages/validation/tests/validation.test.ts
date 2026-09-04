@@ -13,7 +13,7 @@ import {
   union,
   unknown as unknownSchema,
 } from "@safe-shape/core";
-import { validateSchema } from "../src/index.js";
+import { validateSchema, validateSchemaAsync } from "../src/index.js";
 
 test("returns JSON-friendly success reports", () => {
   const schema = object({
@@ -207,4 +207,23 @@ test("preserves multipleOf and record key diagnostics", () => {
       ["invalid_type", ["scores", "invalid_key"]],
     ]);
   }
+});
+
+test("propagates warnings in sync and async validation reports", async () => {
+  const syncReport = validateSchema(
+    string().warn(() => false, { id: "name.legacy/v1", message: "Legacy name." }),
+    "old",
+  );
+  assert.equal(syncReport.valid, true);
+  assert.equal(syncReport.warnings?.[0]?.ruleId, "name.legacy/v1");
+
+  const asyncReport = await validateSchemaAsync(
+    string().warnAsync(async () => false, {
+      id: "name.remote-warning/v1",
+      message: "Remote warning.",
+    }),
+    "name",
+  );
+  assert.equal(asyncReport.valid, true);
+  assert.equal(asyncReport.warnings?.[0]?.severity, "warning");
 });

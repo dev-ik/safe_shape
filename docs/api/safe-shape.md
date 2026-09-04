@@ -74,6 +74,9 @@ input/output inference through the re-exported `StandardSchemaV1` type.
 side-aware Standard JSON Schema conversion.
 `safeToJsonSchema()`, `JsonSchemaExportResult`, and `JsonSchemaExportError` are
 re-exported for immutable machine-readable artifact diagnostics.
+`groupIssuesByPath()` and `toFieldErrors()` expose lossless and form-oriented
+diagnostic projections. `recoverHttpResponse()` exposes the framework-neutral
+validated fallback flow from `@safe-shape/http`.
 
 Installing this package also installs `@safe-shape/cli`, which provides the
 `safe-shape` CLI binary.

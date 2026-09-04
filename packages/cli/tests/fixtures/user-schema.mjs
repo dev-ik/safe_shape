@@ -87,6 +87,14 @@ export const refinedSchema = object({
   }),
 });
 
+export const asyncWarningSchema = object({
+  name: string().warnAsync(async (value) => value.length >= 3, {
+    id: "name.short/v1",
+    message: "Name is unusually short.",
+    params: { recommended_minimum: 3 },
+  }),
+});
+
 export const addressableDiagnosticsSchema = object({
   start: number(),
   end: number(),

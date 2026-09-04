@@ -13,6 +13,8 @@ SafeShape documentation is organized by the task you need to complete.
 - [Production response recovery](production-response-recovery.md): report
   deployed response drift and degrade safely through validated fallbacks.
 - [Migrating from 1.x to 2.0](migration-1-to-2.md): source-sensitive changes
+- [Migrating from 2.x to 3.0](migration-2-to-3.md): warnings, native
+  diagnostics, and explicit async parsing
   and the recommended upgrade order.
 
 ## API Reference

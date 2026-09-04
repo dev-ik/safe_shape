@@ -16,6 +16,8 @@ import {
   formatIssuePath,
   formatIssues,
   formatValidationError,
+  formatWarnings,
+  groupIssuesByPath,
   integer,
   intersection,
   lazy,
@@ -28,6 +30,7 @@ import {
   schema,
   string,
   tuple,
+  toFieldErrors,
   union,
   unknown as unknownSchema,
   SCHEMA_CONTRACT_FORMAT,
@@ -76,6 +79,7 @@ test("native string constraints count Unicode code points", () => {
   const short = constrained.safeParse("😀");
   assert.equal(short.success, false);
   assert.deepEqual(short.error.issues[0], {
+    severity: "error",
     code: "too_small",
     path: [],
     expected: "string length >= 2",
@@ -100,6 +104,7 @@ test("string patterns validate in Unicode mode and remain toolable", () => {
   const result = identifier.safeParse("1-name");
   assert.equal(result.success, false);
   assert.deepEqual(result.error.issues[0], {
+    severity: "error",
     code: "invalid_string_pattern",
     path: [],
     expected: "string matching /^[\\p{L}_][\\p{L}\\p{N}_]*$/u",
@@ -201,6 +206,7 @@ test("multipleOf uses exact decimal divisibility without epsilon", () => {
   const result = tenths.safeParse(0.30000000000000004);
   assert.equal(result.success, false);
   assert.deepEqual(result.error.issues[0], {
+    severity: "error",
     code: "not_multiple_of",
     path: [],
     expected: "number multiple of 0.1",
@@ -311,6 +317,7 @@ test("enum schemas preserve literal inference and validate closed scalar sets", 
   const result = statusSchema.safeParse("archived");
   assert.equal(result.success, false);
   assert.deepEqual(result.error.issues[0], {
+    severity: "error",
     code: "invalid_enum",
     path: [],
     expected: "\"draft\" | \"published\" | 1",
@@ -352,6 +359,7 @@ test("unknown accepts values unchanged while never rejects every value", () => {
   const rejected = rejectedSchema.safeParse(payload);
   assert.equal(rejected.success, false);
   assert.deepEqual(rejected.error.issues[0], {
+    severity: "error",
     code: "forbidden_value",
     path: [],
     expected: "never",
@@ -521,6 +529,7 @@ test("tuple schemas report item paths and length failures", () => {
   const itemResult = pairSchema.safeParse(["x", "2"]);
   assert.equal(itemResult.success, false);
   assert.deepEqual(itemResult.error.issues[0], {
+    severity: "error",
     code: "invalid_type",
     path: [1],
     expected: "finite number",
@@ -532,6 +541,7 @@ test("tuple schemas report item paths and length failures", () => {
   const lengthResult = pairSchema.safeParse(["x"]);
   assert.equal(lengthResult.success, false);
   assert.deepEqual(lengthResult.error.issues[0], {
+    severity: "error",
     code: "invalid_tuple_length",
     path: [],
     expected: "2 items",
@@ -557,6 +567,7 @@ test("union schemas report a stable issue when no choices match", () => {
 
   assert.equal(result.success, false);
   assert.deepEqual(result.error.issues[0], {
+    severity: "error",
     code: "invalid_union",
     path: [],
     expected: "string | number",
@@ -567,6 +578,7 @@ test("union schemas report a stable issue when no choices match", () => {
       {
         index: 0,
         issues: [{
+          severity: "error",
           code: "invalid_type",
           path: [],
           expected: "string",
@@ -578,6 +590,7 @@ test("union schemas report a stable issue when no choices match", () => {
       {
         index: 1,
         issues: [{
+          severity: "error",
           code: "invalid_type",
           path: [],
           expected: "finite number",
@@ -609,6 +622,7 @@ test("union schemas preserve nested object paths", () => {
 
   assert.equal(result.success, false);
   assert.deepEqual(result.error.issues[0], {
+    severity: "error",
     code: "invalid_union",
     path: ["payload"],
     expected: "object | object",
@@ -620,6 +634,7 @@ test("union schemas preserve nested object paths", () => {
         index: 0,
         issues: [
           {
+            severity: "error",
             code: "invalid_literal",
             path: ["payload", "kind"],
             expected: "\"text\"",
@@ -628,6 +643,7 @@ test("union schemas preserve nested object paths", () => {
             suggestion: "Pass the exact literal value.",
           },
           {
+            severity: "error",
             code: "invalid_type",
             path: ["payload", "value"],
             expected: "string",
@@ -641,6 +657,7 @@ test("union schemas preserve nested object paths", () => {
         index: 1,
         issues: [
           {
+            severity: "error",
             code: "invalid_literal",
             path: ["payload", "kind"],
             expected: "\"count\"",
@@ -649,6 +666,7 @@ test("union schemas preserve nested object paths", () => {
             suggestion: "Pass the exact literal value.",
           },
           {
+            severity: "error",
             code: "invalid_type",
             path: ["payload", "value"],
             expected: "finite number",
@@ -738,6 +756,7 @@ test("discriminated unions report tag paths and preserve selected branch issues"
   const unknownTag = eventSchema.safeParse({ payload: { type: "other", id: "evt_1" } });
   assert.equal(unknownTag.success, false);
   assert.deepEqual(unknownTag.error.issues[0], {
+    severity: "error",
     code: "invalid_discriminator",
     path: ["payload", "type"],
     expected: '"created" | "deleted"',
@@ -818,6 +837,7 @@ test("intersections reject incompatible successful outputs", () => {
 
   assert.equal(result.success, false);
   assert.deepEqual(result.error.issues[0], {
+    severity: "error",
     code: "intersection_conflict",
     path: [],
     expected: "compatible intersection outputs",
@@ -868,6 +888,7 @@ test("record schemas validate string-keyed object values", () => {
   const result = flagsSchema.safeParse({ darkMode: true, beta: "false" });
   assert.equal(result.success, false);
   assert.deepEqual(result.error.issues[0], {
+    severity: "error",
     code: "invalid_type",
     path: ["beta"],
     expected: "boolean",
@@ -961,11 +982,13 @@ test("refine addresses one custom issue with a frozen relative path", () => {
 
   assert.equal(result.success, false);
   assert.deepEqual(result.error.issues[0], {
+    severity: "error",
     code: "custom",
     path: ["confirmation"],
     expected: "confirmation equal to password",
     received: "string",
     message: "Passwords must match.",
+    ruleId: "password-confirmation/v1",
   });
   assert.equal(Object.isFrozen(result.error.issues[0]?.path), true);
 });
@@ -1459,6 +1482,7 @@ test("transform failure returns a stable issue", () => {
 
   assert.equal(result.success, false);
   assert.deepEqual(result.error.issues[0], {
+    severity: "error",
     code: "transform_failed",
     path: [],
     expected: "integer string",
@@ -1533,6 +1557,118 @@ test("diagnostics format stable input paths", () => {
   assert.equal(formatIssuePath(["invalid-key", 0]), "input[\"invalid-key\"][0]");
 });
 
+test("diagnostics group issues by structural path without flattening unions", () => {
+  const result = object({
+    email: string({ minLength: 5, pattern: "@" }),
+    role: union([literal("admin"), literal("member")]),
+  }).safeParse({ email: "x", role: "owner" });
+
+  assert.equal(result.success, false);
+  const groups = groupIssuesByPath(result.error.issues);
+
+  assert.deepEqual(groups.map((group) => [group.path, group.issues.length]), [
+    [["email"], 2],
+    [["role"], 1],
+  ]);
+  assert.equal(groups[0]?.issues[0], result.error.issues[0]);
+  assert.equal(groups[1]?.issues[0]?.branches?.length, 2);
+  assert.equal(Object.isFrozen(groups), true);
+  assert.equal(Object.isFrozen(groups[0]), true);
+  assert.equal(Object.isFrozen(groups[0]?.path), true);
+  assert.equal(Object.isFrozen(groups[0]?.issues), true);
+});
+
+test("field errors preserve messages and format form-oriented paths", () => {
+  const issues: Issue[] = [
+    {
+      severity: "error",
+      code: "custom",
+      path: [],
+      expected: "valid input",
+      received: "object",
+      message: "Input is invalid.",
+    },
+    {
+      severity: "error",
+      code: "invalid_type",
+      path: ["owner", "contacts", 0, "email-address"],
+      expected: "string",
+      received: "number",
+      message: "Expected a string.",
+    },
+    {
+      severity: "error",
+      code: "custom",
+      path: ["owner", "contacts", 0, "email-address"],
+      expected: "work email",
+      received: "string",
+      message: "Use a work email.",
+    },
+  ];
+
+  const fieldErrors = toFieldErrors(issues);
+
+  assert.deepEqual(fieldErrors, {
+    _root: ["Input is invalid."],
+    "owner.contacts[0][\"email-address\"]": [
+      "Expected a string.",
+      "Use a work email.",
+    ],
+  });
+  assert.equal(Object.isFrozen(fieldErrors), true);
+  assert.equal(Object.isFrozen(fieldErrors._root), true);
+});
+
+test("field errors support per-call formatting and reject field-key collisions", () => {
+  const issues: Issue[] = [
+    {
+      severity: "error",
+      code: "custom",
+      path: ["first"],
+      expected: "valid first field",
+      received: "string",
+      message: "Invalid first field.",
+    },
+    {
+      severity: "error",
+      code: "custom",
+      path: ["second"],
+      expected: "valid second field",
+      received: "string",
+      message: "Invalid second field.",
+    },
+  ];
+
+  const localized = toFieldErrors(issues.slice(0, 1), {
+    formatMessage: (issue) => `Localized ${issue.code}`,
+    formatPath: (path) => `form.${String(path[0])}`,
+    rootKey: "form",
+  });
+  assert.deepEqual(localized, { "form.first": ["Localized custom"] });
+
+  assert.throws(
+    () => toFieldErrors(issues, { formatPath: () => "same" }),
+    /Distinct issue paths map to the same field error key/,
+  );
+  assert.throws(
+    () => toFieldErrors(issues, { formatPath: () => "" }),
+    /must not be empty/,
+  );
+  assert.throws(
+    () => toFieldErrors(issues, {
+      formatMessage: () => 1 as unknown as string,
+    }),
+    /must return a string/,
+  );
+
+  const prototypeKey = toFieldErrors([{
+    ...issues[0]!,
+    path: ["__proto__"],
+  }]);
+  assert.equal(Object.prototype.hasOwnProperty.call(prototypeKey, "__proto__"), true);
+  assert.deepEqual(prototypeKey.__proto__, ["Invalid first field."]);
+});
+
 test("diagnostics render issues and validation errors", () => {
   const result = object({
     owner: object({
@@ -1548,6 +1684,7 @@ test("diagnostics render issues and validation errors", () => {
 
   const diagnostic = createDiagnostic(result.error.issues[0]!);
   assert.deepEqual(diagnostic, {
+    severity: "error",
     code: "invalid_type",
     path: "input.owner.email",
     message: "Expected a string.",
@@ -1566,6 +1703,14 @@ test("diagnostics render issues and validation errors", () => {
     "input.owner.email: Expected a string. Expected string; received number. Suggestion: Pass a string value. (invalid_type)",
   ]);
   assert.equal(formatValidationError(result.error), formattedIssues[0]);
+  assert.deepEqual(formatIssues(result.error.issues, {
+    formatMessage: (issue) => `Localized ${issue.code}`,
+  }), [
+    "input.owner.email: Localized invalid_type Expected string; received number. Suggestion: Pass a string value. (invalid_type)",
+  ]);
+  assert.equal(formatValidationError(result.error, {
+    formatMessage: () => "Localized message.",
+  }), "input.owner.email: Localized message. Expected string; received number. Suggestion: Pass a string value. (invalid_type)");
 });
 
 test("diagnostics preserve and format recursive union branches", () => {
@@ -1591,6 +1736,12 @@ test("diagnostics preserve and format recursive union branches", () => {
     "    input.kind: Expected literal \"count\". Expected \"count\"; received string. Suggestion: Pass the exact literal value. (invalid_literal)",
     "    input.value: Expected a finite number. Expected finite number; received boolean. Suggestion: Pass a number value without coercion. (invalid_type)",
   ].join("\n"));
+  const localized = formatIssues(result.error.issues, {
+    formatMessage: (issue) => `Localized ${issue.code}.`,
+  })[0]!;
+  assert.match(localized, /Localized invalid_union\./);
+  assert.match(localized, /Localized invalid_literal\./);
+  assert.match(localized, /Localized invalid_type\./);
 });
 
 test("describeSchema returns frozen schema definitions", () => {
@@ -1734,6 +1885,191 @@ test("schema namespace exposes the builder API", () => {
   });
 
   assert.equal(schema.never().safeParse("value").success, false);
+});
+
+test("warnings are structured, immutable, and propagate through containers", () => {
+  const limits = { recommended: 10, labels: ["soft"] };
+  const warned = object({
+    count: number().warn((value) => value <= 10, {
+      id: "count.recommended/v1",
+      message: "Count exceeds the recommended limit.",
+      params: limits,
+    }),
+  });
+  limits.recommended = 99;
+  limits.labels[0] = "changed";
+
+  const successResult = warned.safeParse({ count: 12 });
+  assert.equal(successResult.success, true);
+  assert.deepEqual(successResult.warnings, [{
+    severity: "warning",
+    code: "custom",
+    path: ["count"],
+    expected: "value satisfying refinement",
+    received: "number",
+    message: "Count exceeds the recommended limit.",
+    ruleId: "count.recommended/v1",
+    params: { recommended: 10, labels: ["soft"] },
+  }]);
+  assert.equal(Object.isFrozen(successResult.warnings), true);
+  assert.equal(Object.isFrozen(successResult.warnings?.[0]?.params), true);
+  assert.deepEqual(formatWarnings(successResult.warnings ?? []), [
+    "input.count: Count exceeds the recommended limit. Expected value satisfying refinement; received number. (custom)",
+  ]);
+
+  const failing = object({
+    count: number()
+      .warn(() => false, { id: "count.warning/v1", message: "Review count." })
+      .refine(() => false, { id: "count.error/v1", message: "Count is rejected." }),
+  }).safeParse({ count: 12 });
+  assert.equal(failing.success, false);
+  assert.equal(failing.error.warnings[0]?.ruleId, "count.warning/v1");
+  assert.equal(failing.error.issues[0]?.ruleId, "count.error/v1");
+
+  const cyclic: { self?: unknown } = {};
+  cyclic.self = cyclic;
+  assert.throws(
+    () => string().warn(() => false, {
+      id: "invalid.params/v1",
+      params: cyclic as never,
+    }),
+    /must not contain cycles/,
+  );
+  assert.throws(
+    () => string().warn(() => false, {
+      id: "large.params/v1",
+      params: "x".repeat(16_384),
+    }),
+    /serialized characters/,
+  );
+});
+
+test("failed union choices retain warnings without promoting them", () => {
+  const result = union([
+    string()
+      .warn(() => false, { id: "branch.warning/v1", message: "Branch warning." })
+      .refine(() => false, { id: "branch.error/v1", message: "Branch rejected." }),
+    number(),
+  ]).safeParse("value");
+
+  assert.equal(result.success, false);
+  assert.deepEqual(result.error.warnings, []);
+  assert.equal(result.error.issues[0]?.branches?.[0]?.warnings?.[0]?.ruleId, "branch.warning/v1");
+});
+
+test("async rules execute sequentially through nested schemas", async () => {
+  const order: string[] = [];
+  const asyncString = (id: string) => string()
+    .refineAsync(async () => {
+      order.push(`${id}:error`);
+      return true;
+    }, { id: `${id}.available/v1` })
+    .warnAsync(async () => {
+      order.push(`${id}:warning`);
+      return false;
+    }, { id: `${id}.legacy/v1`, message: `${id} is legacy.` });
+  const valueSchema = object({ first: asyncString("first"), second: asyncString("second") });
+
+  assert.throws(
+    () => valueSchema.safeParse({ first: "a", second: "b" }),
+    /safeParseAsync\(\) or parseAsync\(\)/,
+  );
+  assert.deepEqual(order, []);
+
+  const result = await valueSchema.safeParseAsync({ first: "a", second: "b" });
+  assert.equal(result.success, true);
+  assert.deepEqual(order, [
+    "first:error",
+    "first:warning",
+    "second:error",
+    "second:warning",
+  ]);
+  assert.deepEqual(result.warnings?.map((warning) => [warning.ruleId, warning.path]), [
+    ["first.legacy/v1", ["first"]],
+    ["second.legacy/v1", ["second"]],
+  ]);
+  assert.deepEqual(describeSchema(valueSchema), {
+    kind: "object",
+    shape: {
+      first: { kind: "string", refinements: ["async-error:first.available/v1", "async-warning:first.legacy/v1"] },
+      second: { kind: "string", refinements: ["async-error:second.available/v1", "async-warning:second.legacy/v1"] },
+    },
+    required: ["first", "second"],
+    unknownProperties: "reject",
+  });
+
+  const standard = valueSchema["~standard"].validate({ first: "a", second: "b" });
+  assert.equal(standard instanceof Promise, true);
+  const standardResult = await standard;
+  assert.equal("value" in standardResult, true);
+  assert.equal(standardResult.warnings?.length, 2);
+
+  const accidentalAsync = string().refine(
+    (async () => true) as never,
+    { id: "accidental.async/v1" },
+  ).safeParse("value");
+  assert.equal(accidentalAsync.success, false);
+  assert.equal(
+    accidentalAsync.error.issues[0]?.message,
+    "Async refinement callbacks require an explicit async rule method.",
+  );
+});
+
+test("async diagnostic collectors preserve order and contain rejections", async () => {
+  const schema = string()
+    .refineAsyncWithDiagnostics(async (_value, context) => {
+      context.addIssue({ message: "First issue.", params: { index: 1 } });
+      await Promise.resolve();
+      context.addIssue({ message: "Second issue.", params: { index: 2 } });
+    }, { id: "async.collector/v1" })
+    .warnAsyncWithDiagnostics(async (_value, context) => {
+      context.addWarning({ message: "Async warning." });
+    }, { id: "async.warning/v1" });
+  const result = await schema.safeParseAsync("value");
+  assert.equal(result.success, false);
+  assert.deepEqual(result.error.issues.map((issue) => issue.params), [{ index: 1 }, { index: 2 }]);
+  assert.equal(result.error.warnings[0]?.ruleId, "async.warning/v1");
+
+  const rejected = await string().refineAsync(
+    async () => Promise.reject(new Error("secret")),
+    { id: "remote.check/v1" },
+  ).safeParseAsync("value");
+  assert.equal(rejected.success, false);
+  assert.equal(rejected.error.issues[0]?.message, "Refinement failed to execute.");
+  assert.equal(rejected.error.issues[0]?.message.includes("secret"), false);
+});
+
+test("async parsing composes through every schema wrapper and container", async () => {
+  const checked = () => string().refineAsync(async () => true, { id: "checked/v1" });
+  const tagged = discriminatedUnion("type", [
+    object({ type: literal("value"), value: checked() }),
+  ] as const);
+  const composed = object({
+    array: array(checked()),
+    tuple: tuple([checked(), number()]),
+    union: union([checked(), number()]),
+    tagged,
+    intersection: intersection(checked(), checked()),
+    record: record(checked()),
+    nullable: checked().nullable(),
+    optional: checked().optional(),
+    lazy: lazy(() => checked(), { id: "AsyncLeaf" }),
+    transformed: checked().transform((value) => value.length),
+  });
+
+  const result = await composed.safeParseAsync({
+    array: ["a"],
+    tuple: ["b", 1],
+    union: "c",
+    tagged: { type: "value", value: "d" },
+    intersection: "e",
+    record: { key: "f" },
+    nullable: null,
+    lazy: "g",
+    transformed: "hello",
+  });
+  assert.equal(result.success, true);
+  assert.equal(result.data.transformed, 5);
 });
 
 const userSchema = object({

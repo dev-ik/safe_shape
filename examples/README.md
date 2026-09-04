@@ -67,7 +67,7 @@ node packages/cli/dist/cli.js --json contract check \
 The JSON check result includes a migration decision and actionable diagnostics.
 
 Validate a production response, report contract drift, and recover only from a
-separately validated fallback:
+fallback checked by `recoverHttpResponse()` through the same contract:
 
 ```js
 import { readUserResponse } from "./resilient-http-response.mjs";

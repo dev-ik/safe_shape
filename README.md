@@ -43,10 +43,10 @@ documented, toolable, and release-tested.
 | Tooling | Large ecosystem and built-in conversion features | First-party CLI, JSON Schema export, TypeScript generation, validation reports |
 | HTTP boundaries | Usually handled through adapters or app code | First-party framework-neutral HTTP helpers |
 | Contract evolution | Application-specific tooling | Deterministic input/output graph snapshots, fingerprints, recursion, and conservative compatibility reports |
-| Ecosystem protocol | Standard Schema support | Native synchronous Standard Schema V1 plus side-aware Standard JSON Schema adapters and richer immutable diagnostics |
+| Ecosystem protocol | Standard Schema support | Native Standard Schema V1 with explicit async support, warning extension, side-aware Standard JSON Schema adapters, and richer immutable diagnostics |
 | Tagged composition | Discriminated union validation | Selected-branch diagnostics plus first-party Contract IR, snapshots, JSON Schema, and TypeScript artifacts |
 | Failed unions | `invalid_union` issues retain branch errors | Ordered recursive branch diagnostics are preserved consistently through native errors, validation reports, CLI, HTTP, and Standard Schema |
-| Cross-field rules | Checks and refinement hooks can add issues | Stable-id opaque rules use relative paths or ordered multi-issue collectors and retain that structure across every first-party boundary |
+| Cross-field rules | Checks and refinement hooks can add issues | Stable-id sync/async rules emit ordered errors or warnings with structured parameters across every first-party boundary |
 | Toolable constraints | Broad validation surface | Exact decimal `multipleOf`, constrained record keys, and explicit object policies retain one meaning across runtime, Contract IR, compatibility, JSON Schema, and CLI |
 | Release posture | Mature general-purpose library | Contract-first release gate with tests, examples, benchmarks, consumer install, audit, and pack dry-run |
 
@@ -92,6 +92,22 @@ if (!result.success) {
 SafeShape validates without coercion. `{ age: "42" }` is invalid until you add an
 explicit transform.
 
+SafeShape 3.0 supports non-fatal diagnostics and explicit async rules:
+
+```ts
+const Name = string().warnAsync(async (value) => value.length >= 3, {
+  id: "name.short/v1",
+  message: "Name is unusually short.",
+  params: { recommendedMinimum: 3 },
+});
+
+const result = await Name.safeParseAsync("x");
+// result.success === true; result.warnings contains the warning
+```
+
+Synchronous entry points stay synchronous and reject schemas containing async
+rules before parsing. See [Migrating from 2.x to 3.0](docs/migration-2-to-3.md).
+
 ## CLI Example
 
 SafeShape also ships a CLI. Use it to turn runtime contracts into generated
@@ -136,16 +152,23 @@ command results, includes migration decisions in compatibility reports, and
 does not require authentication. Snapshot v1 remains the default; v2 is
 explicit for recursive and input/output graph contracts.
 
+## Form-Ready Diagnostics
+
+Use `groupIssuesByPath()` to retain native structural paths and original issue
+objects, or `toFieldErrors()` to create an immutable form-oriented error
+record. Per-call formatters let applications localize issue messages without
+putting locale state on schemas or in global process state. Ordinary union
+branches remain explicit and are never flattened implicitly.
+
 ## Production Response Recovery
 
-Use `safeParseHttpResponse()` at deployed HTTP boundaries to detect an invalid
-response without throwing or treating untrusted data as the inferred response
-type. When validation fails, the application can report redacted diagnostics,
-validate a cached or constructed fallback through the same contract, and render
-an explicit unavailable state if recovery also fails.
+Use `recoverHttpResponse()` at deployed HTTP boundaries to validate a network
+value and an eager or lazy fallback through the same response contract. It
+returns a frozen `valid`, `recovered`, or `unavailable` state and never treats
+either invalid payload as inferred response data.
 
-SafeShape keeps recovery policy in application code: it never silently accepts
-the invalid network payload or weakens the production schema. See the
+SafeShape keeps reporting, storage, retry, and UI policy in application code;
+it never weakens the production schema. See the
 [Production Response Recovery guide](docs/production-response-recovery.md) for
 the typed flow, telemetry guidance, CI compatibility check, and a runnable
 example.
@@ -157,35 +180,39 @@ Current stable release gate:
 | Signal | Status |
 | --- | --- |
 | Packages | 8 publishable packages |
-| Unit tests | 205 passing tests |
+| Unit tests | 220 passing tests |
 | Consumer install | Tarball install smoke check passes |
 | Examples | Runnable examples pass |
 | Security audit | 0 known vulnerabilities |
-| Benchmarks | 18 runtime and compatibility scenarios |
+| Benchmarks | 22 runtime, diagnostics, projection, and compatibility scenarios |
 | Package dry run | `npm pack --workspaces --dry-run` passes |
 
 Sample local benchmark run on Node.js `v20.10.0` / macOS arm64:
 
 | Scenario | Throughput |
 | --- | ---: |
-| Primitive string `safeParse` valid | 8,987,633 ops/sec |
-| Formatted email string `safeParse` valid | 5,208,752 ops/sec |
-| Decimal `multipleOf` `safeParse` valid | 2,551,484 ops/sec |
-| Constrained record `safeParse` valid | 1,212,756 ops/sec |
-| Strip object `safeParse` valid | 1,198,829 ops/sec |
-| Passthrough object `safeParse` valid | 741,364 ops/sec |
-| Object user `safeParse` valid | 208,957 ops/sec |
-| Standard Schema user `validate` valid | 213,828 ops/sec |
-| Union event `safeParse` valid | 38,315 ops/sec |
-| Union event `safeParse` invalid with branch diagnostics | 14,564 ops/sec |
-| Discriminated union event `safeParse` valid | 697,471 ops/sec |
-| Intersection string `safeParse` valid | 3,867,499 ops/sec |
-| Array users `safeParse` valid | 8,703 ops/sec |
-| Object user `safeParse` invalid | 71,471 ops/sec |
-| Recursive tree `safeParse` valid | 376,573 ops/sec |
-| Contract compatibility widening safe | 41,236 ops/sec |
-| Contract compatibility narrowing breaking | 40,276 ops/sec |
-| Recursive contract v2 compatibility widening safe | 11,131 ops/sec |
+| Primitive string `safeParse` valid | 6,719,546 ops/sec |
+| Passing warning rule `safeParse` valid | 5,386,557 ops/sec |
+| Emitted structured warning `safeParse` valid | 1,441,738 ops/sec |
+| Formatted email string `safeParse` valid | 4,026,028 ops/sec |
+| Decimal `multipleOf` `safeParse` valid | 2,247,231 ops/sec |
+| Constrained record `safeParse` valid | 1,014,617 ops/sec |
+| Strip object `safeParse` valid | 961,256 ops/sec |
+| Passthrough object `safeParse` valid | 642,620 ops/sec |
+| Object user `safeParse` valid | 155,301 ops/sec |
+| Standard Schema user `validate` valid | 142,706 ops/sec |
+| Union event `safeParse` valid | 31,041 ops/sec |
+| Union event `safeParse` invalid with branch diagnostics | 13,405 ops/sec |
+| Discriminated union event `safeParse` valid | 437,840 ops/sec |
+| Intersection string `safeParse` valid | 2,435,011 ops/sec |
+| Array users `safeParse` valid | 7,627 ops/sec |
+| Object user `safeParse` invalid | 58,959 ops/sec |
+| Group 200 issues by path | 36,316 ops/sec |
+| Project 200 issues to field errors | 9,830 ops/sec |
+| Recursive tree `safeParse` valid | 289,690 ops/sec |
+| Contract compatibility widening safe | 40,492 ops/sec |
+| Contract compatibility narrowing breaking | 40,501 ops/sec |
+| Recursive contract v2 compatibility widening safe | 11,190 ops/sec |
 
 Benchmark results are execution evidence, not fixed release thresholds. Re-run
 them locally with:
@@ -232,6 +259,7 @@ Use narrower packages when you want strict dependency boundaries:
 - [Documentation home](docs/README.md)
 - [Quick start](docs/quick-start.md)
 - [Migrating from 1.x to 2.0](docs/migration-1-to-2.md)
+- [Migrating from 2.x to 3.0](docs/migration-2-to-3.md)
 - [Project integration](docs/integration.md)
 - [Core API](docs/api/core.md)
 - [Contract compatibility](docs/api/compat.md)
@@ -270,6 +298,6 @@ npm run examples:check
 
 ## Project Status
 
-SafeShape is on the `2.0.2` stable release line. The release gate covers
+SafeShape is on the `3.0.0` stable release line. The release gate covers
 metadata checks, build, typecheck, tests, examples, benchmarks, consumer tarball
 installation, npm audit, and package dry-run.

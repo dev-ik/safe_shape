@@ -1,14 +1,19 @@
 import {
   describeLiteral,
+  freezeDiagnosticParameter,
+  type DiagnosticParameter,
   type Issue,
   type IssuePathSegment,
   type UnionIssueBranch,
+  type Warning,
 } from "./issue.js";
 import { createParseContext, type ParseContext } from "./parser.js";
 import { failure, success, type ParseResult } from "./result.js";
 import type { StandardSchemaV1 } from "./standard-schema.js";
 
 const parseSymbol: unique symbol = Symbol("safeShape.parse");
+const parseAsyncSymbol: unique symbol = Symbol("safeShape.parseAsync");
+const asyncSymbol: unique symbol = Symbol("safeShape.async");
 const optionalSymbol: unique symbol = Symbol("safeShape.optional");
 const describeSymbol: unique symbol = Symbol("safeShape.describe");
 
@@ -20,6 +25,8 @@ export interface Schema<TOutput, TInput = TOutput>
   readonly kind: string;
   parse(input: unknown): TOutput;
   safeParse(input: unknown): ParseResult<TOutput>;
+  parseAsync(input: unknown): Promise<TOutput>;
+  safeParseAsync(input: unknown): Promise<ParseResult<TOutput>>;
   annotate(metadata: SchemaMetadata): Schema<TOutput, TInput>;
   refine(
     predicate: Refinement<TOutput>,
@@ -27,6 +34,30 @@ export interface Schema<TOutput, TInput = TOutput>
   ): Schema<TOutput, TInput>;
   refineWithIssues(
     collector: CustomRefinement<TOutput>,
+    options: CustomRefinementOptions,
+  ): Schema<TOutput, TInput>;
+  warn(
+    predicate: Refinement<TOutput>,
+    options: WarningRefinementOptions,
+  ): Schema<TOutput, TInput>;
+  warnWithDiagnostics(
+    collector: WarningRefinement<TOutput>,
+    options: CustomRefinementOptions,
+  ): Schema<TOutput, TInput>;
+  refineAsync(
+    predicate: AsyncRefinement<TOutput>,
+    options: RefinementOptions & { readonly id: string },
+  ): Schema<TOutput, TInput>;
+  refineAsyncWithDiagnostics(
+    collector: AsyncCustomRefinement<TOutput>,
+    options: CustomRefinementOptions,
+  ): Schema<TOutput, TInput>;
+  warnAsync(
+    predicate: AsyncRefinement<TOutput>,
+    options: WarningRefinementOptions,
+  ): Schema<TOutput, TInput>;
+  warnAsyncWithDiagnostics(
+    collector: AsyncWarningRefinement<TOutput>,
     options: CustomRefinementOptions,
   ): Schema<TOutput, TInput>;
   transform<TNextOutput>(
@@ -48,6 +79,30 @@ interface OptionalSchemaType<TOutput, TInput> extends Schema<TOutput, TInput> {
     collector: CustomRefinement<TOutput>,
     options: CustomRefinementOptions,
   ): OptionalSchemaType<TOutput, TInput>;
+  warn(
+    predicate: Refinement<TOutput>,
+    options: WarningRefinementOptions,
+  ): OptionalSchemaType<TOutput, TInput>;
+  warnWithDiagnostics(
+    collector: WarningRefinement<TOutput>,
+    options: CustomRefinementOptions,
+  ): OptionalSchemaType<TOutput, TInput>;
+  refineAsync(
+    predicate: AsyncRefinement<TOutput>,
+    options: RefinementOptions & { readonly id: string },
+  ): OptionalSchemaType<TOutput, TInput>;
+  refineAsyncWithDiagnostics(
+    collector: AsyncCustomRefinement<TOutput>,
+    options: CustomRefinementOptions,
+  ): OptionalSchemaType<TOutput, TInput>;
+  warnAsync(
+    predicate: AsyncRefinement<TOutput>,
+    options: WarningRefinementOptions,
+  ): OptionalSchemaType<TOutput, TInput>;
+  warnAsyncWithDiagnostics(
+    collector: AsyncWarningRefinement<TOutput>,
+    options: CustomRefinementOptions,
+  ): OptionalSchemaType<TOutput, TInput>;
 }
 
 export type InferOutput<TSchema extends Schema<any, any>> =
@@ -64,15 +119,22 @@ export interface RefinementOptions {
   readonly message?: string;
   readonly expected?: string;
   readonly suggestion?: string;
+  readonly params?: DiagnosticParameter;
+}
+
+export interface WarningRefinementOptions extends RefinementOptions {
+  readonly id: string;
 }
 
 export type Refinement<T> = (value: T) => boolean;
+export type AsyncRefinement<T> = (value: T) => Promise<boolean>;
 
 export interface CustomIssueInput {
   readonly path?: readonly IssuePathSegment[];
   readonly message: string;
   readonly expected?: string;
   readonly suggestion?: string;
+  readonly params?: DiagnosticParameter;
 }
 
 export interface CustomRefinementContext {
@@ -87,6 +149,23 @@ export type CustomRefinement<T> = (
   value: T,
   context: CustomRefinementContext,
 ) => void;
+export type AsyncCustomRefinement<T> = (
+  value: T,
+  context: CustomRefinementContext,
+) => Promise<void>;
+
+export interface WarningRefinementContext {
+  addWarning(input: CustomIssueInput): void;
+}
+
+export type WarningRefinement<T> = (
+  value: T,
+  context: WarningRefinementContext,
+) => void;
+export type AsyncWarningRefinement<T> = (
+  value: T,
+  context: WarningRefinementContext,
+) => Promise<void>;
 
 export interface TransformOptions {
   readonly id?: string;
@@ -291,19 +370,29 @@ interface DescribeContext {
 interface InternalSchema<TOutput, TInput = TOutput> extends Schema<TOutput, TInput> {
   readonly [optionalSymbol]?: true;
   [parseSymbol](input: unknown, context: ParseContext): ParseResult<TOutput>;
+  [parseAsyncSymbol](input: unknown, context: ParseContext): Promise<ParseResult<TOutput>>;
+  [asyncSymbol](seen?: Set<InternalSchema<any, any>>): boolean;
   [describeSymbol](context?: DescribeContext): SchemaDefinition;
 }
 
 interface PredicateCheck<T> {
   readonly kind: "predicate";
-  readonly predicate: Refinement<T>;
+  readonly predicate: Refinement<T> | AsyncRefinement<T>;
   readonly options: RefinementOptions;
+  readonly severity: "error" | "warning";
+  readonly execution: "sync" | "async";
 }
 
 interface CollectorCheck<T> {
   readonly kind: "collector";
-  readonly collector: CustomRefinement<T>;
+  readonly collector:
+    | CustomRefinement<T>
+    | WarningRefinement<T>
+    | AsyncCustomRefinement<T>
+    | AsyncWarningRefinement<T>;
   readonly options: CustomRefinementOptions;
+  readonly severity: "error" | "warning";
+  readonly execution: "sync" | "async";
 }
 
 type Check<T> = PredicateCheck<T> | CollectorCheck<T>;
@@ -324,10 +413,10 @@ abstract class BaseSchema<TOutput, TInput = TOutput>
         value: unknown,
         _options?: StandardSchemaV1.Options,
       ) => {
-        const result = this.safeParse(value);
-        return result.success
-          ? Object.freeze({ value: result.data })
-          : Object.freeze({ issues: result.error.issues });
+        if (this.hasAsyncRules()) {
+          return this.safeParseAsync(value).then(toStandardResult);
+        }
+        return toStandardResult(this.safeParse(value));
       },
     });
   }
@@ -343,7 +432,20 @@ abstract class BaseSchema<TOutput, TInput = TOutput>
   }
 
   safeParse(input: unknown): ParseResult<TOutput> {
+    if (this.hasAsyncRules()) {
+      throw new TypeError("Schema contains async rules; use safeParseAsync() or parseAsync().");
+    }
     return this[parseSymbol](input, createParseContext());
+  }
+
+  async parseAsync(input: unknown): Promise<TOutput> {
+    const result = await this.safeParseAsync(input);
+    if (!result.success) throw result.error;
+    return result.data;
+  }
+
+  safeParseAsync(input: unknown): Promise<ParseResult<TOutput>> {
+    return this[parseAsyncSymbol](input, createParseContext());
   }
 
   annotate(metadata: SchemaMetadata): Schema<TOutput, TInput> {
@@ -370,6 +472,66 @@ abstract class BaseSchema<TOutput, TInput = TOutput>
     ]);
   }
 
+  warn(
+    predicate: Refinement<TOutput>,
+    options: WarningRefinementOptions,
+  ): Schema<TOutput, TInput> {
+    return this.cloneWithChecks([
+      ...this.checks,
+      createCheck(predicate, options, "warning"),
+    ]);
+  }
+
+  warnWithDiagnostics(
+    collector: WarningRefinement<TOutput>,
+    options: CustomRefinementOptions,
+  ): Schema<TOutput, TInput> {
+    return this.cloneWithChecks([
+      ...this.checks,
+      createCollectorCheck(collector, options, "warning"),
+    ]);
+  }
+
+  refineAsync(
+    predicate: AsyncRefinement<TOutput>,
+    options: RefinementOptions & { readonly id: string },
+  ): Schema<TOutput, TInput> {
+    return this.cloneWithChecks([
+      ...this.checks,
+      createCheck(predicate, options, "error", "async"),
+    ]);
+  }
+
+  refineAsyncWithDiagnostics(
+    collector: AsyncCustomRefinement<TOutput>,
+    options: CustomRefinementOptions,
+  ): Schema<TOutput, TInput> {
+    return this.cloneWithChecks([
+      ...this.checks,
+      createCollectorCheck(collector, options, "error", "async"),
+    ]);
+  }
+
+  warnAsync(
+    predicate: AsyncRefinement<TOutput>,
+    options: WarningRefinementOptions,
+  ): Schema<TOutput, TInput> {
+    return this.cloneWithChecks([
+      ...this.checks,
+      createCheck(predicate, options, "warning", "async"),
+    ]);
+  }
+
+  warnAsyncWithDiagnostics(
+    collector: AsyncWarningRefinement<TOutput>,
+    options: CustomRefinementOptions,
+  ): Schema<TOutput, TInput> {
+    return this.cloneWithChecks([
+      ...this.checks,
+      createCollectorCheck(collector, options, "warning", "async"),
+    ]);
+  }
+
   transform<TNextOutput>(
     mapper: Transform<TOutput, TNextOutput>,
     options: TransformOptions = {},
@@ -392,13 +554,43 @@ abstract class BaseSchema<TOutput, TInput = TOutput>
       return parsed;
     }
 
-    return this.applyChecks(parsed.data, input, context);
+    return this.applyChecks(parsed.data, input, context, parsed.warnings ?? []);
+  }
+
+  async [parseAsyncSymbol](
+    input: unknown,
+    context: ParseContext,
+  ): Promise<ParseResult<TOutput>> {
+    const parsed = await this.parseBaseAsync(input, context);
+    if (!parsed.success) return parsed;
+    return this.applyChecksAsync(parsed.data, input, context, parsed.warnings ?? []);
   }
 
   protected abstract parseBase(
     input: unknown,
     context: ParseContext,
   ): ParseResult<TOutput>;
+
+  protected parseBaseAsync(
+    input: unknown,
+    context: ParseContext,
+  ): Promise<ParseResult<TOutput>> {
+    return Promise.resolve(this.parseBase(input, context));
+  }
+
+  protected hasAsyncBase(_seen: Set<InternalSchema<any, any>>): boolean {
+    return false;
+  }
+
+  protected hasAsyncRules(seen: Set<InternalSchema<any, any>> = new Set()): boolean {
+    if (seen.has(this)) return false;
+    seen.add(this);
+    return this.checks.some((check) => check.execution === "async") || this.hasAsyncBase(seen);
+  }
+
+  [asyncSymbol](seen: Set<InternalSchema<any, any>> = new Set()): boolean {
+    return this.hasAsyncRules(seen);
+  }
 
   protected abstract cloneWithChecks(
     checks: readonly Check<TOutput>[],
@@ -415,7 +607,7 @@ abstract class BaseSchema<TOutput, TInput = TOutput>
       ...definition,
       refinements: Object.freeze([
         ...(definition.refinements ?? []),
-        ...this.checks.map((check) => check.options.id ?? null),
+        ...this.checks.map((check) => describeCheckIdentity(check)),
       ]),
     }) as SchemaDefinition;
   }
@@ -424,16 +616,21 @@ abstract class BaseSchema<TOutput, TInput = TOutput>
     data: TOutput,
     originalInput: unknown,
     context: ParseContext,
+    inheritedWarnings: readonly Warning[],
   ): ParseResult<TOutput> {
     const issues: Issue[] = [];
+    const warnings: Warning[] = [...inheritedWarnings];
 
     for (const check of this.checks) {
+      if (check.execution === "async") {
+        throw new TypeError("Schema contains async rules; use safeParseAsync() or parseAsync().");
+      }
       if (check.kind === "collector") {
         const collectorIssues: Issue[] = [];
-        const collectorContext: CustomRefinementContext = Object.freeze({
-          addIssue: (input: CustomIssueInput): void => {
+        const collectorWarnings: Warning[] = [];
+        const addDiagnostic = (input: CustomIssueInput): void => {
             const relativePath = validateRelativeIssuePath(input.path);
-            collectorIssues.push(context.issue({
+            const diagnosticInput = {
               code: "custom",
               path: [...context.path, ...relativePath],
               expected: validateOptionalIssueText(input.expected, "Custom issue expected") ??
@@ -441,13 +638,22 @@ abstract class BaseSchema<TOutput, TInput = TOutput>
               received: valueAtRelativePath(data, relativePath),
               message: validateIssueMessage(input.message),
               suggestion: validateOptionalIssueText(input.suggestion, "Custom issue suggestion"),
-            }));
-          },
-        });
+              ruleId: check.options.id,
+              params: input.params,
+            } as const;
+            if (check.severity === "warning") {
+              collectorWarnings.push(context.warning(diagnosticInput));
+            } else {
+              collectorIssues.push(context.issue(diagnosticInput));
+            }
+          };
+        const collectorContext = check.severity === "warning"
+          ? Object.freeze({ addWarning: addDiagnostic })
+          : Object.freeze({ addIssue: addDiagnostic });
         let returned: unknown;
 
         try {
-          returned = check.collector(data, collectorContext);
+          returned = check.collector(data, collectorContext as never);
           if (isPromiseLike(returned)) {
             void Promise.resolve(returned).catch(() => undefined);
             collectorIssues.push(createCollectorExecutionIssue(
@@ -467,20 +673,31 @@ abstract class BaseSchema<TOutput, TInput = TOutput>
         }
 
         issues.push(...collectorIssues);
+        warnings.push(...collectorWarnings);
         continue;
       }
 
       let passed = false;
 
       try {
-        passed = check.predicate(data);
+        const returned = check.predicate(data);
+        if (isPromiseLike(returned)) {
+          void Promise.resolve(returned).catch(() => undefined);
+          issues.push(createCollectorExecutionIssue(
+            check.options.id ?? "anonymous",
+            originalInput,
+            context,
+            "Async refinement callbacks require an explicit async rule method.",
+          ));
+          continue;
+        }
+        passed = returned as boolean;
       } catch {
         passed = false;
       }
 
       if (!passed) {
-        issues.push(
-          context.issue({
+        const diagnosticInput = {
             code: "custom",
             path: [...context.path, ...(check.options.path ?? [])],
             expected: check.options.expected ?? "value satisfying refinement",
@@ -489,12 +706,125 @@ abstract class BaseSchema<TOutput, TInput = TOutput>
               : valueAtRelativePath(data, check.options.path),
             message: check.options.message ?? "Value did not satisfy refinement.",
             suggestion: check.options.suggestion,
-          }),
-        );
+            ruleId: check.options.id,
+            params: check.options.params,
+          } as const;
+        if (check.severity === "warning") {
+          warnings.push(context.warning(diagnosticInput));
+        } else {
+          issues.push(context.issue(diagnosticInput));
+        }
       }
     }
 
-    return issues.length === 0 ? success(data) : failure(issues);
+    return issues.length === 0 ? success(data, warnings) : failure(issues, warnings);
+  }
+
+  private async applyChecksAsync(
+    data: TOutput,
+    originalInput: unknown,
+    context: ParseContext,
+    inheritedWarnings: readonly Warning[],
+  ): Promise<ParseResult<TOutput>> {
+    const issues: Issue[] = [];
+    const warnings: Warning[] = [...inheritedWarnings];
+
+    for (const check of this.checks) {
+      if (check.kind === "collector") {
+        const collectorIssues: Issue[] = [];
+        const collectorWarnings: Warning[] = [];
+        const addDiagnostic = (input: CustomIssueInput): void => {
+          const relativePath = validateRelativeIssuePath(input.path);
+          const diagnosticInput = {
+            code: "custom",
+            path: [...context.path, ...relativePath],
+            expected: validateOptionalIssueText(input.expected, "Custom issue expected") ??
+              `value satisfying custom rule ${JSON.stringify(check.options.id)}`,
+            received: valueAtRelativePath(data, relativePath),
+            message: validateIssueMessage(input.message),
+            suggestion: validateOptionalIssueText(input.suggestion, "Custom issue suggestion"),
+            ruleId: check.options.id,
+            params: input.params,
+          } as const;
+          if (check.severity === "warning") {
+            collectorWarnings.push(context.warning(diagnosticInput));
+          } else {
+            collectorIssues.push(context.issue(diagnosticInput));
+          }
+        };
+        const collectorContext = check.severity === "warning"
+          ? Object.freeze({ addWarning: addDiagnostic })
+          : Object.freeze({ addIssue: addDiagnostic });
+        try {
+          const returned = check.collector(data, collectorContext as never);
+          if (check.execution === "async") {
+            await returned;
+          } else if (isPromiseLike(returned)) {
+            void Promise.resolve(returned).catch(() => undefined);
+            collectorIssues.push(createCollectorExecutionIssue(
+              check.options.id,
+              originalInput,
+              context,
+              "Async custom diagnostic refinements require refineAsyncWithDiagnostics().",
+            ));
+          }
+        } catch {
+          collectorIssues.push(createCollectorExecutionIssue(
+            check.options.id,
+            originalInput,
+            context,
+            "Custom diagnostic refinement failed to execute.",
+          ));
+        }
+        issues.push(...collectorIssues);
+        warnings.push(...collectorWarnings);
+        continue;
+      }
+
+      let passed = false;
+      let executionFailed = false;
+      try {
+        const returned = check.predicate(data);
+        if (check.execution === "async") {
+          passed = await returned;
+        } else if (isPromiseLike(returned)) {
+          void Promise.resolve(returned).catch(() => undefined);
+          executionFailed = true;
+        } else {
+          passed = returned as boolean;
+        }
+      } catch {
+        executionFailed = check.execution === "async";
+      }
+
+      if (executionFailed) {
+        issues.push(createCollectorExecutionIssue(
+          check.options.id ?? "anonymous",
+          originalInput,
+          context,
+          "Refinement failed to execute.",
+        ));
+        continue;
+      }
+      if (!passed) {
+        const diagnosticInput = {
+          code: "custom",
+          path: [...context.path, ...(check.options.path ?? [])],
+          expected: check.options.expected ?? "value satisfying refinement",
+          received: check.options.path === undefined
+            ? originalInput
+            : valueAtRelativePath(data, check.options.path),
+          message: check.options.message ?? "Value did not satisfy refinement.",
+          suggestion: check.options.suggestion,
+          ruleId: check.options.id,
+          params: check.options.params,
+        } as const;
+        if (check.severity === "warning") warnings.push(context.warning(diagnosticInput));
+        else issues.push(context.issue(diagnosticInput));
+      }
+    }
+
+    return issues.length === 0 ? success(data, warnings) : failure(issues, warnings);
   }
 }
 
@@ -907,6 +1237,7 @@ class ArraySchema<TItemOutput, TItemInput>
 
     const output: TItemOutput[] = [];
     const issues: Issue[] = [];
+    const warnings: Warning[] = [];
 
     if (this.constraints.minLength !== undefined && input.length < this.constraints.minLength) {
       issues.push(context.issue({
@@ -935,12 +1266,64 @@ class ArraySchema<TItemOutput, TItemInput>
 
       if (result.success) {
         output.push(result.data);
+        warnings.push(...(result.warnings ?? []));
       } else {
         issues.push(...result.error.issues);
+        warnings.push(...result.error.warnings);
       }
     });
 
-    return issues.length === 0 ? success(Object.freeze(output)) : failure(issues);
+    return issues.length === 0
+      ? success(Object.freeze(output), warnings)
+      : failure(issues, warnings);
+  }
+
+  protected override async parseBaseAsync(
+    input: unknown,
+    context: ParseContext,
+  ): Promise<ParseResult<readonly TItemOutput[]>> {
+    if (!Array.isArray(input)) return this.parseBase(input, context);
+
+    const output: TItemOutput[] = [];
+    const issues: Issue[] = [];
+    const warnings: Warning[] = [];
+    if (this.constraints.minLength !== undefined && input.length < this.constraints.minLength) {
+      issues.push(context.issue({
+        code: "too_small",
+        expected: `array length >= ${this.constraints.minLength}`,
+        received: input,
+        receivedDescription: `${input.length} items`,
+        message: `Expected an array with at least ${this.constraints.minLength} items.`,
+        suggestion: "Pass an array with more items.",
+      }));
+    }
+    if (this.constraints.maxLength !== undefined && input.length > this.constraints.maxLength) {
+      issues.push(context.issue({
+        code: "too_large",
+        expected: `array length <= ${this.constraints.maxLength}`,
+        received: input,
+        receivedDescription: `${input.length} items`,
+        message: `Expected an array with at most ${this.constraints.maxLength} items.`,
+        suggestion: "Pass an array with fewer items.",
+      }));
+    }
+    for (const [index, item] of input.entries()) {
+      const result = await this.itemSchema[parseAsyncSymbol](item, context.child(index));
+      if (result.success) {
+        output.push(result.data);
+        warnings.push(...(result.warnings ?? []));
+      } else {
+        issues.push(...result.error.issues);
+        warnings.push(...result.error.warnings);
+      }
+    }
+    return issues.length === 0
+      ? success(Object.freeze(output), warnings)
+      : failure(issues, warnings);
+  }
+
+  protected override hasAsyncBase(seen: Set<InternalSchema<any, any>>): boolean {
+    return this.itemSchema[asyncSymbol](seen);
   }
 
   protected cloneWithChecks(
@@ -1003,6 +1386,7 @@ class TupleSchema<TItems extends readonly Schema<any, any>[]>
 
     const output: unknown[] = [];
     const issues: Issue[] = [];
+    const warnings: Warning[] = [];
 
     input.forEach((item, index) => {
       const schema = this.items[index]!;
@@ -1010,14 +1394,45 @@ class TupleSchema<TItems extends readonly Schema<any, any>[]>
 
       if (result.success) {
         output[index] = result.data;
+        warnings.push(...(result.warnings ?? []));
       } else {
         issues.push(...result.error.issues);
+        warnings.push(...result.error.warnings);
       }
     });
 
     return issues.length === 0
-      ? success(Object.freeze(output) as TupleOutput<TItems>)
-      : failure(issues);
+      ? success(Object.freeze(output) as TupleOutput<TItems>, warnings)
+      : failure(issues, warnings);
+  }
+
+  protected override async parseBaseAsync(
+    input: unknown,
+    context: ParseContext,
+  ): Promise<ParseResult<TupleOutput<TItems>>> {
+    if (!Array.isArray(input) || input.length !== this.items.length) {
+      return this.parseBase(input, context);
+    }
+    const output: unknown[] = [];
+    const issues: Issue[] = [];
+    const warnings: Warning[] = [];
+    for (const [index, item] of input.entries()) {
+      const result = await this.items[index]![parseAsyncSymbol](item, context.child(index));
+      if (result.success) {
+        output[index] = result.data;
+        warnings.push(...(result.warnings ?? []));
+      } else {
+        issues.push(...result.error.issues);
+        warnings.push(...result.error.warnings);
+      }
+    }
+    return issues.length === 0
+      ? success(Object.freeze(output) as TupleOutput<TItems>, warnings)
+      : failure(issues, warnings);
+  }
+
+  protected override hasAsyncBase(seen: Set<InternalSchema<any, any>>): boolean {
+    return this.items.some((item) => item[asyncSymbol](seen));
   }
 
   protected cloneWithChecks(
@@ -1073,7 +1488,13 @@ class UnionSchema<
         return result;
       }
 
-      branches.push({ index, issues: result.error.issues });
+      branches.push({
+        index,
+        issues: result.error.issues,
+        ...(result.error.warnings.length === 0
+          ? {}
+          : { warnings: result.error.warnings }),
+      });
     }
 
     return failure([
@@ -1086,6 +1507,36 @@ class UnionSchema<
         branches,
       }),
     ]);
+  }
+
+  protected override async parseBaseAsync(
+    input: unknown,
+    context: ParseContext,
+  ): Promise<ParseResult<InferOutput<TSchemas[number]>>> {
+    const branches: UnionIssueBranch[] = [];
+    for (const [index, choice] of this.choices.entries()) {
+      const result = await choice[parseAsyncSymbol](input, context);
+      if (result.success) return result;
+      branches.push({
+        index,
+        issues: result.error.issues,
+        ...(result.error.warnings.length === 0
+          ? {}
+          : { warnings: result.error.warnings }),
+      });
+    }
+    return failure([context.issue({
+      code: "invalid_union",
+      expected: describeUnionExpected(this.choices),
+      received: input,
+      message: "Expected input to match one union choice.",
+      suggestion: "Pass a value that satisfies one of the union schemas.",
+      branches,
+    })]);
+  }
+
+  protected override hasAsyncBase(seen: Set<InternalSchema<any, any>>): boolean {
+    return this.choices.some((choice) => choice[asyncSymbol](seen));
   }
 
   protected cloneWithChecks(
@@ -1212,6 +1663,23 @@ class DiscriminatedUnionSchema<
     return choice[parseSymbol](input, context);
   }
 
+  protected override async parseBaseAsync(
+    input: unknown,
+    context: ParseContext,
+  ): Promise<ParseResult<InferOutput<TChoices[number]>>> {
+    if (!isRecord(input)) return this.parseBase(input, context);
+    const value = input[this.discriminator];
+    const choice = typeof value === "string" || typeof value === "number"
+      ? this.choicesByValue.get(value)
+      : undefined;
+    if (choice === undefined) return this.parseBase(input, context);
+    return choice[parseAsyncSymbol](input, context);
+  }
+
+  protected override hasAsyncBase(seen: Set<InternalSchema<any, any>>): boolean {
+    return [...this.choicesByValue.values()].some((choice) => choice[asyncSymbol](seen));
+  }
+
   protected cloneWithChecks(
     checks: readonly Check<InferOutput<TChoices[number]>>[],
   ): BaseSchema<InferOutput<TChoices[number]>, InferInput<TChoices[number]>> {
@@ -1262,8 +1730,16 @@ class IntersectionSchema<
       return failure([
         ...(leftResult.success ? [] : leftResult.error.issues),
         ...(rightResult.success ? [] : rightResult.error.issues),
+      ], [
+        ...(leftResult.success ? leftResult.warnings ?? [] : leftResult.error.warnings),
+        ...(rightResult.success ? rightResult.warnings ?? [] : rightResult.error.warnings),
       ]);
     }
+
+    const warnings = [
+      ...(leftResult.warnings ?? []),
+      ...(rightResult.warnings ?? []),
+    ];
 
     const merged = mergeIntersectionOutputs(leftResult.data, rightResult.data);
     if (!merged.success) {
@@ -1275,10 +1751,43 @@ class IntersectionSchema<
           message: "Intersection schemas produced incompatible outputs.",
           suggestion: "Use schemas whose successful outputs agree or can be merged recursively.",
         }),
-      ]);
+      ], warnings);
     }
 
-    return success(merged.data as InferOutput<TLeft> & InferOutput<TRight>);
+    return success(merged.data as InferOutput<TLeft> & InferOutput<TRight>, warnings);
+  }
+
+  protected override async parseBaseAsync(
+    input: unknown,
+    context: ParseContext,
+  ): Promise<ParseResult<InferOutput<TLeft> & InferOutput<TRight>>> {
+    const leftResult = await this.left[parseAsyncSymbol](input, context);
+    const rightResult = await this.right[parseAsyncSymbol](input, context);
+    const warnings = [
+      ...(leftResult.success ? leftResult.warnings ?? [] : leftResult.error.warnings),
+      ...(rightResult.success ? rightResult.warnings ?? [] : rightResult.error.warnings),
+    ];
+    if (!leftResult.success || !rightResult.success) {
+      return failure([
+        ...(leftResult.success ? [] : leftResult.error.issues),
+        ...(rightResult.success ? [] : rightResult.error.issues),
+      ], warnings);
+    }
+    const merged = mergeIntersectionOutputs(leftResult.data, rightResult.data);
+    if (!merged.success) {
+      return failure([context.issue({
+        code: "intersection_conflict",
+        expected: "compatible intersection outputs",
+        received: input,
+        message: "Intersection schemas produced incompatible outputs.",
+        suggestion: "Use schemas whose successful outputs agree or can be merged recursively.",
+      })], warnings);
+    }
+    return success(merged.data as InferOutput<TLeft> & InferOutput<TRight>, warnings);
+  }
+
+  protected override hasAsyncBase(seen: Set<InternalSchema<any, any>>): boolean {
+    return this.left[asyncSymbol](seen) || this.right[asyncSymbol](seen);
   }
 
   protected cloneWithChecks(
@@ -1340,6 +1849,7 @@ class ObjectSchema<
 
     const output: Record<string, unknown> = {};
     const issues: Issue[] = [];
+    const warnings: Warning[] = [];
     const inputKeys = new Set(Object.keys(input));
 
     for (const [key, schema] of Object.entries(this.shape)) {
@@ -1366,11 +1876,13 @@ class ObjectSchema<
       const result = childSchema[parseSymbol](input[key], childContext);
 
       if (result.success) {
+        warnings.push(...(result.warnings ?? []));
         if (!(isOptionalSchema(childSchema) && result.data === undefined)) {
           defineRecordValue(output, key, result.data);
         }
       } else {
         issues.push(...result.error.issues);
+        warnings.push(...result.error.warnings);
       }
 
       inputKeys.delete(key);
@@ -1397,8 +1909,67 @@ class ObjectSchema<
     }
 
     return issues.length === 0
-      ? success(Object.freeze(output) as ObjectOutputWithPolicy<TShape, TPolicy>)
-      : failure(issues);
+      ? success(Object.freeze(output) as ObjectOutputWithPolicy<TShape, TPolicy>, warnings)
+      : failure(issues, warnings);
+  }
+
+  protected override async parseBaseAsync(
+    input: unknown,
+    context: ParseContext,
+  ): Promise<ParseResult<ObjectOutputWithPolicy<TShape, TPolicy>>> {
+    if (!isRecord(input)) return this.parseBase(input, context);
+    const output: Record<string, unknown> = {};
+    const issues: Issue[] = [];
+    const warnings: Warning[] = [];
+    const inputKeys = new Set(Object.keys(input));
+    for (const [key, schema] of Object.entries(this.shape)) {
+      const childSchema = toInternalSchema(schema);
+      const childContext = context.child(key);
+      if (!Object.prototype.hasOwnProperty.call(input, key)) {
+        if (!isOptionalSchema(childSchema)) {
+          issues.push(childContext.issue({
+            code: "missing_property",
+            expected: childSchema.kind,
+            received: undefined,
+            message: `Missing required property "${key}".`,
+            suggestion: `Add "${key}" with a ${childSchema.kind} value.`,
+          }));
+        }
+        continue;
+      }
+      const result = await childSchema[parseAsyncSymbol](input[key], childContext);
+      if (result.success) {
+        warnings.push(...(result.warnings ?? []));
+        if (!(isOptionalSchema(childSchema) && result.data === undefined)) {
+          defineRecordValue(output, key, result.data);
+        }
+      } else {
+        issues.push(...result.error.issues);
+        warnings.push(...result.error.warnings);
+      }
+      inputKeys.delete(key);
+    }
+    for (const key of inputKeys) {
+      if (this.unknownProperties === "strip") continue;
+      if (this.unknownProperties === "passthrough") {
+        defineRecordValue(output, key, input[key]);
+      } else {
+        issues.push(context.child(key).issue({
+          code: "unexpected_property",
+          expected: "no additional property",
+          received: input[key],
+          message: `Unexpected property "${key}".`,
+          suggestion: `Remove "${key}" or add it to the schema.`,
+        }));
+      }
+    }
+    return issues.length === 0
+      ? success(Object.freeze(output) as ObjectOutputWithPolicy<TShape, TPolicy>, warnings)
+      : failure(issues, warnings);
+  }
+
+  protected override hasAsyncBase(seen: Set<InternalSchema<any, any>>): boolean {
+    return Object.values(this.shape).some((schema) => toInternalSchema(schema)[asyncSymbol](seen));
   }
 
   protected cloneWithChecks(
@@ -1477,26 +2048,72 @@ class RecordSchema<TValueOutput, TValueInput>
 
     const output: Record<string, TValueOutput> = {};
     const issues: Issue[] = [];
+    const warnings: Warning[] = [];
 
     for (const [key, value] of Object.entries(input)) {
       const childContext = context.child(key);
       const keyResult = this.keySchema?.[parseSymbol](key, childContext);
-      if (keyResult !== undefined && !keyResult.success) {
-        issues.push(...keyResult.error.issues);
+      if (keyResult !== undefined) {
+        if (keyResult.success) {
+          warnings.push(...(keyResult.warnings ?? []));
+        } else {
+          issues.push(...keyResult.error.issues);
+          warnings.push(...keyResult.error.warnings);
+        }
       }
 
       const result = this.valueSchema[parseSymbol](value, childContext);
 
       if (result.success) {
         defineRecordValue(output, key, result.data);
+        warnings.push(...(result.warnings ?? []));
       } else {
         issues.push(...result.error.issues);
+        warnings.push(...result.error.warnings);
       }
     }
 
     return issues.length === 0
-      ? success(Object.freeze(output))
-      : failure(issues);
+      ? success(Object.freeze(output), warnings)
+      : failure(issues, warnings);
+  }
+
+  protected override async parseBaseAsync(
+    input: unknown,
+    context: ParseContext,
+  ): Promise<ParseResult<Readonly<Record<string, TValueOutput>>>> {
+    if (!isRecord(input)) return this.parseBase(input, context);
+    const output: Record<string, TValueOutput> = {};
+    const issues: Issue[] = [];
+    const warnings: Warning[] = [];
+    for (const [key, value] of Object.entries(input)) {
+      const childContext = context.child(key);
+      const keyResult = this.keySchema === undefined
+        ? undefined
+        : await this.keySchema[parseAsyncSymbol](key, childContext);
+      if (keyResult !== undefined) {
+        if (keyResult.success) warnings.push(...(keyResult.warnings ?? []));
+        else {
+          issues.push(...keyResult.error.issues);
+          warnings.push(...keyResult.error.warnings);
+        }
+      }
+      const result = await this.valueSchema[parseAsyncSymbol](value, childContext);
+      if (result.success) {
+        defineRecordValue(output, key, result.data);
+        warnings.push(...(result.warnings ?? []));
+      } else {
+        issues.push(...result.error.issues);
+        warnings.push(...result.error.warnings);
+      }
+    }
+    return issues.length === 0
+      ? success(Object.freeze(output), warnings)
+      : failure(issues, warnings);
+  }
+
+  protected override hasAsyncBase(seen: Set<InternalSchema<any, any>>): boolean {
+    return (this.keySchema?.[asyncSymbol](seen) ?? false) || this.valueSchema[asyncSymbol](seen);
   }
 
   protected cloneWithChecks(
@@ -1539,6 +2156,19 @@ class NullableSchema<TOutput, TInput>
     }
 
     return this.innerSchema[parseSymbol](input, context);
+  }
+
+  protected override parseBaseAsync(
+    input: unknown,
+    context: ParseContext,
+  ): Promise<ParseResult<TOutput | null>> {
+    return input === null
+      ? Promise.resolve(success(null))
+      : this.innerSchema[parseAsyncSymbol](input, context);
+  }
+
+  protected override hasAsyncBase(seen: Set<InternalSchema<any, any>>): boolean {
+    return this.innerSchema[asyncSymbol](seen);
   }
 
   protected cloneWithChecks(
@@ -1598,6 +2228,66 @@ class OptionalSchema<TOutput, TInput>
     ]) as unknown as OptionalSchemaType<TOutput | undefined, TInput | undefined>;
   }
 
+  override warn(
+    predicate: Refinement<TOutput | undefined>,
+    options: WarningRefinementOptions,
+  ): OptionalSchemaType<TOutput | undefined, TInput | undefined> {
+    return this.cloneWithChecks([
+      ...this.checks,
+      createCheck(predicate, options, "warning"),
+    ]) as unknown as OptionalSchemaType<TOutput | undefined, TInput | undefined>;
+  }
+
+  override warnWithDiagnostics(
+    collector: WarningRefinement<TOutput | undefined>,
+    options: CustomRefinementOptions,
+  ): OptionalSchemaType<TOutput | undefined, TInput | undefined> {
+    return this.cloneWithChecks([
+      ...this.checks,
+      createCollectorCheck(collector, options, "warning"),
+    ]) as unknown as OptionalSchemaType<TOutput | undefined, TInput | undefined>;
+  }
+
+  override refineAsync(
+    predicate: AsyncRefinement<TOutput | undefined>,
+    options: RefinementOptions & { readonly id: string },
+  ): OptionalSchemaType<TOutput | undefined, TInput | undefined> {
+    return this.cloneWithChecks([
+      ...this.checks,
+      createCheck(predicate, options, "error", "async"),
+    ]) as unknown as OptionalSchemaType<TOutput | undefined, TInput | undefined>;
+  }
+
+  override refineAsyncWithDiagnostics(
+    collector: AsyncCustomRefinement<TOutput | undefined>,
+    options: CustomRefinementOptions,
+  ): OptionalSchemaType<TOutput | undefined, TInput | undefined> {
+    return this.cloneWithChecks([
+      ...this.checks,
+      createCollectorCheck(collector, options, "error", "async"),
+    ]) as unknown as OptionalSchemaType<TOutput | undefined, TInput | undefined>;
+  }
+
+  override warnAsync(
+    predicate: AsyncRefinement<TOutput | undefined>,
+    options: WarningRefinementOptions,
+  ): OptionalSchemaType<TOutput | undefined, TInput | undefined> {
+    return this.cloneWithChecks([
+      ...this.checks,
+      createCheck(predicate, options, "warning", "async"),
+    ]) as unknown as OptionalSchemaType<TOutput | undefined, TInput | undefined>;
+  }
+
+  override warnAsyncWithDiagnostics(
+    collector: AsyncWarningRefinement<TOutput | undefined>,
+    options: CustomRefinementOptions,
+  ): OptionalSchemaType<TOutput | undefined, TInput | undefined> {
+    return this.cloneWithChecks([
+      ...this.checks,
+      createCollectorCheck(collector, options, "warning", "async"),
+    ]) as unknown as OptionalSchemaType<TOutput | undefined, TInput | undefined>;
+  }
+
   protected parseBase(
     input: unknown,
     context: ParseContext,
@@ -1607,6 +2297,19 @@ class OptionalSchema<TOutput, TInput>
     }
 
     return this.innerSchema[parseSymbol](input, context);
+  }
+
+  protected override parseBaseAsync(
+    input: unknown,
+    context: ParseContext,
+  ): Promise<ParseResult<TOutput | undefined>> {
+    return input === undefined
+      ? Promise.resolve(success(undefined))
+      : this.innerSchema[parseAsyncSymbol](input, context);
+  }
+
+  protected override hasAsyncBase(seen: Set<InternalSchema<any, any>>): boolean {
+    return this.innerSchema[asyncSymbol](seen);
   }
 
   protected cloneWithChecks(
@@ -1666,6 +2369,17 @@ class LazySchema<TOutput, TInput> extends BaseSchema<TOutput, TInput> {
 
   protected parseBase(input: unknown, context: ParseContext): ParseResult<TOutput> {
     return this.resolveSchema()[parseSymbol](input, context);
+  }
+
+  protected override parseBaseAsync(
+    input: unknown,
+    context: ParseContext,
+  ): Promise<ParseResult<TOutput>> {
+    return this.resolveSchema()[parseAsyncSymbol](input, context);
+  }
+
+  protected override hasAsyncBase(seen: Set<InternalSchema<any, any>>): boolean {
+    return this.resolveSchema()[asyncSymbol](seen);
   }
 
   protected cloneWithChecks(
@@ -1734,7 +2448,7 @@ class TransformSchema<TInnerOutput, TOutput, TInput>
     }
 
     try {
-      return success(this.mapper(result.data));
+      return success(this.mapper(result.data), result.warnings ?? []);
     } catch {
       return failure([
         context.issue({
@@ -1744,8 +2458,31 @@ class TransformSchema<TInnerOutput, TOutput, TInput>
           message: this.options.message ?? "Transform failed.",
           suggestion: this.options.suggestion,
         }),
-      ]);
+      ], result.warnings ?? []);
     }
+  }
+
+  protected override async parseBaseAsync(
+    input: unknown,
+    context: ParseContext,
+  ): Promise<ParseResult<TOutput>> {
+    const result = await this.innerSchema[parseAsyncSymbol](input, context);
+    if (!result.success) return result;
+    try {
+      return success(this.mapper(result.data), result.warnings ?? []);
+    } catch {
+      return failure([context.issue({
+        code: "transform_failed",
+        expected: this.options.expected ?? "successful transform",
+        received: input,
+        message: this.options.message ?? "Transform failed.",
+        suggestion: this.options.suggestion,
+      })], result.warnings ?? []);
+    }
+  }
+
+  protected override hasAsyncBase(seen: Set<InternalSchema<any, any>>): boolean {
+    return this.innerSchema[asyncSymbol](seen);
   }
 
   protected cloneWithChecks(checks: readonly Check<TOutput>[]): BaseSchema<TOutput, TInput> {
@@ -1790,6 +2527,17 @@ class AnnotatedSchema<TOutput, TInput> extends BaseSchema<TOutput, TInput> {
 
   protected parseBase(input: unknown, context: ParseContext): ParseResult<TOutput> {
     return this.innerSchema[parseSymbol](input, context);
+  }
+
+  protected override parseBaseAsync(
+    input: unknown,
+    context: ParseContext,
+  ): Promise<ParseResult<TOutput>> {
+    return this.innerSchema[parseAsyncSymbol](input, context);
+  }
+
+  protected override hasAsyncBase(seen: Set<InternalSchema<any, any>>): boolean {
+    return this.innerSchema[asyncSymbol](seen);
   }
 
   protected cloneWithChecks(checks: readonly Check<TOutput>[]): BaseSchema<TOutput, TInput> {
@@ -2146,23 +2894,50 @@ function compareEnumValues(left: EnumValue, right: EnumValue): number {
   return left < right ? -1 : left > right ? 1 : 0;
 }
 
-function createCheck<T>(predicate: Refinement<T>, options: RefinementOptions): Check<T> {
+function createCheck<T>(
+  predicate: Refinement<T> | AsyncRefinement<T>,
+  options: RefinementOptions,
+  severity: "error" | "warning" = "error",
+  execution: "sync" | "async" = "sync",
+): Check<T> {
+  if (typeof predicate !== "function") {
+    throw new TypeError("Refinement predicate must be a function.");
+  }
+  if ((severity === "warning" || execution === "async") &&
+      (options === undefined || options.id === undefined)) {
+    throw new TypeError("Warning and async refinement options with a stable id are required.");
+  }
   return Object.freeze({
     kind: "predicate",
     predicate,
     options: freezeRefinementOptions(options),
+    severity,
+    execution,
   });
+}
+
+function describeCheckIdentity<T>(check: Check<T>): string | null {
+  const id = check.options.id ?? null;
+  if (id === null || (check.execution === "sync" && check.severity === "error")) return id;
+  if (check.execution === "sync") return `warning:${id}`;
+  return check.severity === "error" ? `async-error:${id}` : `async-warning:${id}`;
 }
 
 function cloneCheck<T>(check: Check<T>): Check<T> {
   return check.kind === "predicate"
-    ? createCheck(check.predicate, check.options)
-    : createCollectorCheck(check.collector, check.options);
+    ? createCheck(check.predicate, check.options, check.severity, check.execution)
+    : createCollectorCheck(check.collector, check.options, check.severity, check.execution);
 }
 
 function createCollectorCheck<T>(
-  collector: CustomRefinement<T>,
+  collector:
+    | CustomRefinement<T>
+    | WarningRefinement<T>
+    | AsyncCustomRefinement<T>
+    | AsyncWarningRefinement<T>,
   options: CustomRefinementOptions,
+  severity: "error" | "warning" = "error",
+  execution: "sync" | "async" = "sync",
 ): Check<T> {
   if (typeof collector !== "function") {
     throw new TypeError("Custom refinement collector must be a function.");
@@ -2172,7 +2947,23 @@ function createCollectorCheck<T>(
     kind: "collector",
     collector,
     options: freezeCustomRefinementOptions(options),
+    severity,
+    execution,
   });
+}
+
+function toStandardResult<T>(result: ParseResult<T>): StandardSchemaV1.Result<T> {
+  return result.success
+    ? Object.freeze({
+        value: result.data,
+        ...(result.warnings === undefined ? {} : { warnings: result.warnings }),
+      })
+    : Object.freeze({
+        issues: result.error.issues,
+        ...(result.error.warnings.length === 0
+          ? {}
+          : { warnings: result.error.warnings }),
+      });
 }
 
 function freezeRefinementOptions(options: RefinementOptions): RefinementOptions {
@@ -2182,6 +2973,9 @@ function freezeRefinementOptions(options: RefinementOptions): RefinementOptions 
     ...(options.message === undefined ? {} : { message: options.message }),
     ...(options.expected === undefined ? {} : { expected: options.expected }),
     ...(options.suggestion === undefined ? {} : { suggestion: options.suggestion }),
+    ...(options.params === undefined
+      ? {}
+      : { params: freezeDiagnosticParameter(options.params) }),
   });
 }
 

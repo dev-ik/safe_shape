@@ -7,7 +7,7 @@ validation reports.
 
 ```ts
 import { object, string } from "@safe-shape/core";
-import { validateSchema } from "@safe-shape/validation";
+import { validateSchema, validateSchemaAsync } from "@safe-shape/validation";
 
 const userSchema = object({
   id: string(),
@@ -15,6 +15,8 @@ const userSchema = object({
 
 const report = validateSchema(userSchema, { id: "user_1" });
 ```
+
+Use `validateSchemaAsync()` for schemas containing explicit async rules.
 
 Success:
 
@@ -39,6 +41,8 @@ Failure:
 The report shape is designed for tool output, logs, generated validation
 reports, and transport-safe API boundaries. It does not throw for validation
 failures.
+Both success and failure reports include a frozen `warnings` field when
+non-fatal diagnostics were emitted. It is omitted when empty.
 
 Native diagnostic codes are preserved, including `not_multiple_of` for exact
 numeric increments and string issue codes at constrained record-key paths.
@@ -61,16 +65,19 @@ rooted at their containing schema and retain the `custom` code.
 
 ```ts
 function validateSchema<T>(schema: Schema<T>, input: unknown): ValidationReport<T>;
+function validateSchemaAsync<T>(schema: Schema<T>, input: unknown): Promise<ValidationReport<T>>;
 
 type ValidationReport<T> = ValidationSuccess<T> | ValidationFailure;
 
 interface ValidationSuccess<T> {
   readonly valid: true;
   readonly data: T;
+  readonly warnings?: readonly Warning[];
 }
 
 interface ValidationFailure {
   readonly valid: false;
   readonly issues: readonly Issue[];
+  readonly warnings?: readonly Warning[];
 }
 ```

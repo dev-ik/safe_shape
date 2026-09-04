@@ -1,32 +1,33 @@
 # SafeShape Roadmap
 
-Status: proposed
+Status: SafeShape 3.0 released
 
-Last updated: 2026-08-19
+Last updated: 2026-09-04
 
-SafeShape `2.0.0` established the runtime contract platform: input/output
-Contract IR, recursive snapshots, compatibility analysis, Standard Schema,
-and addressable synchronous custom diagnostics. The next releases should make
-those diagnostics easier to consume without changing their meaning.
+SafeShape `2.0.0` established the runtime contract platform. The 3.0 work now
+combines the completed 2.1 form/recovery surface with Diagnostics v2 and
+explicit async parsing. The combined release was approved as SafeShape 3.0.
 
 The accepted and completed 2.0 plan remains available in
 [roadmap-2.0.md](roadmap-2.0.md).
 
 ## Version Strategy
 
-The recommended sequence is:
+The implemented sequence is:
 
 1. `2.1`: form-oriented issue projection, externally supplied formatting, and
    production response recovery.
-2. `2.2` candidate: asynchronous parsing and refinements, if the RFC proves
-   that the existing synchronous contract remains intact.
-3. `3.0`: Diagnostics v2, including non-fatal warnings and structured custom
-   diagnostic parameters.
+2. The optional `2.2` release was skipped.
+3. `3.0`: Diagnostics v2, non-fatal warnings, structured custom diagnostic
+   parameters, and explicit async parsing.
 
-This sequence delivers the low-risk consumer-facing improvements first and
-keeps result-model changes in one deliberate major release. A `2.2` release is
-optional: async parsing must move to 3.0 if it cannot be introduced without
-changing existing synchronous behavior or types.
+This keeps result-model changes and async boundary additions in one deliberate
+major release while preserving synchronous return types.
+
+SafeShape 2.1 implementation follows accepted RFC 0039. Core issue grouping,
+field projection, external per-call formatting, HTTP response recovery,
+documentation, consumer coverage, and focused benchmarks ship as part of the
+3.0 release.
 
 ## SafeShape 2.1: Form-Ready Diagnostics and Response Recovery
 
@@ -40,9 +41,9 @@ a typed valid, recovered, or unavailable state without weakening validation.
 The release should remain framework-neutral. It should not add React, Vue, or
 form-library dependencies.
 
-### Proposed Public Surface
+### Accepted Public Surface
 
-The exact types require an accepted RFC. The intended capabilities are:
+RFC 0039 defines the exact types. The implemented capabilities are:
 
 - `groupIssuesByPath(issues)` groups issues by their exact native path without
   losing issue objects or their declaration order;
@@ -52,11 +53,11 @@ The exact types require an accepted RFC. The intended capabilities are:
   English output retained as the default;
 - the same helpers are exported from `@safe-shape/core` and the `safe-shape`
   umbrella package;
-- a framework-neutral response recovery capability builds on
-  `safeParseHttpResponse()`, validates fallback data through the same contract,
-  and is exported from `@safe-shape/http` and the umbrella package.
+- `recoverHttpResponse()` builds on `safeParseHttpResponse()`, validates
+  fallback data through the same contract, and is exported from
+  `@safe-shape/http` and the umbrella package.
 
-A candidate shape for discussion is:
+The accepted core shape is:
 
 ```ts
 interface IssueGroup {
@@ -241,7 +242,7 @@ and structured application data. This is a major release because warnings can
 make a parse successful while still producing diagnostics, and successful
 result objects currently contain only `success` and `data`.
 
-### Planned Capabilities
+### Implemented Capabilities
 
 - warning diagnostics that do not make parsing unsuccessful;
 - structured, JSON-safe custom diagnostic parameters;
@@ -252,22 +253,18 @@ result objects currently contain only `success` and `data`.
 - async parsing from the 2.2 candidate, if it was not safe to release in 2.x;
 - a documented migration path from 2.x issues and formatter hooks.
 
-### Decisions Required Before Implementation
+### Resolved Decisions
 
-- Whether `Issue` gains `severity` or the model becomes a broader
-  `Diagnostic` type.
-- Whether successful `ParseResult` values always contain a diagnostics array
-  or expose warnings through a separate detailed result API.
-- What `parse()` does with warnings when it returns only data.
-- How warnings map to Standard Schema, whose success result has no standard
-  warning channel.
-- Whether nested schemas accumulate warnings after later fatal failures.
-- The allowed parameter value model, copy/freeze depth, serialization rules,
-  size limits, and treatment of sensitive values.
-- How diagnostic codes and parameter schemas are versioned for formatter
-  compatibility.
-- How CLI exit codes distinguish success-with-warnings from validation
-  failure.
+- `Issue` has severity `error`; native `Diagnostic` is `Issue | Warning`.
+- Successful warnings use an optional separate frozen channel; failures retain
+  warnings on `ValidationError`, and `parse()` remains data-only.
+- Standard Schema uses an optional `warnings` extension.
+- Nested warnings survive later failures, while rejected union-branch warnings
+  remain branch-local.
+- Parameters are JSON-safe, copied, frozen, cycle-checked, and bounded.
+- Stable `ruleId` values identify custom semantics; built-in codes remain
+  closed.
+- CLI success with warnings exits `0`; validation failure exits `1`.
 
 ### Release Gates
 

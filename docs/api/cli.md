@@ -111,8 +111,11 @@ safe-shape --json schema validate \
   --out ./validation-report.json
 ```
 
-Valid input exits with code `0` and returns `valid: true`. Invalid input exits
-with code `1` and returns `valid: false` with SafeShape issues.
+The command uses async parsing, so the same command supports synchronous and
+explicitly asynchronous schemas. Valid input exits with code `0` and returns
+`valid: true`; warnings are included without changing the exit code. Invalid
+input exits with code `1` and returns `valid: false` with SafeShape issues and
+any warnings collected before or alongside failure.
 
 ## Schema Types
 

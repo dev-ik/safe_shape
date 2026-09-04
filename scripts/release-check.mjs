@@ -67,6 +67,7 @@ assertArrayEqual(rootPackage.workspaces, expectedPackages, "root workspaces");
 assert(rootPackage.private === true, "root workspace must remain private");
 assertExists("docs/integration.md", "project integration documentation");
 assertExists("docs/migration-1-to-2.md", "1.x to 2.0 migration guide");
+assertExists("docs/migration-2-to-3.md", "2.x to 3.0 migration guide");
 assertExists("docs/publish-readiness.md", "publish readiness documentation");
 assertExists("docs/benchmarks.md", "benchmark documentation");
 assertExists("benchmarks/run.mjs", "benchmark runner");

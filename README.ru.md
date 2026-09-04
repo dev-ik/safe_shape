@@ -43,9 +43,9 @@ Zod сегодня обладает более широкой экосистем
 | Инструменты | Большая экосистема и встроенные конвертеры | Собственные CLI, JSON Schema, генерация TypeScript и validation reports |
 | HTTP-границы | Обычно адаптеры или код приложения | Собственные framework-neutral HTTP helpers |
 | Эволюция контракта | Зависит от инструментов приложения | Детерминированные input/output snapshots, fingerprints и консервативный compatibility report |
-| Стандартные протоколы | Standard Schema | Нативный синхронный Standard Schema V1 и явный Standard JSON Schema adapter |
+| Стандартные протоколы | Standard Schema | Нативный Standard Schema V1 с явным async-режимом, warnings и Standard JSON Schema adapter |
 | Диагностика union | `invalid_union` сохраняет ошибки веток | Упорядоченная рекурсивная диагностика веток одинаково проходит через native errors, validation reports, CLI, HTTP и Standard Schema |
-| Межполевые правила | Checks и refinements могут добавлять issues | Stable-id правила используют относительные пути или упорядоченный collector и сохраняют структуру на всех first-party границах |
+| Межполевые правила | Checks и refinements могут добавлять issues | Stable-id sync/async правила создают errors или warnings со структурированными параметрами на всех first-party границах |
 | Release gate | Зрелая библиотека общего назначения | Тесты, примеры, benchmarks, consumer install, audit и pack dry-run |
 
 Сравнение опирается на текущие официальные материалы Zod 4:
@@ -90,6 +90,22 @@ if (!result.success) {
 SafeShape не приводит типы автоматически. Значение `{ age: "42" }` останется
 невалидным, пока вы явно не добавите преобразование.
 
+В SafeShape 3.0 появились нефатальные предупреждения и явные async-правила:
+
+```ts
+const Name = string().warnAsync(async (value) => value.length >= 3, {
+  id: "name.short/v1",
+  message: "Имя необычно короткое.",
+  params: { recommendedMinimum: 3 },
+});
+
+const result = await Name.safeParseAsync("x");
+// result.success === true; предупреждение находится в result.warnings
+```
+
+Синхронные методы не меняют тип возврата и заранее отклоняют схемы с async-
+правилами. Подробнее: [миграция с 2.x на 3.0](docs/ru/migration-2-to-3.md).
+
 Подробный сценарий находится в [руководстве по быстрому старту](docs/ru/quick-start.md).
 
 ## CLI
@@ -132,17 +148,23 @@ safe-shape --json contract check \
 Snapshot v1 остаётся форматом по умолчанию; v2 нужно выбирать явно для
 рекурсивных контрактов и раздельных input/output-графов.
 
+## Диагностика для форм и UI
+
+Используйте `groupIssuesByPath()`, чтобы сохранить исходные структурные пути и
+объекты issue, или `toFieldErrors()`, чтобы получить неизменяемый record ошибок
+для формы. Formatter, переданный на один вызов, позволяет локализовать сообщения
+без locale-состояния в схемах или глобальном процессе. Ветки обычного union
+остаются явными и не разворачиваются автоматически.
+
 ## Восстановление после невалидного production-ответа
 
-Используйте `safeParseHttpResponse()` на HTTP-границе, чтобы обнаружить
-невалидный ответ без исключения и не принять недоверенные данные за выведенный
-тип ответа. Если валидация завершилась ошибкой, приложение может отправить
-отредактированную диагностику, проверить кэшированный или сформированный
-fallback тем же контрактом и показать явное состояние недоступности, если
-восстановление тоже не удалось.
+Используйте `recoverHttpResponse()` на HTTP-границе, чтобы проверить сетевое
+значение и eager- или lazy-fallback одним и тем же response-контрактом. Helper
+возвращает неизменяемое состояние `valid`, `recovered` или `unavailable` и не
+выдаёт невалидный payload за выведенный тип ответа.
 
-Политика восстановления остаётся в коде приложения: SafeShape не принимает
-невалидный сетевой payload скрыто и не ослабляет production-схему. Типизированный
+Reporting, storage, retry и UI-политика остаются в коде приложения: SafeShape
+не ослабляет production-схему. Типизированный
 сценарий, рекомендации по telemetry, CI-проверка совместимости и исполняемый
 пример приведены в руководстве
 [Production Response Recovery](docs/production-response-recovery.md) (EN).
@@ -178,6 +200,7 @@ fallback тем же контрактом и показать явное сос�
 - [Русская документация](docs/ru/README.md)
 - [Быстрый старт](docs/ru/quick-start.md)
 - [Миграция с 1.x на 2.0](docs/ru/migration-1-to-2.md)
+- [Миграция с 2.x на 3.0](docs/ru/migration-2-to-3.md)
 - [Полный каталог документации](docs/README.md) (EN)
 - [Core API](docs/api/core.md) (EN)
 - [Совместимость контрактов](docs/api/compat.md) (EN)
@@ -210,6 +233,6 @@ npm run examples:check
 
 ## Статус проекта
 
-SafeShape находится на стабильной версии `2.0.2`. Release gate проверяет
+SafeShape находится на стабильной версии `3.0.0`. Release gate проверяет
 метаданные, сборку, типы, тесты, примеры, benchmarks, установку tarball в
 тестовый consumer-проект, npm audit и package dry-run.

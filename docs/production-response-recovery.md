@@ -4,18 +4,18 @@ Runtime response validation detects contract drift after deployment. A client
 can report that drift without treating invalid network data as trusted
 application data or crashing the whole interface.
 
-SafeShape keeps this policy in application code. `safeParseHttpResponse()`
-remains strict and side-effect free; the application decides how to report a
-violation, recover from trusted fallback data, and render an unavailable state.
+`recoverHttpResponse()` keeps validation strict while providing the repeated
+framework-neutral control flow. The application still decides how to report a
+violation, read trusted fallback input, and render an unavailable state.
 
 ## Recommended Flow
 
-1. Validate the network response with `safeParseHttpResponse()`.
-2. Return parsed data when validation succeeds.
-3. Report only contract metadata and immutable issues when validation fails.
-4. Read a stale cache or construct another explicit fallback as `unknown`.
-5. Validate the fallback through the same HTTP contract.
-6. Return a local unavailable state when neither value satisfies the contract.
+1. Call `recoverHttpResponse()` with the network value and an eager or lazy
+   fallback.
+2. Return parsed data immediately when the state is `valid`.
+3. For `recovered` or `unavailable`, report only contract metadata and the
+   immutable issues from `networkError`.
+4. Render recovered data or a local unavailable state according to `kind`.
 
 Never return the failed network payload as the inferred response type. A cast
 such as `payload as User` only moves the failure into application rendering.
@@ -23,11 +23,12 @@ such as `payload as User` only moves the failure into application rendering.
 ## Typed Application Example
 
 ```ts
-import type { Issue, ValidationError } from "@safe-shape/core";
+import type { Issue } from "@safe-shape/core";
 import { object, string, type Infer } from "@safe-shape/core";
 import {
   httpContract,
-  safeParseHttpResponse,
+  recoverHttpResponse,
+  type HttpResponseRecoveryResult,
 } from "@safe-shape/http";
 
 const userSchema = object({
@@ -42,14 +43,7 @@ const getUserContract = httpContract({
 });
 
 type User = Infer<typeof userSchema>;
-type UserResponseState =
-  | { readonly kind: "valid"; readonly data: User }
-  | {
-      readonly kind: "recovered";
-      readonly data: User;
-      readonly error: ValidationError;
-    }
-  | { readonly kind: "unavailable"; readonly error: ValidationError };
+type UserResponseState = HttpResponseRecoveryResult<User>;
 
 function readCachedUser(): unknown {
   try {
@@ -77,39 +71,38 @@ function reportContractViolation(event: {
 }
 
 export function readUserResponse(input: unknown, status: number): UserResponseState {
-  const current = safeParseHttpResponse(getUserContract, input, status);
+  const state = recoverHttpResponse(getUserContract, input, {
+    status,
+    getFallback: readCachedUser,
+  });
 
-  if (current.success) {
-    return { kind: "valid", data: current.data };
-  }
+  if (state.kind === "valid") return state;
 
   reportContractViolation({
     endpoint: "GET /users/me",
     status,
-    diagnostics: current.error.issues.map((issue) => ({
+    diagnostics: state.networkError.issues.map((issue) => ({
       code: issue.code,
       path: issue.path,
     })),
   });
 
-  const cached = safeParseHttpResponse(getUserContract, readCachedUser(), status);
-
-  if (cached.success) {
-    return {
-      kind: "recovered",
-      data: cached.data,
-      error: current.error,
-    };
-  }
-
-  return { kind: "unavailable", error: current.error };
+  return state;
 }
 ```
 
 The `recovered` branch contains only data that passed the same schema as the
-network response. The original error remains available for diagnostics. The
-`unavailable` branch lets the affected component render a local error state
-instead of throwing during property access.
+network response. The original failure remains available as `networkError`.
+The `unavailable` branch also contains `fallbackError`, so local diagnostics
+can distinguish deployed drift from an invalid cache. It lets the affected
+component render a local error state instead of throwing during property
+access.
+
+Use `fallback` instead of `getFallback` when the fallback value is already
+available. Exactly one must be provided. A lazy fallback is never read for a
+valid network response. If reading storage can throw, catch that failure inside
+`getFallback` and return `undefined` or another `unknown` value for validation;
+application callback exceptions are not swallowed by the helper.
 
 A runnable JavaScript version is available in
 [`examples/resilient-http-response.mjs`](../examples/resilient-http-response.mjs).

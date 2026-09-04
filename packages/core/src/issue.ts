@@ -1,4 +1,12 @@
 export type IssuePathSegment = string | number;
+export type DiagnosticSeverity = "error" | "warning";
+export type DiagnosticParameter =
+  | null
+  | boolean
+  | number
+  | string
+  | readonly DiagnosticParameter[]
+  | { readonly [key: string]: DiagnosticParameter };
 
 export type IssueCode =
   | "invalid_type"
@@ -21,18 +29,34 @@ export type IssueCode =
   | "custom";
 
 export interface Issue {
+  readonly severity: "error";
   readonly code: IssueCode;
   readonly path: readonly IssuePathSegment[];
   readonly expected: string;
   readonly received: string;
   readonly message: string;
   readonly suggestion?: string;
+  readonly ruleId?: string;
+  readonly params?: DiagnosticParameter;
   readonly branches?: readonly UnionIssueBranch[];
 }
+
+export interface Warning extends Omit<Issue, "severity" | "branches"> {
+  readonly severity: "warning";
+  readonly branches?: readonly UnionDiagnosticBranch[];
+}
+
+export type Diagnostic = Issue | Warning;
 
 export interface UnionIssueBranch {
   readonly index: number;
   readonly issues: readonly Issue[];
+  readonly warnings?: readonly Warning[];
+}
+
+export interface UnionDiagnosticBranch {
+  readonly index: number;
+  readonly diagnostics: readonly Diagnostic[];
 }
 
 export interface IssueInput {
@@ -42,6 +66,8 @@ export interface IssueInput {
   readonly received: unknown;
   readonly message: string;
   readonly suggestion?: string | undefined;
+  readonly ruleId?: string | undefined;
+  readonly params?: DiagnosticParameter | undefined;
   readonly receivedDescription?: string | undefined;
   readonly branches?: readonly UnionIssueBranch[] | undefined;
 }
@@ -49,16 +75,114 @@ export interface IssueInput {
 export function createIssue(input: IssueInput): Issue {
   const branches = freezeUnionIssueBranches(input.code, input.branches);
   const issue: Issue = {
+    severity: "error",
     code: input.code,
     path: Object.freeze([...input.path]),
     expected: input.expected,
     received: input.receivedDescription ?? describeReceived(input.received),
     message: input.message,
     ...(input.suggestion === undefined ? {} : { suggestion: input.suggestion }),
+    ...(input.ruleId === undefined ? {} : { ruleId: validateRuleId(input.ruleId) }),
+    ...(input.params === undefined ? {} : { params: freezeDiagnosticParameter(input.params) }),
     ...(branches === undefined ? {} : { branches }),
   };
 
   return Object.freeze(issue);
+}
+
+export interface WarningInput extends Omit<IssueInput, "branches"> {
+  readonly branches?: readonly UnionDiagnosticBranch[] | undefined;
+}
+
+export function createWarning(input: WarningInput): Warning {
+  const warning: Warning = {
+    severity: "warning",
+    code: input.code,
+    path: Object.freeze([...input.path]),
+    expected: input.expected,
+    received: input.receivedDescription ?? describeReceived(input.received),
+    message: input.message,
+    ...(input.suggestion === undefined ? {} : { suggestion: input.suggestion }),
+    ...(input.ruleId === undefined ? {} : { ruleId: validateRuleId(input.ruleId) }),
+    ...(input.params === undefined ? {} : { params: freezeDiagnosticParameter(input.params) }),
+    ...(input.branches === undefined ? {} : {
+      branches: Object.freeze(input.branches.map((branch) => Object.freeze({
+        index: branch.index,
+        diagnostics: Object.freeze([...branch.diagnostics]),
+      }))),
+    }),
+  };
+  return Object.freeze(warning);
+}
+
+export function freezeDiagnosticParameter(value: DiagnosticParameter): DiagnosticParameter {
+  const frozen = freezeDiagnosticParameterAt(value, 0, {
+    entries: 0,
+    ancestors: new Set<object>(),
+  });
+  const serialized = JSON.stringify(frozen);
+  if (serialized === undefined || serialized.length > 16_384) {
+    throw new TypeError("Diagnostic params must not exceed 16384 serialized characters.");
+  }
+  return frozen;
+}
+
+function validateRuleId(value: unknown): string {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    throw new TypeError("Diagnostic ruleId must be a non-empty string.");
+  }
+  return value;
+}
+
+function freezeDiagnosticParameterAt(
+  value: DiagnosticParameter,
+  depth: number,
+  state: { entries: number; ancestors: Set<object> },
+): DiagnosticParameter {
+  if (depth > 20) throw new TypeError("Diagnostic params must not exceed 20 levels.");
+  state.entries += 1;
+  if (state.entries > 1_000) throw new TypeError("Diagnostic params must not exceed 1000 entries.");
+  if (value === null || typeof value === "boolean" || typeof value === "string") return value;
+  if (typeof value === "number") {
+    if (!Number.isFinite(value)) throw new TypeError("Diagnostic params numbers must be finite.");
+    return value;
+  }
+  if (Array.isArray(value)) {
+    if (state.ancestors.has(value)) throw new TypeError("Diagnostic params must not contain cycles.");
+    state.ancestors.add(value);
+    try {
+      return Object.freeze(value.map((item) => freezeDiagnosticParameterAt(item, depth + 1, state)));
+    } finally {
+      state.ancestors.delete(value);
+    }
+  }
+  if (typeof value !== "object") throw new TypeError("Diagnostic params must be JSON-safe.");
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== Object.prototype && prototype !== null) {
+    throw new TypeError("Diagnostic params objects must use a plain or null prototype.");
+  }
+  if (state.ancestors.has(value)) throw new TypeError("Diagnostic params must not contain cycles.");
+  state.ancestors.add(value);
+  const output: Record<string, DiagnosticParameter> = {};
+  try {
+    for (const key of Object.keys(value)) {
+      const descriptor = Object.getOwnPropertyDescriptor(value, key);
+      if (descriptor === undefined || !("value" in descriptor)) {
+        throw new TypeError("Diagnostic params must not contain accessors.");
+      }
+      Object.defineProperty(output, key, {
+        enumerable: true,
+        value: freezeDiagnosticParameterAt(
+          descriptor.value as DiagnosticParameter,
+          depth + 1,
+          state,
+        ),
+      });
+    }
+  } finally {
+    state.ancestors.delete(value);
+  }
+  return Object.freeze(output);
 }
 
 function freezeUnionIssueBranches(
@@ -85,6 +209,9 @@ function freezeUnionIssueBranches(
     return Object.freeze({
       index: branch.index,
       issues: Object.freeze([...branch.issues]),
+      ...(branch.warnings === undefined
+        ? {}
+        : { warnings: Object.freeze([...branch.warnings]) }),
     });
   }));
 }

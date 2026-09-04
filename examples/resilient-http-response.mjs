@@ -1,7 +1,7 @@
 import { object, string } from "../packages/core/dist/index.js";
 import {
   httpContract,
-  safeParseHttpResponse,
+  recoverHttpResponse,
 } from "../packages/http/dist/index.js";
 
 export const userResponseContract = httpContract({
@@ -22,35 +22,25 @@ export function readUserResponse(
     report = () => undefined,
   },
 ) {
-  const current = safeParseHttpResponse(userResponseContract, input, status);
+  const state = recoverHttpResponse(userResponseContract, input, {
+    status,
+    getFallback: () => readFallbackSafely(fallback),
+  });
 
-  if (current.success) {
-    return Object.freeze({ kind: "valid", data: current.data });
-  }
+  if (state.kind === "valid") return state;
 
   reportSafely(report, Object.freeze({
     type: "contract_violation",
     boundary: "response",
     endpoint,
     status,
-    diagnostics: Object.freeze(current.error.issues.map((issue) => Object.freeze({
+    diagnostics: Object.freeze(state.networkError.issues.map((issue) => Object.freeze({
       code: issue.code,
       path: issue.path,
     }))),
   }));
 
-  const fallbackInput = readFallbackSafely(fallback);
-  const recovered = safeParseHttpResponse(userResponseContract, fallbackInput, status);
-
-  if (recovered.success) {
-    return Object.freeze({
-      kind: "recovered",
-      data: recovered.data,
-      error: current.error,
-    });
-  }
-
-  return Object.freeze({ kind: "unavailable", error: current.error });
+  return state;
 }
 
 function reportSafely(report, event) {

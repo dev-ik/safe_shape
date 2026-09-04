@@ -26,8 +26,8 @@ This performs:
 The repository runs the same gate for pushes and pull requests through
 `.github/workflows/ci.yml`. Consumer projects can use the provider-neutral
 [contract CI guide](ci.md) without adopting SafeShape's release workflow.
-Release candidates for 2.0 must also satisfy the
-[1.x to 2.0 migration guide](migration-1-to-2.md).
+Release candidates for 3.0 must also satisfy the
+[2.x to 3.0 migration guide](migration-2-to-3.md).
 
 To run the same checks and create publishable archives in
 `release-artifacts/`, use:
@@ -107,10 +107,10 @@ Prepare and tag a release only after `npm run prepare:release` succeeds:
 
 ```sh
 git add -A
-git commit -m "release: v2.0.0"
+git commit -m "release: v3.0.0"
 git push origin main
-git tag -a v2.0.0 -m "Release v2.0.0"
-git push origin v2.0.0
+git tag -a v3.0.0 -m "Release v3.0.0"
+git push origin v3.0.0
 ```
 
 Then open GitHub Actions, choose `Publish npm packages`, select the release tag,

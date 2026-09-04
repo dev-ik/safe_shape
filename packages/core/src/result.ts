@@ -1,8 +1,9 @@
-import type { Issue } from "./issue.js";
+import type { Issue, Warning } from "./issue.js";
 
 export interface ParseSuccess<T> {
   readonly success: true;
   readonly data: T;
+  readonly warnings?: readonly Warning[];
 }
 
 export interface ParseFailure {
@@ -12,21 +13,27 @@ export interface ParseFailure {
 
 export type ParseResult<T> = ParseSuccess<T> | ParseFailure;
 
-export function success<T>(data: T): ParseSuccess<T> {
-  return Object.freeze({ success: true, data });
+export function success<T>(data: T, warnings: readonly Warning[] = []): ParseSuccess<T> {
+  return Object.freeze({
+    success: true,
+    data,
+    ...(warnings.length === 0 ? {} : { warnings: Object.freeze([...warnings]) }),
+  });
 }
 
-export function failure(issues: readonly Issue[]): ParseFailure {
-  return Object.freeze({ success: false, error: new ValidationError(issues) });
+export function failure(issues: readonly Issue[], warnings: readonly Warning[] = []): ParseFailure {
+  return Object.freeze({ success: false, error: new ValidationError(issues, warnings) });
 }
 
 export class ValidationError extends Error {
   override readonly name = "ValidationError";
   readonly issues: readonly Issue[];
+  readonly warnings: readonly Warning[];
 
-  constructor(issues: readonly Issue[]) {
+  constructor(issues: readonly Issue[], warnings: readonly Warning[] = []) {
     super(formatValidationMessage(issues));
     this.issues = Object.freeze([...issues]);
+    this.warnings = Object.freeze([...warnings]);
   }
 }
 

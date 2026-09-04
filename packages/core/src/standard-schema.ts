@@ -1,3 +1,5 @@
+import type { Warning } from "./issue.js";
+
 /**
  * Structural Standard Schema V1 contract.
  *
@@ -28,10 +30,12 @@ export declare namespace StandardSchemaV1 {
   export interface SuccessResult<Output> {
     readonly value: Output;
     readonly issues?: undefined;
+    readonly warnings?: ReadonlyArray<Warning> | undefined;
   }
 
   export interface FailureResult {
     readonly issues: ReadonlyArray<Issue>;
+    readonly warnings?: ReadonlyArray<Warning> | undefined;
   }
 
   export interface Issue {

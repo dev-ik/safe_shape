@@ -21,7 +21,7 @@ npm install safe-shape
 ## Первая схема
 
 ```ts
-import { integer, object, string, type Infer } from "safe-shape";
+import { integer, object, string, toFieldErrors, type Infer } from "safe-shape";
 
 const User = object({
   id: string({ minLength: 1 }),
@@ -61,6 +61,19 @@ if (!result.success) {
 
 Пути представлены массивами и остаются машиночитаемыми в validation reports,
 HTTP helpers, Standard Schema и CLI.
+
+При необходимости преобразуйте issues в неизменяемую структуру для формы:
+
+```ts
+const fieldErrors = result.success
+  ? {}
+  : toFieldErrors(result.error.issues);
+// { id: ["Expected a string with at least 1 code points."], ... }
+```
+
+Используйте `groupIssuesByPath()`, если адаптер должен сохранить исходные
+issues и структурные пути. Оба helper не разворачивают ветки обычного union
+неявно.
 
 ## Генерация артефактов
 

@@ -14,9 +14,14 @@ import {
   httpContract,
   parseHttpRequest,
   parseHttpResponse,
+  recoverHttpResponse,
+  recoverHttpResponseAsync,
   safeParseHttpRequest,
   safeParseHttpResponse,
+  safeParseHttpRequestAsync,
+  safeParseHttpResponseAsync,
   type HttpRequestData,
+  type HttpResponseRecoveryResult,
   type InferHttpRequest,
   type InferHttpResponse,
 } from "../src/index.js";
@@ -171,6 +176,7 @@ test("http response status mapping reports unknown statuses without fallback res
 
   assert.equal(result.success, false);
   assert.deepEqual(result.error.issues[0], {
+    severity: "error",
     code: "custom",
     path: ["response", "status"],
     expected: "200 | 404",
@@ -259,6 +265,103 @@ test("standalone response helpers accept status codes", () => {
   });
 });
 
+test("response recovery returns valid data without evaluating lazy fallback", () => {
+  const contract = httpContract({
+    response: object({ id: string() }),
+  });
+  let fallbackCalls = 0;
+
+  const result = recoverHttpResponse(contract, { id: "user_1" }, {
+    getFallback: () => {
+      fallbackCalls += 1;
+      return { id: "cached" };
+    },
+  });
+
+  assert.deepEqual(result, { kind: "valid", data: { id: "user_1" } });
+  assert.equal(fallbackCalls, 0);
+  assert.equal(Object.isFrozen(result), true);
+});
+
+test("response recovery validates eager and lazy fallbacks through the same status schema", () => {
+  const contract = httpContract({
+    responses: {
+      200: object({ id: string() }),
+      404: object({ message: string() }),
+    },
+  });
+
+  const eager = recoverHttpResponse(contract, { id: 42 }, {
+    status: 200,
+    fallback: { id: "cached" },
+  });
+  assert.equal(eager.kind, "recovered");
+  if (eager.kind === "recovered") {
+    assert.deepEqual(eager.data, { id: "cached" });
+    assert.equal(eager.networkError.issues[0]?.code, "invalid_type");
+  }
+
+  const lazy = recoverHttpResponse(contract, { message: 42 }, {
+    status: 404,
+    getFallback: () => ({ message: "Cached missing response" }),
+  });
+  assert.equal(lazy.kind, "recovered");
+  if (lazy.kind === "recovered") {
+    assert.deepEqual(lazy.data, { message: "Cached missing response" });
+  }
+  assert.equal(Object.isFrozen(eager), true);
+  assert.equal(Object.isFrozen(lazy), true);
+});
+
+test("response recovery exposes both immutable errors when fallback validation fails", () => {
+  const contract = httpContract({
+    response: object({ id: string() }),
+  });
+
+  const result = recoverHttpResponse(contract, { id: 42 }, {
+    fallback: { id: false },
+  });
+
+  assert.equal(result.kind, "unavailable");
+  if (result.kind === "unavailable") {
+    assert.equal(result.networkError.issues[0]?.received, "number");
+    assert.equal(result.fallbackError.issues[0]?.received, "boolean");
+    assert.equal(Object.isFrozen(result.networkError.issues), true);
+    assert.equal(Object.isFrozen(result.fallbackError.issues), true);
+  }
+  assert.equal(Object.isFrozen(result), true);
+});
+
+test("response recovery rejects ambiguous options and propagates fallback callback failures", () => {
+  const contract = httpContract({ response: object({ id: string() }) });
+
+  assert.throws(
+    () => recoverHttpResponse(contract, { id: 42 }, {} as never),
+    /exactly one of fallback or getFallback/,
+  );
+  assert.throws(
+    () => recoverHttpResponse(contract, { id: 42 }, {
+      fallback: { id: "cached" },
+      getFallback: () => ({ id: "other" }),
+    } as never),
+    /exactly one of fallback or getFallback/,
+  );
+  assert.throws(
+    () => recoverHttpResponse(contract, { id: 42 }, {
+      getFallback: "invalid",
+    } as never),
+    /must be a function/,
+  );
+  assert.throws(
+    () => recoverHttpResponse(contract, { id: 42 }, {
+      getFallback: () => {
+        throw new Error("cache failed");
+      },
+    }),
+    /cache failed/,
+  );
+});
+
 test("http contract output types are inferred from configured sections", () => {
   const paramsSchema = object({ id: string() });
   const bodySchema = object({ name: string() });
@@ -304,6 +407,25 @@ test("http contract output types are inferred from configured sections", () => {
 
   type HelperResponse = InferHttpResponse<typeof contract>;
   type HelperResponseExpectation = Expect<Equal<HelperResponse, Infer<typeof responseSchema>>>;
+  type Recovery = HttpResponseRecoveryResult<InferHttpResponse<typeof contract>>;
+  type RecoveryExpectation = Expect<Equal<Recovery,
+    | {
+        readonly kind: "valid";
+        readonly data: Infer<typeof responseSchema>;
+        readonly warnings?: readonly import("@safe-shape/core").Warning[];
+      }
+    | {
+        readonly kind: "recovered";
+        readonly data: Infer<typeof responseSchema>;
+        readonly networkError: ValidationError;
+        readonly warnings?: readonly import("@safe-shape/core").Warning[];
+      }
+    | {
+        readonly kind: "unavailable";
+        readonly networkError: ValidationError;
+        readonly fallbackError: ValidationError;
+      }
+  >>;
 
   const okResponseSchema = object({ id: string() });
   const notFoundResponseSchema = object({ message: string() });
@@ -320,4 +442,39 @@ test("http contract output types are inferred from configured sections", () => {
   >;
 
   assert.equal(request.params.id, "user_1");
+  const recoveryExpectation: RecoveryExpectation = true;
+  assert.equal(recoveryExpectation, true);
+});
+
+test("http contracts propagate warning paths and async rules", async () => {
+  const contract = httpContract({
+    query: object({
+      search: string().warnAsync(async (value) => value.length >= 3, {
+        id: "search.short/v1",
+        message: "Short searches may be ambiguous.",
+      }),
+    }),
+    response: object({
+      id: string().refineAsync(async (value) => value.startsWith("item_"), {
+        id: "item.id/v1",
+        message: "Invalid item id.",
+      }),
+    }),
+  });
+
+  assert.throws(
+    () => contract.safeParseRequest({ query: { search: "x" } }),
+    /safeParseAsync/,
+  );
+  const request = await safeParseHttpRequestAsync(contract, { query: { search: "x" } });
+  assert.equal(request.success, true);
+  assert.deepEqual(request.warnings?.[0]?.path, ["query", "search"]);
+
+  const response = await safeParseHttpResponseAsync(contract, { id: "bad" });
+  assert.equal(response.success, false);
+  const recovery = await recoverHttpResponseAsync(contract, { id: "bad" }, {
+    fallback: { id: "item_cached" },
+  });
+  assert.equal(recovery.kind, "recovered");
+  assert.deepEqual(recovery.data, { id: "item_cached" });
 });

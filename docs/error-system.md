@@ -58,3 +58,6 @@ not suppressed when the key also fails.
 Diagnostic helpers preserve the recursive branch tree in `Diagnostic` objects.
 Human-readable output renders the stable union summary followed by indented
 `Union branch N:` sections without changing the underlying issue model.
+Lossless path grouping and form projection likewise keep a union issue intact;
+applications must explicitly project a selected branch if their own UI policy
+requires it.

@@ -74,9 +74,16 @@ Native string, number, integer, and array constraints remain visible to JSON
 Schema and compatibility tooling.
 `Schema<TOutput, TInput = TOutput>` preserves both sides of transforms while
 the existing `Infer<TSchema>` helper remains an output alias.
-Every schema also implements synchronous Standard Schema V1 through its frozen
-`~standard` protocol object. `StandardSchemaV1.InferInput` and `InferOutput`
+Every schema also implements Standard Schema V1 through its frozen `~standard`
+protocol object. Sync-only schemas validate synchronously; schemas with async
+rules return a Promise. `StandardSchemaV1.InferInput` and `InferOutput`
 preserve the same transform-aware type sides without an adapter dependency.
+
+Diagnostics v2 adds explicit non-fatal `warn()` / `warnWithDiagnostics()`
+rules, bounded JSON-safe `params`, and frozen warning channels on parse
+results. Async work is opt-in through `refineAsync()` / `warnAsync()` and their
+collector variants, plus `safeParseAsync()` and `parseAsync()`. Synchronous
+entry points reject schemas containing nested async work before parsing.
 
 Use `lazy(() => schema, { id })` for recursive contracts and
 `describeContract(schema)` for deterministic input/output graphs with stable
@@ -123,6 +130,13 @@ const periodSchema = object({ start: number(), end: number() }).refineWithIssues
 Relative paths compose with containing schemas. Custom rules stay opaque in
 Contract IR and are rejected by JSON Schema exporters rather than approximated.
 Async collectors, warnings, and arbitrary issue payloads are not supported.
+
+Use `groupIssuesByPath(issues)` for lossless immutable path groups and
+`toFieldErrors(issues, options?)` for a form-oriented error record. Field
+projection preserves every top-level issue, never flattens ordinary-union
+branches implicitly, and rejects path-key collisions. Per-call message
+formatters are available through `toFieldErrors()`, `formatIssues()`, and
+`formatValidationError()` without schema-owned locale or global state.
 
 Attach tooling metadata without changing runtime behavior:
 

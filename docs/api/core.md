@@ -113,8 +113,13 @@ Every `Schema<TOutput, TInput = TOutput>` has:
 
 - `safeParse(input)` returning `ParseResult<TOutput>`.
 - `parse(input)` returning `TOutput` or throwing `ValidationError`.
+- `safeParseAsync(input)` returning `Promise<ParseResult<TOutput>>`.
+- `parseAsync(input)` returning `Promise<TOutput>` or rejecting with `ValidationError`.
 - `refine(predicate, options)` returning a new schema with an additional runtime check.
 - `refineWithIssues(collector, { id })` returning a new schema with an addressable multi-issue check.
+- `warn(predicate, options)` and `warnWithDiagnostics(collector, { id })` for non-fatal diagnostics.
+- `refineAsync()`, `refineAsyncWithDiagnostics()`, `warnAsync()`, and
+  `warnAsyncWithDiagnostics()` for explicit promise-returning rules.
 - `transform(mapper, options)` returning a new schema with a mapped output type.
 - `nullable()` returning a new nullable schema.
 - `optional()` returning a new optional schema.
@@ -132,9 +137,11 @@ protocol directly:
 const result = userSchema["~standard"].validate(input);
 ```
 
-The protocol has `version: 1`, `vendor: "safe-shape"`, and synchronous
-validation. Success is an immutable `{ value }`; failure is an immutable
-`{ issues }` using native frozen SafeShape issues. Standard consumers see the
+The protocol has `version: 1` and `vendor: "safe-shape"`. Validation remains
+synchronous for sync-only schemas and returns a Promise for schemas containing
+async rules. Success is an immutable `{ value }`; failure is an immutable
+`{ issues }` using native frozen SafeShape issues. Either result may contain
+the optional SafeShape extension `warnings`. Standard consumers see the
 required message and path, while SafeShape-aware consumers retain issue codes,
 suggestions, and recursive union branches.
 
@@ -144,8 +151,8 @@ type Output = StandardSchemaV1.InferOutput<typeof schema>;
 ```
 
 Transforms preserve different Standard Schema input and output types.
-`libraryOptions` is accepted but currently ignored. Validation never returns a
-Promise, and the type-only `types` member is intentionally absent at runtime.
+`libraryOptions` is accepted but currently ignored. The type-only `types`
+member is intentionally absent at runtime.
 No `@standard-schema/spec` dependency is required because compatibility is
 structural.
 
@@ -155,16 +162,19 @@ structural.
 
 ```ts
 type ParseResult<T> =
-  | { readonly success: true; readonly data: T }
+  | { readonly success: true; readonly data: T; readonly warnings?: readonly Warning[] }
   | { readonly success: false; readonly error: ValidationError };
 ```
 
-`ValidationError` contains immutable `issues`.
+`ValidationError` contains immutable `issues` and `warnings`. Successful
+warnings are omitted when empty, preserving the ordinary `{ success, data }`
+shape. `parse()` intentionally returns only data.
 
 ## Issues
 
 Each issue contains:
 
+- `severity: "error"`
 - `code`
 - `path`
 - `expected`
@@ -172,16 +182,51 @@ Each issue contains:
 - `message`
 - `suggestion`
 - optional `branches` for `invalid_union`
+- optional custom `ruleId` and JSON-safe `params`
 
 ```ts
 interface UnionIssueBranch {
   readonly index: number;
   readonly issues: readonly Issue[];
+  readonly warnings?: readonly Warning[];
 }
 ```
 
 Issues, branch entries, branch issue arrays, and the `branches` array are
 immutable. Branch indexes and order match the choices passed to `union()`.
+
+### Form-ready issue projection
+
+Use `groupIssuesByPath()` when an adapter needs lossless groups with native
+structural paths and original issue objects:
+
+```ts
+const groups = groupIssuesByPath(result.error.issues);
+```
+
+Groups retain first-seen path order and issue order. Returned groups, copied
+paths, and copied issue arrays are frozen. Ordinary union branches remain on
+their parent issue and are never flattened or ranked implicitly.
+
+Use `toFieldErrors()` for an immutable form-oriented record:
+
+```ts
+const errors = toFieldErrors(result.error.issues, {
+  rootKey: "form",
+  formatMessage: (issue) => translate(issue.code, issue),
+});
+```
+
+Field paths omit the diagnostic `input` prefix. For example,
+`["contacts", 0, "email"]` becomes `contacts[0].email`; root issues use
+`_root` by default. `formatPath` can replace the field-key syntax. Distinct
+structural paths that produce the same field key throw `TypeError` instead of
+overwriting messages. Prototype-like property names are preserved safely.
+
+`formatIssues()` and `formatValidationError()` also accept a per-call
+`formatMessage` option. It replaces only `issue.message`; default English
+output and all other diagnostic fields remain unchanged. Formatter state is
+never stored on a schema or in global process state.
 
 Current issue codes are:
 
@@ -305,10 +350,27 @@ objects, arrays, and HTTP sections. Issues keep `addIssue()` order, use code
 `custom`, and have copied frozen paths. The stable rule id is required and is
 stored as opaque Contract IR behavior.
 
-Collectors are synchronous. Returning a promise-like value or throwing creates
-a deterministic custom failure without exposing the thrown value. Every
-collected issue is an error; async refinements, warning-only diagnostics, and
-arbitrary issue payloads are outside the 2.0 API.
+Synchronous collectors remain synchronous. Returning a promise-like value or
+throwing creates a deterministic custom failure without exposing the thrown
+value. Every collected issue is an error.
+
+## Warnings and Async Rules
+
+`warn()` mirrors `refine()` but emits a non-fatal `Warning` when its predicate
+returns false. `warnWithDiagnostics()` provides ordered `addWarning()` calls.
+Both require stable ids. Custom errors and warnings may include `params` made
+of JSON primitives, arrays, and plain objects; SafeShape copies and freezes
+them and rejects cycles, accessors, non-finite numbers, non-plain objects, more
+than 20 levels, more than 1,000 entries, or more than 16,384 serialized
+characters.
+
+Async rules are explicit: use `refineAsync()`,
+`refineAsyncWithDiagnostics()`, `warnAsync()`, or
+`warnAsyncWithDiagnostics()`, then call `safeParseAsync()` or `parseAsync()`.
+Nested work runs sequentially in declaration/input order. Synchronous entry
+points detect nested async rules before parsing and throw a deterministic
+`TypeError`. Rejections become fatal custom issues without exposing the
+rejection value.
 
 ## Transforms
 
@@ -366,11 +428,16 @@ packages can decide how to map it into their target artifact.
 Use diagnostics helpers to convert issues into stable objects or readable strings:
 
 - `createDiagnostic(issue)`
+- `createFormattedDiagnostic(diagnostic)`
 - `createDiagnostics(issues)`
 - `formatIssuePath(path)`
 - `formatDiagnostic(diagnostic)`
-- `formatIssues(issues)`
-- `formatValidationError(error)`
+- `formatIssues(issues, options?)`
+- `formatWarnings(warnings, options?)`
+- `formatDiagnostics(diagnostics, options?)`
+- `formatValidationError(error, options?)`
+- `groupIssuesByPath(issues)`
+- `toFieldErrors(issues, options?)`
 
 Example formatted diagnostic:
 
@@ -379,8 +446,10 @@ input.user.email: Expected a string. Expected string; received number. Suggestio
 ```
 
 Failed ordinary unions keep that summary line and append indented
-`Union branch N:` sections recursively. `Diagnostic.branches` exposes the same
-tree for structured consumers.
+`Union branch N:` sections recursively. `FormattedDiagnostic.branches` exposes
+the same tree for structured consumers. Native `Diagnostic` is the
+`Issue | Warning` union; per-call mixed formatters receive severity, rule id,
+and structured parameters.
 
 ## Type Inference
 
@@ -429,6 +498,8 @@ The description model is not JSON Schema. Exporter packages such as
 
 Descriptions expose refinement ids (or `null` for anonymous refinements) and
 transform ids so tooling does not silently treat opaque behavior as structural.
+Warning and async rule identities are encoded as `warning:<id>`,
+`async-error:<id>`, and `async-warning:<id>`.
 
 Use `describeContract(schema)` for Contract IR v2. It returns deterministic,
 immutable input and output graphs:

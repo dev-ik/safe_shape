@@ -15,6 +15,7 @@ const {
   boolean,
   discriminatedUnion,
   intersection,
+  groupIssuesByPath,
   lazy,
   literal,
   nullable,
@@ -23,11 +24,20 @@ const {
   record,
   string,
   tuple,
+  toFieldErrors,
   union,
 } = core;
 const { compareContracts, compareContractsV2 } = compat;
 
 const stringSchema = string();
+const passingWarningSchema = string().warn(() => true, {
+  id: "benchmark.warning-pass/v1",
+});
+const emittedWarningSchema = string().warn(() => false, {
+  id: "benchmark.warning-emit/v1",
+  message: "Benchmark warning.",
+  params: { recommended: true },
+});
 const emailSchema = string({ format: "email" });
 const decimalAmountSchema = number({ minimum: 0, multipleOf: 0.01 });
 const constrainedRecordSchema = record(boolean(), {
@@ -91,6 +101,11 @@ const compatibilityNarrowedSchema = object({
 });
 const recursiveCompatibilityPreviousSchema = createRecursiveCompatibilitySchema(2);
 const recursiveCompatibilityNextSchema = createRecursiveCompatibilitySchema(1);
+const issueListResult = array(string()).safeParse(
+  Object.freeze(Array.from({ length: 200 }, (_, index) => index)),
+);
+if (issueListResult.success) throw new Error("Benchmark issue fixture must be invalid.");
+const largeIssueList = issueListResult.error.issues;
 
 const validUser = Object.freeze({
   id: "user_1",
@@ -125,6 +140,16 @@ const cases = [
     name: "primitive string safeParse valid",
     iterations: 500_000,
     run: () => stringSchema.safeParse("safe-shape"),
+  },
+  {
+    name: "passing warning rule safeParse valid",
+    iterations: 250_000,
+    run: () => passingWarningSchema.safeParse("safe-shape"),
+  },
+  {
+    name: "emitted structured warning safeParse valid",
+    iterations: 100_000,
+    run: () => emittedWarningSchema.safeParse("safe-shape"),
   },
   {
     name: "formatted email string safeParse valid",
@@ -190,6 +215,18 @@ const cases = [
     name: "object user safeParse invalid",
     iterations: 100_000,
     run: () => userSchema.safeParse(invalidUser),
+  },
+  {
+    name: "group 200 issues by path",
+    iterations: 10_000,
+    run: () => groupIssuesByPath(largeIssueList),
+    accept: (result) => result.length === 200,
+  },
+  {
+    name: "project 200 issues to field errors",
+    iterations: 10_000,
+    run: () => toFieldErrors(largeIssueList),
+    accept: (result) => Object.keys(result).length === 200,
   },
   {
     name: "recursive tree safeParse valid",

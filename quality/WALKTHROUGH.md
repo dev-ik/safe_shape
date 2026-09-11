@@ -1,8 +1,10 @@
 # Independent Developer Walkthrough
 
-Status: not performed. A developer other than the implementation author should
-record the environment, commands, results, and any undocumented steps here or
-in the release evidence. Do not turn this checklist green from automated tests.
+Status: completion confirmed by the user on 2026-09-11 for release 3.1.0:
+"всё пройдено тогда редизим". This is user-reported completion; a named reviewer,
+environment and command transcript were not supplied. See the
+[release record](../docs/release-candidate-3.1.0.md). Automated tests alone do not
+establish completion of this walkthrough.
 
 1. From a clean checkout, follow the quick-start to install SafeShape, define a
    nested schema, and inspect one successful and one failed parse.

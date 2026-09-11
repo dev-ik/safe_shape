@@ -302,3 +302,9 @@ const length = string().transform((value) => value.length, {
 Equal ids are a caller assertion that contract semantics are unchanged. Change
 the id whenever the accepted values or transform contract changes. Empty ids
 are rejected.
+
+## Counterexample extension
+
+See [contract counterexamples](../counterexamples.md) for the additive
+`createContractCounterexamples()` API, supported scalar domain, and explicit
+unavailable outcomes. Introduced in 3.1.0.

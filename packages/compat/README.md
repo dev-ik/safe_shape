@@ -80,3 +80,11 @@ universal identity properties from narrower or opaque behavior.
 
 See [`docs/api/compat.md`](../../docs/api/compat.md) for the snapshot format,
 compatibility modes, and report semantics.
+
+## Bounded counterexamples
+
+`createContractCounterexamples(previousSnapshot, nextSnapshot, options?)` adds
+synthetic input witnesses for supported scalar and finite composite roots. Results are deeply immutable;
+unsupported domains and exhausted searches return explicit unavailable reasons.
+See [semantics and examples](../../docs/counterexamples.md). Introduced in
+3.1.0; it does not change comparison reports.

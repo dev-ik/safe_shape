@@ -1,8 +1,39 @@
 # SafeShape Roadmap
 
-Status: SafeShape 3.0 released
+Status: SafeShape 3.0 released; contract-evolution verification implemented
 
-Last updated: 2026-09-04
+Last updated: 2026-09-10
+
+Release was authorized on 2026-09-11. The 3.1 stable checklist remains open;
+the [versioned 3.1.0 candidate](release-candidate-3.1.0.md) combines the 3.1 and
+unpublished 3.2 working scope. Publication awaits mandatory gates.
+
+## Next Release: 3.1 — Trusted Contract Evolution
+
+The selected scope is implemented: `contract check-many`, aggregate reports,
+HTTP role presentation, soundness coverage, consumer examples, and benchmark
+outcome checks. Package versions remain at 3.0.0; 3.1 has not been released.
+
+The [3.1 release roadmap](roadmap-3.1.md) is the current release checklist:
+
+1. Complete the mandatory [quality contract](release-quality-3.1.md): pinned
+   comparison, correctness, types, performance, integrations, and usability.
+2. Freeze and review the public contract.
+3. Prepare release notes and synchronized 3.1.0 package versions.
+4. Verify the final versioned candidate and create new archives.
+5. Publish only with explicit approval, then verify registry installation.
+
+The goal is a reliable project workflow for runtime contract evolution, with
+Zod-level quality as an aspiration rather than API imitation or measured parity.
+Snapshots, comparison, and migration diagnostics already existed before this
+release; the new command connects them into a project-wide check.
+
+See the [implementation plan](implementation-plan-3.1.md) and
+[release evidence](release-evidence-3.1.md) for technical scope and completed
+checks. Future candidates are listed separately in the release roadmap and are
+not blockers for 3.1.
+
+## Completed Release Context
 
 SafeShape `2.0.0` established the runtime contract platform. The 3.0 work now
 combines the completed 2.1 form/recovery surface with Diagnostics v2 and

@@ -100,3 +100,24 @@ object-policy, recursive graph, side-selected transform, HTTP presentation,
 migration diagnostics, and generic CI integration are implemented. Migration
 diagnostics and transport presentation only project existing findings; neither
 changes the containment proof defined by this matrix.
+
+### Equal literal leaves in graph comparisons
+
+After opaque guards, equal encoded literals compare safely even inside graph
+union alternatives. For example, `union([string(), literal(null)])` and
+`nullable(string())` have equivalent accepted values in both directions and on
+both graph sides. Unequal literals remain breaking; anonymous refinement
+semantics remain unknown. RFC 0043 corrects the former false-breaking v2 result
+without changing snapshot bytes or report shapes.
+
+### Prototype-sensitive property names
+
+`__proto__`, `constructor`, and other own string keys participate in compatibility
+like ordinary declared fields. Adding a required such field is breaking when
+old values lack it. RFC 0044 corrects lost `__proto__` fields in descriptions and
+artifacts. Required keys must exist as own properties of the snapshot shape;
+inherited prototype members cannot satisfy this condition.
+
+Old artifacts that lost these fields may be malformed or have different
+fingerprints after the fix. Review the runtime schema and explicitly replace
+only affected baselines; do not automatically approve fingerprint changes.

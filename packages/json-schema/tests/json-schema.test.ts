@@ -712,3 +712,16 @@ test("adds a JSON Schema dialect when requested", () => {
     type: "string",
   });
 });
+
+test("preserves prototype-sensitive property and definition names in both dialects", () => {
+  const schema = lazy(() => object({ ["__proto__"]: string() }), { id: "__proto__" });
+  for (const target of ["draft-07", "draft-2020-12"] as const) {
+    const exported = toJsonSchema(schema, { target });
+    const json = JSON.parse(JSON.stringify(exported));
+    const definitions = target === "draft-07" ? json.definitions : json.$defs;
+    assert.equal(Object.hasOwn(definitions, "__proto__"), true);
+    assert.deepEqual(definitions["__proto__"].properties, JSON.parse('{"__proto__":{"type":"string"}}'));
+    assert.deepEqual(definitions["__proto__"].required, ["__proto__"]);
+    assert.equal(Object.getPrototypeOf(exported), Object.prototype);
+  }
+});

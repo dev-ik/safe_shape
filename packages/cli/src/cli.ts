@@ -1,15 +1,18 @@
 #!/usr/bin/env node
+import { renderContractReview } from "./review.js";
 import { readFileSync, realpathSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
-import { isAbsolute, resolve } from "node:path";
+import { dirname, isAbsolute, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import {
   CONTRACT_SNAPSHOT_V2_FORMAT,
   compareContractSnapshots,
   compareContractSnapshotsV2,
+  createContractCounterexamples,
   createContractSnapshot,
   createContractSnapshotV2,
   createMigrationDiagnostics,
+  createHttpCompatibilityPresentation,
   parseContractSnapshot,
   parseContractSnapshotV2,
   type ContractSide,
@@ -54,7 +57,7 @@ const VERSION = packageManifest.version;
 if (typeof VERSION !== "string") {
   throw new TypeError("@safe-shape/cli package version is missing.");
 }
-const BOOLEAN_FLAGS = new Set(["h", "help", "json"]);
+const BOOLEAN_FLAGS = new Set(["h", "help", "json", "counterexamples", "markdown"]);
 const VALUE_FLAGS = new Set([
   "against",
   "compatibility",
@@ -63,6 +66,7 @@ const VALUE_FLAGS = new Set([
   "id",
   "input",
   "module",
+  "manifest",
   "name",
   "out",
   "schema",
@@ -77,6 +81,11 @@ export async function main(argv: readonly string[] = process.argv.slice(2)): Pro
     if (parsed.command.length === 0 || parsed.flags.help === true || parsed.flags.h === true) {
       writeText(helpText());
       return 0;
+    }
+
+    if (parsed.flags.markdown === true && (json || parsed.flags.out !== undefined ||
+      (!matches(parsed.command, ["contract", "check"]) && !matches(parsed.command, ["contract", "check-many"])))) {
+      throw new CliError("invalid_flag", "--markdown requires contract check or check-many and cannot be combined with --json or --out.");
     }
 
     if (matches(parsed.command, ["doctor"])) {
@@ -97,6 +106,10 @@ export async function main(argv: readonly string[] = process.argv.slice(2)): Pro
 
     if (matches(parsed.command, ["contract", "snapshot"])) {
       return await runContractSnapshot(parsed, json);
+    }
+
+    if (matches(parsed.command, ["contract", "check-many"])) {
+      return await runContractCheckMany(parsed, json);
     }
 
     if (matches(parsed.command, ["contract", "check"])) {
@@ -191,6 +204,138 @@ async function runContractSnapshot(parsed: ParsedArgs, json: boolean): Promise<n
   return 0;
 }
 
+interface ContractCheckEntry {
+  readonly name: string;
+  readonly module: string;
+  readonly against: string;
+  readonly export: string;
+  readonly compatibility: CompatibilityMode;
+  readonly side?: ContractSide;
+  readonly exchange?: "request" | "response";
+}
+
+function parseContractManifest(value: unknown, base: string): readonly ContractCheckEntry[] {
+  const invalid = (message: string): never => { throw new CliError("invalid_contract_manifest", message); };
+  const record = (value: unknown): value is Record<string, unknown> =>
+    typeof value === "object" && value !== null && !Array.isArray(value);
+  if (!record(value) || value.version !== 1 || !Array.isArray(value.contracts) || value.contracts.length === 0 ||
+    Object.keys(value).some((key) => key !== "version" && key !== "contracts")) {
+    return invalid("Expected { version: 1, contracts: [ ... ] } with a non-empty list.");
+  }
+  const names = new Set<string>();
+  return value.contracts.map((entry: unknown, index: number) => {
+    if (!record(entry)) return invalid(`contracts[${index}] must be an object.`);
+    const allowed = new Set(["name", "module", "against", "export", "compatibility", "side", "exchange"]);
+    if (Object.keys(entry).some((key) => !allowed.has(key))) return invalid(`Unknown field in contracts[${index}].`);
+    for (const key of allowed) {
+      if ((key === "name" || key === "module" || key === "against" || Object.hasOwn(entry, key)) &&
+        (typeof entry[key] !== "string" || (entry[key] as string).trim().length === 0)) {
+        return invalid(`contracts[${index}].${key} must be a non-empty string.`);
+      }
+    }
+    const name = entry.name as string;
+    if (names.has(name)) return invalid(`Duplicate check name: ${name}.`);
+    names.add(name);
+    if (entry.compatibility !== undefined && !["backward", "forward", "full"].includes(entry.compatibility as string)) {
+      return invalid(`Invalid compatibility in contracts[${index}].`);
+    }
+    if (entry.side !== undefined && entry.side !== "input" && entry.side !== "output") return invalid(`Invalid side in contracts[${index}].`);
+    if (entry.exchange !== undefined && entry.exchange !== "request" && entry.exchange !== "response") return invalid(`Invalid exchange in contracts[${index}].`);
+    return {
+      name, module: resolve(base, entry.module as string), against: resolve(base, entry.against as string),
+      export: (entry.export as string | undefined) ?? "default",
+      compatibility: (entry.compatibility as CompatibilityMode | undefined) ?? "backward",
+      ...(entry.side === undefined ? {} : { side: entry.side }),
+      ...(entry.exchange === undefined ? {} : { exchange: entry.exchange }),
+    };
+  });
+}
+
+async function runContractCheckMany(parsed: ParsedArgs, json: boolean): Promise<number> {
+  for (const key of Object.keys(parsed.flags)) {
+    if (!["manifest", "json", "help", "h", "counterexamples", "markdown"].includes(key)) throw new CliError("invalid_flag", `Unsupported flag for contract check-many: --${key}`);
+  }
+  const manifest = getStringFlag(parsed.flags, "manifest");
+  if (!manifest) throw new CliError("missing_flag", "Missing required flag: --manifest <file>");
+  const manifestPath = resolveFilePath(manifest);
+  let value: unknown;
+  try { value = JSON.parse(await readFile(manifestPath, "utf8")) as unknown; }
+  catch { throw new CliError("invalid_contract_manifest", "Cannot read manifest as JSON."); }
+  const entries = parseContractManifest(value, dirname(manifestPath));
+  type Evaluation = Awaited<ReturnType<typeof evaluateContract>>;
+  type Result = (Evaluation & { name: string; http?: ReturnType<typeof createHttpCompatibilityPresentation> }) |
+    { name: string; ok: false; error: { code: string; message: string } };
+  const results: Result[] = [];
+  const counts = { total: entries.length, compatible: 0, migrationRequired: 0, manualReviewRequired: 0, errors: 0 };
+  for (const entry of entries) {
+    try {
+      const report = await evaluateContract(entry.module, entry.export, entry.against, entry.compatibility, entry.side, parsed.flags.counterexamples === true);
+      results.push({ name: entry.name, ...report,
+        ...(entry.exchange === undefined ? {} : { http: createHttpCompatibilityPresentation(report, { exchange: entry.exchange }) }),
+      });
+      if (report.compatible) counts.compatible += 1;
+      if (report.migration.migrationRequired) counts.migrationRequired += 1;
+      if (report.migration.manualReviewRequired) counts.manualReviewRequired += 1;
+    } catch (error) {
+      const normalized = normalizeError(error);
+      counts.errors += 1;
+      results.push({ name: entry.name, ok: false, error: { code: normalized.code, message: normalized.message } });
+    }
+  }
+  const code = counts.errors > 0 ? 1 : results.every((result) => result.ok) ? 0 : 2;
+  if (parsed.flags.markdown === true) writeText(renderContractReview(results,
+    `Contracts: ${counts.total}; compatible: ${counts.compatible}; migration required: ${counts.migrationRequired}; manual review: ${counts.manualReviewRequired}; errors: ${counts.errors}`));
+  else if (json) writeJson({ ok: code === 0, command: "contract check-many", manifest: manifestPath, counts, results });
+  else {
+    const lines = [`Contracts: ${counts.total}; compatible: ${counts.compatible}; migration required: ${counts.migrationRequired}; manual review: ${counts.manualReviewRequired}; errors: ${counts.errors}`];
+    for (const result of results) {
+      if ("error" in result) { lines.push(`${result.name}: error (${result.error.code}) ${result.error.message}`); continue; }
+      lines.push(`${result.name}: ${result.status}. ${result.migration.summary}`);
+      if (result.counterexamples) lines.push(...formatCounterexamples(result.counterexamples));
+      if (result.http) lines.push(`  ${result.http.summary}`);
+      for (const finding of result.findings) {
+        const role = result.http?.findings.find((item) => item.finding === finding);
+        lines.push(`  ${formatContractPath(finding.path)}: ${finding.message} (${finding.code}, ${finding.direction}${role ? `, ${role.party} ${role.role}` : ""})`);
+        if (finding.suggestion) lines.push(`  Suggestion: ${finding.suggestion}`);
+      }
+    }
+    writeText(lines.join("\n"));
+  }
+  return code;
+}
+
+function formatCounterexamples(results: ReturnType<typeof createContractCounterexamples>): string[] {
+  return results.map((result) => `Counterexample (${result.direction}, ${result.side}, ${result.source} -> ${result.target}): ${result.status === "available" ? JSON.stringify(result.value) : `unavailable (${result.reason})`}`);
+}
+
+async function evaluateContract(modulePath: string, exportName: string, againstPath: string,
+  compatibility: CompatibilityMode, requestedSide: string | undefined, counterexamples = false) {
+  const schema = await loadSchemaExport(modulePath, exportName);
+  const previous = await readContractSnapshot(againstPath);
+  let next: ContractSnapshot | ContractSnapshotV2;
+  let report: ReturnType<typeof compareContractSnapshots> | ReturnType<typeof compareContractSnapshotsV2>;
+  if (previous.format === CONTRACT_SNAPSHOT_V2_FORMAT) {
+    next = createContractSnapshotV2(schema, { id: previous.id });
+    report = compareContractSnapshotsV2(previous, next, { compatibility, side: parseContractSide(requestedSide) });
+  } else {
+    if (requestedSide !== undefined) throw new CliError("invalid_contract_side", "Contract side selection requires a v2 snapshot baseline.");
+    next = createContractSnapshot(schema, { id: previous.id });
+    report = compareContractSnapshots(previous, next, { compatibility });
+  }
+  const migration = createMigrationDiagnostics(report);
+  return {
+    ok: report.compatible,
+    module: resolveModulePath(modulePath),
+    export: exportName,
+    against: resolveFilePath(againstPath),
+    format: previous.format,
+    ...report,
+    migration,
+    ...(counterexamples ? { counterexamples: createContractCounterexamples(previous, next,
+      { compatibility, side: parseContractSide(requestedSide) }) } : {}),
+  };
+}
+
 async function runContractCheck(parsed: ParsedArgs, json: boolean): Promise<number> {
   const modulePath = getStringFlag(parsed.flags, "module");
   const exportName = getStringFlag(parsed.flags, "export") ?? "default";
@@ -207,34 +352,18 @@ async function runContractCheck(parsed: ParsedArgs, json: boolean): Promise<numb
     throw new CliError("missing_flag", "Missing required flag: --against <snapshot>");
   }
 
-  const schema = await loadSchemaExport(modulePath, exportName);
-  const previous = await readContractSnapshot(againstPath);
-  const report = previous.format === CONTRACT_SNAPSHOT_V2_FORMAT
-    ? compareContractSnapshotsV2(
-        previous,
-        createContractSnapshotV2(schema, { id: previous.id }),
-        {
-          compatibility,
-          side: parseContractSide(requestedSide),
-        },
-      )
-    : compareV1ContractSnapshot(previous, schema, compatibility, requestedSide);
-  const migration = createMigrationDiagnostics(report);
-  const payload = {
-    ok: report.compatible,
-    command: "contract check",
-    module: resolveModulePath(modulePath),
-    export: exportName,
-    against: resolveFilePath(againstPath),
-    format: previous.format,
-    ...report,
-    migration,
-  };
+  const report = await evaluateContract(modulePath, exportName, againstPath, compatibility, requestedSide, parsed.flags.counterexamples === true);
+  const migration = report.migration;
+  const { ok, ...details } = report;
+  const payload = { ok, command: "contract check", ...details };
   const payloadWithOutput = outPath === undefined ? payload : await writeJsonReport(outPath, payload);
 
-  if (json) {
+  if (parsed.flags.markdown === true) {
+    writeText(renderContractReview([{ name: exportName, ...report }], "Single contract check"));
+  } else if (json) {
     writeJson(payloadWithOutput);
   } else if (report.compatible) {
+    if (report.counterexamples) writeText(formatCounterexamples(report.counterexamples).join("\n"));
     writeText(
       report.status === "annotation-only"
         ? "Contract is compatible; only annotations changed."
@@ -249,6 +378,7 @@ async function runContractCheck(parsed: ParsedArgs, json: boolean): Promise<numb
     process.stderr.write([
       `Contract compatibility is ${report.status}:`,
       ...findings,
+      ...formatCounterexamples(report.counterexamples ?? []),
       `Migration: ${migration.summary}`,
       ...suggestions.map((suggestion) => `Suggestion: ${suggestion}`),
       "",
@@ -624,25 +754,6 @@ function parseContractSide(value: string | undefined): ContractSide {
   throw new CliError("invalid_contract_side", `Invalid contract side: ${value}. Expected input or output.`);
 }
 
-function compareV1ContractSnapshot(
-  previous: ContractSnapshot,
-  schema: Schema<any, any>,
-  compatibility: CompatibilityMode,
-  requestedSide: string | undefined,
-) {
-  if (requestedSide !== undefined) {
-    throw new CliError(
-      "invalid_contract_side",
-      "Contract side selection requires a v2 snapshot baseline.",
-    );
-  }
-  return compareContractSnapshots(
-    previous,
-    createContractSnapshot(schema, { id: previous.id }),
-    { compatibility },
-  );
-}
-
 function formatContractPath(path: readonly (string | number)[]): string {
   if (path.length === 0) {
     return "$";
@@ -705,6 +816,7 @@ function helpText(): string {
   return `safe-shape ${VERSION}
 
 Usage:
+  safe-shape [--json] contract check-many --manifest <file>
   safe-shape [--json] doctor
   safe-shape [--json] schema export --module <file> [--export <name>] [--schema <uri>] [--id <uri>] [--out <file>]
   safe-shape [--json] schema validate --module <file> [--export <name>] --input <file|-> [--out <file>]
@@ -717,6 +829,7 @@ Commands:
   schema export Export a SafeShape schema module to JSON Schema.
   schema validate Validate a JSON file through a SafeShape schema module.
   schema types  Generate a TypeScript type from a SafeShape schema module.
+  contract check-many  Check a manifest of contracts and aggregate results.
   contract snapshot Create a deterministic contract snapshot and fingerprint.
   contract check Compare a schema with a stored contract snapshot.
 
@@ -726,6 +839,9 @@ Options:
   --input        JSON file to validate, or - to read stdin.
   --export       Named export to load. Defaults to default.
   --name         TypeScript type name for schema types. Defaults to SchemaOutput.
+  --counterexamples  Include bounded synthetic input counterexamples.
+  --markdown     Render check/check-many review Markdown to stdout; redirect to save.
+  --manifest     JSON manifest for contract check-many; paths are manifest-relative.
   --schema       Optional JSON Schema dialect URI.
   --out          Write output to a file instead of stdout.
   --id           Root $id for schema export, or stable contract id for snapshots.

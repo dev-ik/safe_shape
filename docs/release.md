@@ -138,3 +138,17 @@ Create a local global npm link only when needed:
 npm run link:cli
 safe-shape --json doctor
 ```
+
+## Quality Fixture Setup
+
+Before local release checks, install the private quality tooling:
+
+```sh
+npm ci --prefix quality --ignore-scripts
+```
+
+The full gate runs installed consumer, compiler, browser-bundle, and matched
+baseline checks through `npm run quality:check`, and audits its isolated
+lockfile. Keep the local `v3.0.0` baseline tag available. CI fetches release tags,
+checks Node 20.10.0 and Node 24, and retains the quality JSON report. Local
+success does not mark remote CI or the independent developer walkthrough done.

@@ -38,6 +38,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: ${{ inputs.phase == 'compat-only' && inputs.release_ref || github.ref }}
+          fetch-depth: 0
 
       - uses: actions/setup-node@v6
         with:
@@ -63,6 +64,8 @@ jobs:
           fi
 
       - run: npm ci
+      - if: hashFiles('quality/package-lock.json') != ''
+        run: npm ci --prefix quality --ignore-scripts
       - run: npm run prepare:release
 
       - name: Upload release artifacts

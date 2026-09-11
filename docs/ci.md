@@ -108,3 +108,81 @@ contracts:
 If a deliberate breaking change is approved, create the new snapshot locally,
 review its semantic diff, and commit it in the same change. Do not make the CI
 job accept a failure by regenerating the file it is meant to verify.
+
+## Reproduce a Contract Evolution Review
+
+The repository provides a checked example with recursive v2 schemas:
+
+```sh
+npm run build
+node examples/check-contract-evolution.mjs packages/cli/dist/cli.js
+```
+
+In an installed consumer project, copy `examples/contract-evolution.mjs` and
+`examples/check-contract-evolution.mjs` together, install `safe-shape`, and run:
+
+```sh
+node check-contract-evolution.mjs
+```
+
+The runner creates an isolated temporary baseline, checks both input and output
+sides, and asserts safe, breaking, unknown, and operational-error outcomes. It
+also checks that baseline bytes remain unchanged after every comparison and
+removes only its own temporary directory. The release consumer check runs the
+same example against installed tarballs.
+
+For application-owned HTTP explanations, compose the existing projections:
+
+```js
+import { explainChange, narrowed } from "./contract-evolution.mjs";
+
+const { report, migration, http } = explainChange(narrowed, {
+  exchange: "request",
+  compatibility: "backward",
+  side: "input",
+});
+
+console.log(http.summary);
+for (const diagnostic of migration.diagnostics) {
+  console.log(diagnostic.path, diagnostic.direction, diagnostic.message, diagnostic.suggestion);
+}
+```
+
+`http.findings` associates each original finding with its producer/consumer role
+and client/server party. These roles describe the selected compatibility
+relationship, not a discovered list of deployed services. Forward response
+checks describe the server producer concern; backward request checks describe
+the server consumer concern. Use `full` when both directions must hold.
+
+For `migration-required`, inspect the reported path and coordinate the affected
+producer/consumer changes before approving a baseline update. For `manual-review`,
+review the opaque rule or missing proof; an `unknown` result does not prove
+breakage or safety. Matching opaque ids assert unchanged semantics, so changing
+callback behavior requires changing its id. The check never approves that
+assertion on the application's behalf.
+
+After an intentional migration is reviewed, create a new baseline explicitly,
+review its diff with the schema change, and commit both. Never regenerate a
+production baseline merely to make a failing compatibility job pass.
+
+## Gate a Project with Several Contracts
+
+Maintain a reviewed `contracts.json` manifest using the
+[check-many format](api/cli.md#check-multiple-contracts), then replace the single
+check script with:
+
+```json
+{
+  "scripts": {
+    "contracts:check": "safe-shape --json contract check-many --manifest ./contracts.json"
+  }
+}
+```
+
+The shell and CI artifact examples above work unchanged. The aggregate report
+includes every entry even if an earlier module or baseline failed. Exit 1
+means the batch contains an operational failure; it takes precedence over
+exit 2 for migration or review. Inspect all `results`, not only the exit code.
+Manifest paths are relative to the manifest file, making the same list usable
+from a different working directory. Baseline creation and approval remain
+explicit per-contract operations.

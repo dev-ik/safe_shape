@@ -1088,3 +1088,121 @@ test("rejects dangling references and unreachable v2 definitions", () => {
     /definitions\.Unused is not reachable/,
   );
 });
+
+test("bounded runtime witnesses never contradict safe containment across formats", () => {
+  const schemas: Schema<any, any>[] = [
+    neverSchema(), unknownSchema(), literal(""), literal("a"),
+    enumSchema(["a", "b"]), string(), string({ minLength: 1 }),
+    string({ maxLength: 1 }), number(), integer(), number({ minimum: 0 }),
+    number({ multipleOf: 2 }), nullable(string()), optional(string()),
+    union([string(), number()]), array(string()),
+    array(string(), { minLength: 1, maxLength: 2 }), tuple([string()]),
+    object({ id: string() }), object({ id: optional(string()) }),
+    object({ id: string(), label: optional(string()) }), record(string()),
+  ];
+  const atoms: unknown[] = [undefined, null, false, -2, -1, 0, 0.5, 1, 2, "", "a", "b", "aa"];
+  const values = [...atoms, {}, ...atoms.flatMap((value) => [
+    [value], [value, value], { id: value }, { id: value, label: "a" }, { extra: value },
+  ])];
+  for (const [i, previous] of schemas.entries()) {
+    for (const [j, next] of schemas.entries()) {
+      for (const compatibility of ["backward", "forward", "full"] as const) {
+        const legacy = compareContracts(previous, next, { compatibility });
+        const graph = compareContractsV2(previous, next, { compatibility });
+        const context = `${i} -> ${j}, ${compatibility}`;
+        assert.equal(graph.status, legacy.status, context);
+        if (graph.status !== "safe") continue;
+        for (const value of values) {
+          const before = previous.safeParse(value).success;
+          const after = next.safeParse(value).success;
+          if (compatibility !== "forward") assert.ok(!before || after, context);
+          if (compatibility !== "backward") assert.ok(!after || before, context);
+        }
+      }
+    }
+  }
+});
+
+test("recursive safe proofs agree with finite-depth runtime witnesses", () => {
+  const tree = (id: string, minLength: number): Schema<any, any> => {
+    let schema: Schema<any, any>;
+    schema = lazy(() => object({ name: string({ minLength }), children: array(schema) }), { id });
+    return schema;
+  };
+  const previous = tree("Before", 2);
+  const next = tree("After", 1);
+  const report = compareContractsV2(previous, next);
+  assert.equal(report.status, "safe");
+  for (const name of ["", "a", "ab"]) {
+    let value: unknown = { name, children: [] };
+    for (let depth = 0; depth < 4; depth += 1) {
+      if (previous.safeParse(value).success) assert.equal(next.safeParse(value).success, true);
+      value = { name: "root", children: [value] };
+    }
+  }
+  const witness = { name: "root", children: [{ name: "a", children: [] }] };
+  assert.equal(previous.safeParse(witness).success, false);
+  assert.equal(next.safeParse(witness).success, true);
+  assert.equal(compareContractsV2(previous, next, { compatibility: "forward" }).status, "breaking");
+});
+
+test("output proofs preserve produced values and expose policy changes", () => {
+  const strip = object({ id: string() }, { unknownProperties: "strip" });
+  const pass = object({ id: string() }, { unknownProperties: "passthrough" });
+  const input = { id: "a", extra: 42 };
+  assert.deepEqual(strip.parse(input), { id: "a" });
+  assert.deepEqual(pass.parse(input), input);
+  assert.equal(compareContractsV2(strip, pass, { side: "output", compatibility: "full" }).status, "breaking");
+  const widened = object({ id: string({ minLength: 1 }) }, { unknownProperties: "strip" });
+  assert.equal(compareContractsV2(widened, strip, { side: "output" }).status, "safe");
+  for (const id of ["a", "ab"]) {
+    const produced = widened.parse({ id, extra: 42 });
+    assert.deepEqual(strip.parse(produced), produced);
+  }
+});
+
+test("warning and async opaque identities stay conservative across graph sides", async () => {
+  const factories = [
+    (id: string) => string().warn(() => false, { id }),
+    (id: string) => string().refineAsync(async () => true, { id }),
+    (id: string) => string().warnAsync(async () => false, { id }),
+  ];
+  for (const factory of factories) {
+    const previous = factory("rule/v1");
+    assert.equal((await previous.safeParseAsync("a")).success, true);
+    assert.equal(compareContracts(previous, factory("rule/v1"), { compatibility: "full" }).status, "safe");
+    assert.equal(compareContracts(previous, factory("rule/v2"), { compatibility: "full" }).status, "unknown");
+    for (const side of ["input", "output"] as const) {
+      assert.equal(compareContractsV2(previous, factory("rule/v1"), { side }).status, "safe");
+      const report = compareContractsV2(previous, factory("rule/v2"), { side });
+      assert.equal(report.status, "unknown");
+      assert.equal(createMigrationDiagnostics(report).decision, "manual-review");
+    }
+  }
+});
+
+test("migration guidance composes with HTTP roles without changing proof", () => {
+  for (const exchange of ["request", "response"] as const) {
+    for (const compatibility of ["backward", "forward", "full"] as const) {
+      for (const opaque of [false, true]) {
+        const previous = object({ id: string() });
+        const next = object({ id: opaque ? string().refine(() => true, { id: "id/v2" }) : string({ minLength: 2 }) });
+        const report = compareContractsV2(previous, next, { compatibility });
+        const migration = createMigrationDiagnostics(report);
+        const http = createHttpCompatibilityPresentation(report, { exchange });
+        assert.equal(http.status, report.status);
+        assert.equal(http.producer, exchange === "request" ? "client" : "server");
+        assert.equal(http.consumer, exchange === "request" ? "server" : "client");
+        assert.equal(migration.decision, opaque ? "manual-review" : compatibility === "forward" ? "compatible" : "migration-required");
+        for (const diagnostic of migration.diagnostics) {
+          const finding = http.findings.find(({ finding }) => finding.code === diagnostic.code && finding.direction === diagnostic.direction);
+          assert.ok(finding);
+          assert.deepEqual(diagnostic.path, ["id"]);
+          assert.ok(diagnostic.message.length > 0);
+          assert.ok(diagnostic.suggestion);
+          assert.equal(finding.role, diagnostic.direction === "backward" ? "consumer" : "producer");
+        }
+      }
+    }
+  }
+});

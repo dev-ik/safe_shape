@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
-import { performance } from "node:perf_hooks";
+import { runCase } from "./runner.mjs";
 import { fileURLToPath } from "node:url";
 
 const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -135,7 +135,44 @@ const validTree = Object.freeze({
   ]),
 });
 
+const migrationReport = compareContracts(compatibilityPreviousSchema, compatibilityNarrowedSchema);
+const counterexamplePrevious = compat.createContractSnapshotV2(number({ minimum: 0 }));
+const counterexampleNext = compat.createContractSnapshotV2(number({ minimum: 1 }));
+const stringCounterexamplePrevious = compat.createContractSnapshotV2(string({ minLength: 2 }));
+const stringCounterexampleNext = compat.createContractSnapshotV2(string({ minLength: 3 }));
+const compositeCounterexamplePrevious = compat.createContractSnapshotV2(object({ user: object({ name: string({ minLength: 2 }) }), events: array(number(), { minLength: 1 }) }));
+const compositeCounterexampleNext = compat.createContractSnapshotV2(object({ user: object({ name: string({ minLength: 3 }) }), events: array(number(), { minLength: 1 }) }));
 const cases = [
+  {
+    name: "contract composite counterexample",
+    iterations: 1_000,
+    run: () => compat.createContractCounterexamples(compositeCounterexamplePrevious, compositeCounterexampleNext),
+    accept: (result) => result[0].status === "available" && result[0].value.user.name === "aa" && result[0].value.events.length === 1,
+  },
+  {
+    name: "contract string counterexample",
+    iterations: 10_000,
+    run: () => compat.createContractCounterexamples(stringCounterexamplePrevious, stringCounterexampleNext),
+    accept: (result) => result[0].status === "available" && result[0].value === "aa",
+  },
+  {
+    name: "contract scalar counterexample",
+    iterations: 10_000,
+    run: () => compat.createContractCounterexamples(counterexamplePrevious, counterexampleNext),
+    accept: (result) => result[0].status === "available" && result[0].value === 0,
+  },
+  {
+    name: "recursive contract v2 snapshot creation",
+    iterations: 10_000,
+    run: () => compat.createContractSnapshotV2(recursiveCompatibilityPreviousSchema, { id: "benchmark-tree" }),
+    accept: (result) => result.format === "safe-shape.contract/v2",
+  },
+  {
+    name: "contract migration projection breaking",
+    iterations: 20_000,
+    run: () => compat.createMigrationDiagnostics(migrationReport),
+    accept: (result) => result.decision === "migration-required",
+  },
   {
     name: "primitive string safeParse valid",
     iterations: 500_000,
@@ -185,6 +222,7 @@ const cases = [
     name: "Standard Schema user validate valid",
     iterations: 100_000,
     run: () => standardUserSchema.validate(validUser),
+    accept: (result) => result.issues === undefined && result.value?.id === validUser.id,
   },
   {
     name: "union event safeParse valid",
@@ -193,6 +231,7 @@ const cases = [
   },
   {
     name: "union event safeParse invalid with branch diagnostics",
+    expectedSuccess: false,
     iterations: 50_000,
     run: () => eventSchema.safeParse(invalidEvent),
   },
@@ -213,6 +252,7 @@ const cases = [
   },
   {
     name: "object user safeParse invalid",
+    expectedSuccess: false,
     iterations: 100_000,
     run: () => userSchema.safeParse(invalidUser),
   },
@@ -267,7 +307,11 @@ const cases = [
 
 const results = [];
 for (const benchmarkCase of cases) {
-  results.push(runCase(benchmarkCase));
+  const result = runCase(benchmarkCase);
+  if (["contract scalar counterexample", "contract string counterexample", "contract composite counterexample"].includes(benchmarkCase.name) && result.duration_ms > 5000) {
+    throw new Error(`${benchmarkCase.name} budget exceeded: ${benchmarkCase.iterations} calls must complete within 5 seconds.`);
+  }
+  results.push(result);
 }
 
 const report = Object.freeze({
@@ -294,41 +338,6 @@ if (process.argv.includes("--json")) {
   console.log(`benchmark report: ${reportPath}`);
 }
 
-function runCase(benchmarkCase) {
-  for (let index = 0; index < Math.min(10_000, benchmarkCase.iterations); index += 1) {
-    benchmarkCase.run();
-  }
-
-  let successes = 0;
-  let failures = 0;
-  const startedAt = performance.now();
-
-  for (let index = 0; index < benchmarkCase.iterations; index += 1) {
-    const result = benchmarkCase.run();
-    const accepted = benchmarkCase.accept?.(result) ?? result.success;
-    if (accepted) {
-      successes += 1;
-    } else {
-      failures += 1;
-    }
-  }
-
-  const durationMs = performance.now() - startedAt;
-  const opsPerSecond = benchmarkCase.iterations / (durationMs / 1000);
-
-  if (!Number.isFinite(opsPerSecond) || opsPerSecond <= 0) {
-    throw new Error(`Invalid benchmark result for ${benchmarkCase.name}`);
-  }
-
-  return Object.freeze({
-    name: benchmarkCase.name,
-    iterations: benchmarkCase.iterations,
-    duration_ms: Number(durationMs.toFixed(3)),
-    ops_per_second: Number(opsPerSecond.toFixed(3)),
-    successes,
-    failures,
-  });
-}
 
 function createRecursiveCompatibilitySchema(minLength) {
   let schema;

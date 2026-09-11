@@ -267,3 +267,79 @@ The CLI does not require auth and does not print secrets.
 
 See [Contract Checks in CI](../ci.md) for vendor-neutral shell, GitHub Actions,
 and GitLab CI examples and baseline review policy.
+
+## Check Multiple Contracts
+
+```sh
+safe-shape --json contract check-many --manifest ./contracts.json > contract-report.json
+```
+
+The manifest is explicit and versioned:
+
+```json
+{
+  "version": 1,
+  "contracts": [
+    {
+      "name": "create-user-request",
+      "module": "./dist/contracts/user.js",
+      "export": "createUserRequest",
+      "against": "./.safe-shape/create-user-request.json",
+      "compatibility": "backward",
+      "side": "input",
+      "exchange": "request"
+    },
+    {
+      "name": "user-response",
+      "module": "./dist/contracts/user.js",
+      "export": "userResponse",
+      "against": "./.safe-shape/user-response.json",
+      "compatibility": "forward",
+      "side": "output",
+      "exchange": "response"
+    }
+  ]
+}
+```
+
+Paths resolve relative to the manifest directory. `name`, `module`, and
+`against` are required non-empty strings; names must be unique. `export`
+defaults to `default`, compatibility to `backward`, and the v2 side to `input`.
+Omit `side` entirely for v1 baselines. `exchange` is optional and only adds HTTP
+presentation; it does not select the compatibility direction or graph side.
+
+Unknown fields, invalid values, duplicate names, unsupported versions, and empty
+lists are rejected before any schema module is loaded. Entries run sequentially
+in declaration order; imports use normal Node ESM caching. Only `--manifest`,
+`--json`, and help flags are accepted. Use shell redirection to save a report
+in a separate file, never over a manifest, schema, or baseline.
+
+A completed JSON report has `ok`, `command: "contract check-many"`, absolute
+`manifest`, `counts`, and ordered `results`. Counts are `total`, `compatible`,
+`migrationRequired`, `manualReviewRequired`, and `errors`. Migration and review
+counts may overlap. Each evaluated result retains its `name`, module/export,
+baseline path, format, the complete compatibility report, and `migration`.
+When requested, `http` contains the existing HTTP role projection.
+
+Operational-error entries contain `name`, `ok: false`, and `error` with `code`
+and `message`; later entries still run. They have no fabricated migration
+verdict. Exit codes are:
+
+- `1` if any entry has an operational error;
+- otherwise `2` if any entry is incompatible or requires review;
+- otherwise `0`.
+
+The complete report, including per-entry errors, goes to stdout; stderr remains
+empty. Invalid manifests use `invalid_contract_manifest` in the usual stderr
+error envelope with exit 1 and no partial stdout report. Trusted schema modules
+can themselves print output; keep contract modules quiet when consuming JSON.
+Text mode prints the aggregate counts, findings, directions, suggestions, and
+HTTP roles. The command never modifies a baseline or updates a schema.
+
+## Optional contract counterexamples
+
+`contract check` and `contract check-many` accept `--counterexamples` to include
+bounded synthetic root examples. See [semantics and limits](../counterexamples.md).
+The default reports and command exit codes are unchanged.
+Use `--markdown` for [review artifacts](../contract-review.md) on either check
+command; it cannot be combined with `--json` or `--out`.

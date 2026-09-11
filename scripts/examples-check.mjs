@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { mkdir, rm } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -184,6 +184,11 @@ assert.equal(validResponse.data.id, "user_1");
 
 await rm(workspaceDir, { force: true, recursive: true });
 
+const evolution = spawnSync(process.execPath, [
+  resolve(rootDir, "examples/check-contract-evolution.mjs"), cliPath,
+], { cwd: rootDir, encoding: "utf8" });
+if (evolution.error) throw evolution.error;
+assert.equal(evolution.status, 0, evolution.stdout + evolution.stderr);
 console.log("examples-check: ok");
 
 function runCli(args) {

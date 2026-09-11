@@ -1991,7 +1991,7 @@ class ObjectSchema<
 
     for (const [key, schema] of Object.entries(this.shape)) {
       const childSchema = toInternalSchema(schema);
-      shape[key] = childSchema[describeSymbol](context);
+      defineRecordValue(shape, key, childSchema[describeSymbol](context));
 
       if (!isOptionalSchema(childSchema)) {
         required.push(key);
@@ -2726,7 +2726,7 @@ function describeContractGraph(
   const definitions: Record<string, SchemaDefinition> = {};
 
   for (const id of [...context.definitions.keys()].sort()) {
-    definitions[id] = canonicalizeDefinition(context.definitions.get(id)!);
+    defineRecordValue(definitions, id, canonicalizeDefinition(context.definitions.get(id)!));
   }
 
   return Object.freeze({
@@ -3401,7 +3401,7 @@ function canonicalizeDefinition(definition: SchemaDefinition): SchemaDefinition 
     case "object": {
       const shape: Record<string, SchemaDefinition> = {};
       for (const key of Object.keys(definition.shape).sort()) {
-        shape[key] = canonicalizeDefinition(definition.shape[key]!);
+        defineRecordValue(shape, key, canonicalizeDefinition(definition.shape[key]!));
       }
       return Object.freeze({
         kind: "object",

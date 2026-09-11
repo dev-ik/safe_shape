@@ -233,6 +233,8 @@ npm run examples:check
 
 ## Статус проекта
 
-SafeShape находится на стабильной версии `3.0.0`. Release gate проверяет
+SafeShape готовит релиз `3.1.0`; последняя опубликованная версия — `3.0.0`.
+См. [состав кандидата и оставшиеся проверки](docs/release-candidate-3.1.0.md).
+Release gate проверяет
 метаданные, сборку, типы, тесты, примеры, benchmarks, установку tarball в
 тестовый consumer-проект, npm audit и package dry-run.

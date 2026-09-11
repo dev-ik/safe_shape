@@ -1,4 +1,6 @@
 import { createHash } from "node:crypto";
+import { constructCounterexample, type ContractCounterexample } from "./counterexamples.js";
+export type { ContractCounterexample, CounterexampleValue, CounterexampleUnavailableReason } from "./counterexamples.js";
 import {
   describeContract,
   describeSchema,
@@ -175,6 +177,28 @@ export interface CompareContractsV2Options extends CompareContractsOptions {
 
 export interface CompareContractSnapshotsV2Options extends CompareContractSnapshotsOptions {
   readonly side?: ContractSide;
+}
+
+/** Bounded synthetic root witnesses; unavailable never implies compatibility. */
+export function createContractCounterexamples(
+  previous: ContractSnapshot | ContractSnapshotV2,
+  next: ContractSnapshot | ContractSnapshotV2,
+  options: CompareContractSnapshotsV2Options = {},
+): readonly ContractCounterexample[] {
+  const compatibility = options.compatibility ?? "backward";
+  const side = options.side ?? "input";
+  if (!["backward", "forward", "full"].includes(compatibility) || !["input", "output"].includes(side)) {
+    throw new TypeError("Invalid counterexample options.");
+  }
+  if (previous.format !== next.format) throw new TypeError("Counterexamples require matching snapshot formats.");
+  const root = (snapshot: ContractSnapshot | ContractSnapshotV2): ContractGraphNode =>
+    snapshot.format === CONTRACT_SNAPSHOT_V2_FORMAT
+      ? parseContractSnapshotV2(snapshot)[side].root
+      : parseContractSnapshot(snapshot).contract;
+  const previousRoot = root(previous);
+  const nextRoot = root(next);
+  const directions: readonly CompatibilityDirection[] = compatibility === "full" ? ["backward", "forward"] : [compatibility];
+  return Object.freeze(directions.map((direction) => constructCounterexample(previousRoot, nextRoot, direction, side)));
 }
 
 export interface CompatibilityFinding<TNode extends ContractGraphNode = ContractNode> {
@@ -866,6 +890,9 @@ function compareNodes(
     case "boolean":
       return emptyAnalysis("safe");
     case "literal":
+      if (next.kind === "literal" && contractLiteralEquals(previous.value, next.value)) {
+        return emptyAnalysis("safe");
+      }
       return analysisFromFindings([createFinding(
         "literal.value.changed",
         "breaking",
@@ -1434,10 +1461,10 @@ function compareObjects(
   const keys = [...new Set([...Object.keys(previous.shape), ...Object.keys(next.shape)])].sort();
 
   for (const key of keys) {
-    const previousProperty = previous.shape[key];
-    const nextProperty = next.shape[key];
-    const sourceProperty = source.shape[key];
-    const targetProperty = target.shape[key];
+    const previousProperty = Object.hasOwn(previous.shape, key) ? previous.shape[key] : undefined;
+    const nextProperty = Object.hasOwn(next.shape, key) ? next.shape[key] : undefined;
+    const sourceProperty = Object.hasOwn(source.shape, key) ? source.shape[key] : undefined;
+    const targetProperty = Object.hasOwn(target.shape, key) ? target.shape[key] : undefined;
     const propertyPath = [...path, key];
 
     if (sourceProperty === undefined && targetProperty !== undefined) {
@@ -1817,7 +1844,7 @@ function findAnonymousOpaque(
     case "object": {
       const nextNode = next as Extract<ContractGraphNode, { readonly kind: "object" }>;
       for (const key of Object.keys(previous.shape)) {
-        const nextProperty = nextNode.shape[key];
+        const nextProperty = Object.hasOwn(nextNode.shape, key) ? nextNode.shape[key] : undefined;
         if (nextProperty !== undefined) {
           findings.push(...findAnonymousOpaque(previous.shape[key]!, nextProperty, [...path, key], direction));
         }
@@ -1920,7 +1947,7 @@ function definitionToContract(definition: SchemaDefinition): ContractNode {
     case "object": {
       const shape: Record<string, ContractNode> = {};
       for (const key of Object.keys(definition.shape).sort()) {
-        shape[key] = definitionToContract(definition.shape[key]!);
+        defineRecordValue(shape, key, definitionToContract(definition.shape[key]!));
       }
       return Object.freeze({
         kind: "object",
@@ -2241,10 +2268,10 @@ function parseContractNode(value: unknown, path: string): ContractNode {
       );
       const shapeRecord = expectRecord(record.shape, `${path}.shape`);
       const shape: Record<string, ContractNode> = {};
-      for (const key of Object.keys(shapeRecord).sort()) shape[key] = parseContractNode(shapeRecord[key], `${path}.shape.${key}`);
+      for (const key of Object.keys(shapeRecord).sort()) defineRecordValue(shape, key, parseContractNode(shapeRecord[key], `${path}.shape.${key}`));
       if (!Array.isArray(record.required)) throw new TypeError(`${path}.required must be an array.`);
       const required = record.required.map((item, index) => expectString(item, `${path}.required[${index}]`)).sort();
-      if (new Set(required).size !== required.length || required.some((key) => shape[key] === undefined)) {
+      if (new Set(required).size !== required.length || required.some((key) => !Object.hasOwn(shape, key))) {
         throw new TypeError(`${path}.required must contain unique keys from shape.`);
       }
       return Object.freeze({
@@ -2385,7 +2412,7 @@ function parseContractGraphNode(value: unknown, path: string): ContractGraphNode
       const required = record.required
         .map((item, index) => expectString(item, `${path}.required[${index}]`))
         .sort();
-      if (new Set(required).size !== required.length || required.some((key) => shape[key] === undefined)) {
+      if (new Set(required).size !== required.length || required.some((key) => !Object.hasOwn(shape, key))) {
         throw new TypeError(`${path}.required must contain unique keys from shape.`);
       }
       return Object.freeze({

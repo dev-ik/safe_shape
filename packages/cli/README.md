@@ -112,3 +112,19 @@ Addressable `custom` issues from `refine()` and `refineWithIssues()` preserve
 their relative paths and collector order in the same JSON output.
 
 The CLI does not require auth.
+
+Check a reviewed list of contracts in one invocation:
+
+```sh
+safe-shape --json contract check-many --manifest ./contracts.json
+```
+
+See the [manifest and aggregate report reference](../../docs/api/cli.md#check-multiple-contracts).
+
+## Optional counterexamples
+
+Add `--counterexamples` to `contract check` or `contract check-many` for bounded
+synthetic root witnesses; see [supported domain](../../docs/counterexamples.md).
+Default JSON, exit codes, and baseline files remain unchanged.
+Add `--markdown` to generate a [review artifact](../../docs/contract-review.md)
+on stdout. It is incompatible with `--json` and `--out`.

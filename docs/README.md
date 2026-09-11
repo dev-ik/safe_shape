@@ -48,6 +48,14 @@ SafeShape documentation is organized by the task you need to complete.
 - [Testing](testing.md)
 - [Performance](performance.md)
 - [Roadmap](roadmap.md)
+- [3.0 to 3.1 candidate migration notes](migration-3.0-to-3.1.md)
+- [3.1 release quality contract](release-quality-3.1.md)
+- [3.1 release roadmap](roadmap-3.1.md)
+- [3.1 implementation plan](implementation-plan-3.1.md)
+- [3.2 working roadmap](roadmap-3.2.md)
+- [Contract counterexamples](counterexamples.md)
+- [Markdown contract review](contract-review.md)
+- [3.1.0 release candidate and notes](release-candidate-3.1.0.md)
 
 Architecture decisions live in [`adr/`](../adr/), and accepted public API
 proposals live in [`rfc/`](../rfc/).

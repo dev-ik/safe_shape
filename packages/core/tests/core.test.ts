@@ -2111,3 +2111,19 @@ const schemaContract: Schema<string> = string();
 
 assert.equal(validUser.id, "user_1");
 assert.equal(schemaContract.safeParse("value").success, true);
+
+test("descriptions preserve own prototype-sensitive fields and lazy identifiers", () => {
+  const schema = object({ ["__proto__"]: string() });
+  const definition = describeSchema(schema);
+  if (definition.kind !== "object") throw new Error("Expected object");
+  assert.equal(Object.hasOwn(definition.shape, "__proto__"), true);
+  assert.equal(Object.getPrototypeOf(definition.shape), Object.prototype);
+  for (const side of ["input", "output"] as const) {
+    const graph = describeContract(lazy(() => schema, { id: "__proto__" }))[side];
+    assert.equal(Object.hasOwn(graph.definitions, "__proto__"), true);
+    const node = graph.definitions["__proto__"];
+    if (node?.kind !== "object") throw new Error("Expected object definition");
+    assert.equal(Object.hasOwn(node.shape, "__proto__"), true);
+    assert.equal(Object.isFrozen(node.shape), true);
+  }
+});

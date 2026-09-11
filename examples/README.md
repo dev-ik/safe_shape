@@ -86,3 +86,31 @@ Run the example smoke check:
 ```sh
 npm run examples:check
 ```
+
+## Contract Evolution
+
+Run the complete recursive snapshot and migration workflow:
+
+```sh
+node examples/check-contract-evolution.mjs packages/cli/dist/cli.js
+```
+
+The runner checks both graph sides and safe, breaking, unknown, and operational
+error outcomes while preserving baseline bytes. `contract-evolution.mjs`
+exports the previous, widened, narrowed, and opaque schemas, plus an
+application-owned `explainChange()` example combining migration diagnostics
+with HTTP roles. See the [CI guide](../docs/ci.md) for consumer installation,
+review decisions, and baseline replacement policy.
+
+The same runner also exercises `contract check-many` with a generated manifest,
+including a response producer change, a manual-review result, and an operational
+error. The aggregate report is tested in workspace and installed consumers.
+## Bounded scalar counterexamples
+
+The contract-evolution runner also checks numeric and string-length input counterexamples through
+the public API and opt-in single/batch CLI commands, composes migration and HTTP
+presentations, and verifies that baseline bytes remain unchanged. It explicitly
+checks the unavailable output-side result. See [supported domain](../docs/counterexamples.md).
+The same installed-consumer runner includes a nested payload with arrays/unions
+and exercises [Markdown review](../docs/contract-review.md) for single and mixed
+batch outcomes.

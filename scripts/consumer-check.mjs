@@ -112,6 +112,11 @@ const compatibilityResult = await run(cliPath, [
 ], appDir);
 assert.equal(JSON.parse(compatibilityResult.stdout).status, "safe");
 
+for (const file of ["contract-evolution.mjs", "check-contract-evolution.mjs"]) {
+  await writeFile(resolve(appDir, file), await readFile(resolve(rootDir, "examples", file)));
+}
+await run(process.execPath, [resolve(appDir, "check-contract-evolution.mjs"), cliPath], appDir);
+
 console.log("consumer-check: ok");
 
 async function run(command, args, cwd) {

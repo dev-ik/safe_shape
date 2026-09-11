@@ -147,11 +147,11 @@ export function safeToJsonSchema(
     const definitionsKeyword = target === "draft-07" ? "definitions" : "$defs";
 
     for (const [definitionId, definition] of Object.entries(graph.definitions)) {
-      definitions[definitionId] = convertDefinition(
+      defineJsonProperty(definitions, definitionId, convertDefinition(
         definition,
         context,
         [definitionsKeyword, definitionId],
-      );
+      ));
     }
 
     const convertedRoot = convertDefinition(graph.root, context, []);
@@ -621,11 +621,11 @@ function convertObjectDefinition(
   const properties: Record<string, JsonSchema> = {};
 
   for (const [key, propertyDefinition] of Object.entries(definition.shape)) {
-    properties[key] = convertDefinition(
+    defineJsonProperty(properties, key, convertDefinition(
       propertyDefinition,
       context,
       childPath(path, "properties", key),
-    );
+    ));
   }
 
   return Object.freeze({
@@ -655,4 +655,8 @@ function addMetadata(schema: JsonSchema, metadata: SchemaDefinition["metadata"])
     ...(metadata.description === undefined ? {} : { description: metadata.description }),
     ...(metadata.examples === undefined ? {} : { examples: Object.freeze([...metadata.examples]) }),
   });
+}
+
+function defineJsonProperty(record: Record<string, JsonSchema>, key: string, value: JsonSchema): void {
+  Object.defineProperty(record, key, { value, enumerable: true, configurable: true, writable: true });
 }

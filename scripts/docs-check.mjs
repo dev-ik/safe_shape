@@ -32,11 +32,13 @@ for (const [englishPath, russianPath] of languagePairs) {
 
 const version = JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version;
 assert(
-  read("README.md").includes(`SafeShape is on the \`${version}\` stable release line.`),
+  read("README.md").includes(`SafeShape is on the \`${version}\` stable release line.`) ||
+    read("README.md").includes(`SafeShape is preparing the \`${version}\` release;`),
   `README.md project status must match package version ${version}`,
 );
 assert(
-  read("README.ru.md").includes(`SafeShape находится на стабильной версии \`${version}\`.`),
+  read("README.ru.md").includes(`SafeShape находится на стабильной версии \`${version}\`.`) ||
+    read("README.ru.md").includes(`SafeShape готовит релиз \`${version}\`;`),
   `README.ru.md project status must match package version ${version}`,
 );
 

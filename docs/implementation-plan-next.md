@@ -1,6 +1,9 @@
-# Next release: composable and connected runtime contracts
+# SafeShape 3.2.0: composable and connected runtime contracts
 
-Implementation authorized. Additive candidate version: 3.2.0. Publication is separate.
+Completed and published on 2026-09-25. See the
+[release record](release-candidate-3.2.0.md) for verification and the explicit
+owner-approved exception to the independent human walkthrough gate.
+The implementation and qualification history follows.
 Baseline: published 3.1.0. See [RFC 0048](../rfc/0048-composable-runtime-contracts.md)
 and [ADR 0035](../adr/0035-composition-and-connection-boundaries.md).
 
@@ -52,4 +55,5 @@ no global non-throwing mode or silently trusted invalid data is introduced.
 The polish passed the full `prepare:release` gate and all eight archive hashes
 match installed consumers. See [current evidence](release-polish-3.2.0.md) for
 274 package tests, production checks and comparative diagnostics measurements.
-CI and independent walkthrough remain separate pending gates.
+Final CI passed on Node 20.10.0 and Node 24. The independent human walkthrough
+remained incomplete and was explicitly excepted by the owner for publication.

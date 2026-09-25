@@ -1,8 +1,10 @@
 # SafeShape 3.2.0 final readiness verification
 
 This supplements the [production/diagnostic qualification](release-polish-3.2.0.md).
-The implementation is prepared as an isolated candidate for final Linux CI.
-Publication and the independent human walkthrough remain separate steps.
+The candidate subsequently passed final Linux CI and was published. See the
+[verified publication record](release-candidate-3.2.0.md#verified-publication)
+for exact commit, workflow and archive evidence. The independent human
+walkthrough was not completed; the owner authorized an explicit exception.
 
 ## Additional checks
 
@@ -56,4 +58,5 @@ that final remote result.
 The [quality contract](release-quality-3.1.md) requires a developer outside the
 implementation review to reproduce the quick start and a contract change.
 The agent's fresh-project and browser passes do not mark that human gate complete.
-There has been no merge to main, release tag, npm publication or GitHub release.
+At the time of this readiness review, no merge, tag or publication had occurred.
+The subsequent authorized publication is recorded in the linked release record.

@@ -1,7 +1,8 @@
 # SafeShape Roadmap
 
 Status: historical roadmap through 3.1; superseded by [the current plan](implementation-plan-next.md).
-Published release: 3.1.0. The following prior planning sections are retained as history.
+Published release: [3.2.0](release-candidate-3.2.0.md). The following prior planning
+sections are retained as history.
 
 Last updated: 2026-09-10
 

@@ -1,18 +1,18 @@
 # Roadmap
 
-Current published release: **3.1.0**, verified in the
-[release record](docs/release-candidate-3.1.0.md). The old 3.2 working scope was
-incorporated into 3.1.0; historical roadmaps do not describe a pending publication.
+Current published release: **3.2.0**, verified in the
+[release record](docs/release-candidate-3.2.0.md).
 
-The next development release focuses on composable runtime contracts, checked
-pipelines, recursive TypeScript artifacts, explicit producer/consumer connections
-and a verified adoption journey from Zod. Runtime first, immutable schemas, explicit
-conversion and API stability remain mandatory.
+The release adds composable runtime contracts, checked pipelines, recursive
+TypeScript artifacts, explicit producer/consumer connections and a documented
+adoption journey from Zod. Runtime first, immutable schemas, explicit conversion
+and API stability remain mandatory.
 
 See [the implementation plan](docs/implementation-plan-next.md),
 [RFC 0048](rfc/0048-composable-runtime-contracts.md), and
-[ADR 0035](adr/0035-composition-and-connection-boundaries.md). The additive candidate version is 3.2.0;
-publication follows separate release authorization and final qualification.
+[ADR 0035](adr/0035-composition-and-connection-boundaries.md). The additive 3.2.0
+release was published on 2026-09-25; its release record includes qualification
+results and the owner-approved exception for the independent human walkthrough.
 
 ## v1.0.0 Stable API
 

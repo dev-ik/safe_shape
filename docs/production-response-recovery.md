@@ -55,7 +55,7 @@ function readCachedUser(): unknown {
 }
 
 declare const telemetry: {
-  capture(name: string, event: unknown): void;
+  capture(name: string, event: unknown): void | Promise<void>;
 };
 
 function reportContractViolation(event: {
@@ -66,8 +66,12 @@ function reportContractViolation(event: {
     readonly path: Issue["path"];
   }[];
 }): void {
-  // The telemetry adapter should isolate SDK failures and apply deduplication.
-  telemetry.capture("contract_violation", event);
+  try {
+    void Promise.resolve(telemetry.capture("contract_violation", event))
+      .catch(() => undefined);
+  } catch {
+    // Telemetry must not control recovery, even when the SDK throws immediately.
+  }
 }
 
 export function readUserResponse(input: unknown, status: number): UserResponseState {
@@ -126,6 +130,14 @@ immutable `ValidationError` locally when the recovery state needs it.
 Group and rate-limit repeated violations by stable fields such as operation,
 status, issue code, and issue path. Keep the telemetry adapter non-throwing so
 an unavailable monitoring service cannot break response recovery.
+
+Attach rejection handling immediately for asynchronous sinks as well. The runnable
+example isolates both throwing and rejecting reporters without waiting for a
+pending logger. Its fallback callback is synchronous; use the async parsing API
+and application-owned async storage handling when cache reads need awaiting.
+
+For server requests and service failures, see
+[Production boundaries](production-boundaries.md).
 
 ## Environment Policy
 

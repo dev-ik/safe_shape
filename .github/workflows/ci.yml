@@ -33,5 +33,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: quality-node-${{ matrix.node }}
-          path: .tmp/quality/report.json
+          path: |
+            .tmp/quality/report.json
+            .tmp/quality/tarballs/*.tgz
           if-no-files-found: warn

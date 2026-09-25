@@ -114,3 +114,13 @@ checks the unavailable output-side result. See [supported domain](../docs/counte
 The same installed-consumer runner includes a nested payload with arrays/unions
 and exercises [Markdown review](../docs/contract-review.md) for single and mixed
 batch outcomes.
+
+## Next-release connected contracts
+
+`node examples/connected-contracts.mjs packages/cli/dist/cli.js` exercises object
+composition, checked query conversion, recursive declaration generation and a
+producer/consumer CI manifest. It also runs against installed release tarballs.
+
+## Production request boundary
+
+[`production-boundary.mjs`](production-boundary.mjs) handles invalid requests, response drift and service failures with structured logging and controlled HTTP results. Throwing/rejecting loggers cannot fail the operation. [Guide](../docs/production-boundaries.md).

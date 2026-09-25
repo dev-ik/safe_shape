@@ -13,3 +13,11 @@ const wrong: InferOutput<typeof schema> = { id: "a", size: "abc" };
 const missing: InferInput<typeof schema> = { size: "abc" };
 // @ts-expect-error optional numeric field retains its type
 const wrongOptional: InferInput<typeof schema> = { id: "a", size: "abc", age: "1" };
+
+const composed = object({ id: string(), age: number().optional() }).omit(["id"]).required().extend({ name: string() });
+const composedOutput: InferOutput<typeof composed> = { age: 1, name: "Ada" };
+// @ts-expect-error required composition excludes omitted age
+const absentAge: InferOutput<typeof composed> = { name: "Ada" };
+const pipeline = string().transform(Number).pipe(number());
+type CheckedOutput = Expect<Equal<InferOutput<typeof pipeline>, number>>;
+type OriginalInput = Expect<Equal<InferInput<typeof pipeline>, string>>;

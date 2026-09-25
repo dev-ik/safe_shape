@@ -8,7 +8,8 @@ import {
   type Warning,
 } from "./issue.js";
 import { createParseContext, type ParseContext } from "./parser.js";
-import { failure, success, type ParseResult } from "./result.js";
+import { success, type ParseResult } from "./result.js";
+import { internalFailure as failure, toPublicResult, type InternalParseResult } from "./parse-result.js";
 import type { StandardSchemaV1 } from "./standard-schema.js";
 
 const parseSymbol: unique symbol = Symbol("safeShape.parse");
@@ -64,6 +65,9 @@ export interface Schema<TOutput, TInput = TOutput>
     mapper: Transform<TOutput, TNextOutput>,
     options?: TransformOptions,
   ): Schema<TNextOutput, TInput>;
+  pipe<TNext extends Schema<any, any>>(
+    next: TNext & ([TOutput] extends [InferInput<TNext>] ? unknown : unknown extends TOutput ? unknown : never),
+  ): Schema<InferOutput<TNext>, TInput>;
   nullable(): Schema<TOutput | null, TInput | null>;
   optional(): OptionalSchemaType<TOutput | undefined, TInput | undefined>;
 }
@@ -210,6 +214,25 @@ export interface ObjectOptions<
   TPolicy extends UnknownPropertyPolicy = UnknownPropertyPolicy,
 > {
   readonly unknownProperties?: TPolicy;
+}
+
+export type PartialShape<TShape extends Shape> = {
+  [Key in keyof TShape]: OptionalSchemaType<InferOutput<TShape[Key]> | undefined, InferInput<TShape[Key]> | undefined>;
+};
+
+export type RequiredShape<TShape extends Shape> = {
+  [Key in keyof TShape]: Schema<Exclude<InferOutput<TShape[Key]>, undefined>, Exclude<InferInput<TShape[Key]>, undefined>>;
+};
+
+export interface ObjectSchemaType<TShape extends Shape, TPolicy extends UnknownPropertyPolicy = "reject">
+  extends Schema<ObjectOutputWithPolicy<TShape, TPolicy>, ObjectInputWithPolicy<TShape, TPolicy>> {
+  readonly shape: Readonly<TShape>;
+  annotate(metadata: SchemaMetadata): ObjectSchemaType<TShape, TPolicy>;
+  pick<const TKeys extends readonly (keyof TShape & string)[]>(keys: TKeys): ObjectSchemaType<Pick<TShape, TKeys[number]>, TPolicy>;
+  omit<const TKeys extends readonly (keyof TShape & string)[]>(keys: TKeys): ObjectSchemaType<Omit<TShape, TKeys[number]>, TPolicy>;
+  partial(): ObjectSchemaType<PartialShape<TShape>, TPolicy>;
+  required(): ObjectSchemaType<RequiredShape<TShape>, TPolicy>;
+  extend<TExtra extends Shape>(shape: TExtra): ObjectSchemaType<TShape & TExtra, TPolicy>;
 }
 
 export type ObjectOutputWithPolicy<
@@ -369,8 +392,8 @@ interface DescribeContext {
 
 interface InternalSchema<TOutput, TInput = TOutput> extends Schema<TOutput, TInput> {
   readonly [optionalSymbol]?: true;
-  [parseSymbol](input: unknown, context: ParseContext): ParseResult<TOutput>;
-  [parseAsyncSymbol](input: unknown, context: ParseContext): Promise<ParseResult<TOutput>>;
+  [parseSymbol](input: unknown, context: ParseContext): InternalParseResult<TOutput>;
+  [parseAsyncSymbol](input: unknown, context: ParseContext): Promise<InternalParseResult<TOutput>>;
   [asyncSymbol](seen?: Set<InternalSchema<any, any>>): boolean;
   [describeSymbol](context?: DescribeContext): SchemaDefinition;
 }
@@ -435,7 +458,7 @@ abstract class BaseSchema<TOutput, TInput = TOutput>
     if (this.hasAsyncRules()) {
       throw new TypeError("Schema contains async rules; use safeParseAsync() or parseAsync().");
     }
-    return this[parseSymbol](input, createParseContext());
+    return toPublicResult(this[parseSymbol](input, createParseContext()));
   }
 
   async parseAsync(input: unknown): Promise<TOutput> {
@@ -445,7 +468,7 @@ abstract class BaseSchema<TOutput, TInput = TOutput>
   }
 
   safeParseAsync(input: unknown): Promise<ParseResult<TOutput>> {
-    return this[parseAsyncSymbol](input, createParseContext());
+    return this[parseAsyncSymbol](input, createParseContext()).then(toPublicResult);
   }
 
   annotate(metadata: SchemaMetadata): Schema<TOutput, TInput> {
@@ -539,6 +562,13 @@ abstract class BaseSchema<TOutput, TInput = TOutput>
     return new TransformSchema(this, mapper, options);
   }
 
+  pipe<TNext extends Schema<any, any>>(
+    next: TNext & ([TOutput] extends [InferInput<TNext>] ? unknown : unknown extends TOutput ? unknown : never),
+  ): Schema<InferOutput<TNext>, TInput> {
+    if (!isInternalSchema(next)) throw new TypeError("Pipeline requires a SafeShape schema.");
+    return new PipelineSchema(this, toInternalSchema(next));
+  }
+
   nullable(): Schema<TOutput | null, TInput | null> {
     return new NullableSchema(this);
   }
@@ -547,7 +577,7 @@ abstract class BaseSchema<TOutput, TInput = TOutput>
     return new OptionalSchema(this);
   }
 
-  [parseSymbol](input: unknown, context: ParseContext): ParseResult<TOutput> {
+  [parseSymbol](input: unknown, context: ParseContext): InternalParseResult<TOutput> {
     const parsed = this.parseBase(input, context);
 
     if (!parsed.success) {
@@ -560,7 +590,7 @@ abstract class BaseSchema<TOutput, TInput = TOutput>
   async [parseAsyncSymbol](
     input: unknown,
     context: ParseContext,
-  ): Promise<ParseResult<TOutput>> {
+  ): Promise<InternalParseResult<TOutput>> {
     const parsed = await this.parseBaseAsync(input, context);
     if (!parsed.success) return parsed;
     return this.applyChecksAsync(parsed.data, input, context, parsed.warnings ?? []);
@@ -569,12 +599,12 @@ abstract class BaseSchema<TOutput, TInput = TOutput>
   protected abstract parseBase(
     input: unknown,
     context: ParseContext,
-  ): ParseResult<TOutput>;
+  ): InternalParseResult<TOutput>;
 
   protected parseBaseAsync(
     input: unknown,
     context: ParseContext,
-  ): Promise<ParseResult<TOutput>> {
+  ): Promise<InternalParseResult<TOutput>> {
     return Promise.resolve(this.parseBase(input, context));
   }
 
@@ -617,7 +647,7 @@ abstract class BaseSchema<TOutput, TInput = TOutput>
     originalInput: unknown,
     context: ParseContext,
     inheritedWarnings: readonly Warning[],
-  ): ParseResult<TOutput> {
+  ): InternalParseResult<TOutput> {
     const issues: Issue[] = [];
     const warnings: Warning[] = [...inheritedWarnings];
 
@@ -725,7 +755,7 @@ abstract class BaseSchema<TOutput, TInput = TOutput>
     originalInput: unknown,
     context: ParseContext,
     inheritedWarnings: readonly Warning[],
-  ): Promise<ParseResult<TOutput>> {
+  ): Promise<InternalParseResult<TOutput>> {
     const issues: Issue[] = [];
     const warnings: Warning[] = [...inheritedWarnings];
 
@@ -848,7 +878,7 @@ class StringSchema extends BaseSchema<string> {
   protected parseBase(
     input: unknown,
     context: ParseContext,
-  ): ParseResult<string> {
+  ): InternalParseResult<string> {
     if (typeof input !== "string") {
       return failure([context.issue({
         code: "invalid_type",
@@ -953,7 +983,7 @@ class NumberSchema extends BaseSchema<number> {
   protected parseBase(
     input: unknown,
     context: ParseContext,
-  ): ParseResult<number> {
+  ): InternalParseResult<number> {
     if (typeof input !== "number" || !Number.isFinite(input)) {
       return failure([context.issue({
         code: "invalid_type",
@@ -1043,7 +1073,7 @@ class BooleanSchema extends BaseSchema<boolean> {
   protected parseBase(
     input: unknown,
     context: ParseContext,
-  ): ParseResult<boolean> {
+  ): InternalParseResult<boolean> {
     if (typeof input === "boolean") {
       return success(input);
     }
@@ -1079,7 +1109,7 @@ class LiteralSchema<T extends LiteralValue> extends BaseSchema<T> {
     Object.freeze(this);
   }
 
-  protected parseBase(input: unknown, context: ParseContext): ParseResult<T> {
+  protected parseBase(input: unknown, context: ParseContext): InternalParseResult<T> {
     if (Object.is(input, this.value)) {
       return success(this.value);
     }
@@ -1122,7 +1152,7 @@ class EnumSchema<const TValues extends EnumValues>
   protected parseBase(
     input: unknown,
     context: ParseContext,
-  ): ParseResult<TValues[number]> {
+  ): InternalParseResult<TValues[number]> {
     if (this.values.some((value) => Object.is(value, input))) {
       return success(input as TValues[number]);
     }
@@ -1161,7 +1191,7 @@ class UnknownSchema extends BaseSchema<unknown> {
     Object.freeze(this);
   }
 
-  protected parseBase(input: unknown): ParseResult<unknown> {
+  protected parseBase(input: unknown): InternalParseResult<unknown> {
     return success(input);
   }
 
@@ -1182,7 +1212,7 @@ class NeverSchema extends BaseSchema<never> {
     Object.freeze(this);
   }
 
-  protected parseBase(input: unknown, context: ParseContext): ParseResult<never> {
+  protected parseBase(input: unknown, context: ParseContext): InternalParseResult<never> {
     return failure([
       context.issue({
         code: "forbidden_value",
@@ -1222,7 +1252,7 @@ class ArraySchema<TItemOutput, TItemInput>
   protected parseBase(
     input: unknown,
     context: ParseContext,
-  ): ParseResult<readonly TItemOutput[]> {
+  ): InternalParseResult<readonly TItemOutput[]> {
     if (!Array.isArray(input)) {
       return failure([
         context.issue({
@@ -1281,7 +1311,7 @@ class ArraySchema<TItemOutput, TItemInput>
   protected override async parseBaseAsync(
     input: unknown,
     context: ParseContext,
-  ): Promise<ParseResult<readonly TItemOutput[]>> {
+  ): Promise<InternalParseResult<readonly TItemOutput[]>> {
     if (!Array.isArray(input)) return this.parseBase(input, context);
 
     const output: TItemOutput[] = [];
@@ -1358,7 +1388,7 @@ class TupleSchema<TItems extends readonly Schema<any, any>[]>
     Object.freeze(this);
   }
 
-  protected parseBase(input: unknown, context: ParseContext): ParseResult<TupleOutput<TItems>> {
+  protected parseBase(input: unknown, context: ParseContext): InternalParseResult<TupleOutput<TItems>> {
     if (!Array.isArray(input)) {
       return failure([
         context.issue({
@@ -1409,7 +1439,7 @@ class TupleSchema<TItems extends readonly Schema<any, any>[]>
   protected override async parseBaseAsync(
     input: unknown,
     context: ParseContext,
-  ): Promise<ParseResult<TupleOutput<TItems>>> {
+  ): Promise<InternalParseResult<TupleOutput<TItems>>> {
     if (!Array.isArray(input) || input.length !== this.items.length) {
       return this.parseBase(input, context);
     }
@@ -1478,7 +1508,7 @@ class UnionSchema<
   protected parseBase(
     input: unknown,
     context: ParseContext,
-  ): ParseResult<InferOutput<TSchemas[number]>> {
+  ): InternalParseResult<InferOutput<TSchemas[number]>> {
     const branches: UnionIssueBranch[] = [];
 
     for (const [index, choice] of this.choices.entries()) {
@@ -1512,7 +1542,7 @@ class UnionSchema<
   protected override async parseBaseAsync(
     input: unknown,
     context: ParseContext,
-  ): Promise<ParseResult<InferOutput<TSchemas[number]>>> {
+  ): Promise<InternalParseResult<InferOutput<TSchemas[number]>>> {
     const branches: UnionIssueBranch[] = [];
     for (const [index, choice] of this.choices.entries()) {
       const result = await choice[parseAsyncSymbol](input, context);
@@ -1631,7 +1661,7 @@ class DiscriminatedUnionSchema<
   protected parseBase(
     input: unknown,
     context: ParseContext,
-  ): ParseResult<InferOutput<TChoices[number]>> {
+  ): InternalParseResult<InferOutput<TChoices[number]>> {
     if (!isRecord(input)) {
       return failure([
         context.issue({
@@ -1666,7 +1696,7 @@ class DiscriminatedUnionSchema<
   protected override async parseBaseAsync(
     input: unknown,
     context: ParseContext,
-  ): Promise<ParseResult<InferOutput<TChoices[number]>>> {
+  ): Promise<InternalParseResult<InferOutput<TChoices[number]>>> {
     if (!isRecord(input)) return this.parseBase(input, context);
     const value = input[this.discriminator];
     const choice = typeof value === "string" || typeof value === "number"
@@ -1722,7 +1752,7 @@ class IntersectionSchema<
   protected parseBase(
     input: unknown,
     context: ParseContext,
-  ): ParseResult<InferOutput<TLeft> & InferOutput<TRight>> {
+  ): InternalParseResult<InferOutput<TLeft> & InferOutput<TRight>> {
     const leftResult = this.left[parseSymbol](input, context);
     const rightResult = this.right[parseSymbol](input, context);
 
@@ -1760,7 +1790,7 @@ class IntersectionSchema<
   protected override async parseBaseAsync(
     input: unknown,
     context: ParseContext,
-  ): Promise<ParseResult<InferOutput<TLeft> & InferOutput<TRight>>> {
+  ): Promise<InternalParseResult<InferOutput<TLeft> & InferOutput<TRight>>> {
     const leftResult = await this.left[parseAsyncSymbol](input, context);
     const rightResult = await this.right[parseAsyncSymbol](input, context);
     const warnings = [
@@ -1817,24 +1847,69 @@ class ObjectSchema<
 >
 {
   readonly kind = "object";
-  private readonly shape: Readonly<TShape>;
+  readonly shape: Readonly<TShape>;
   private readonly unknownProperties: TPolicy;
+  private readonly metadata: SchemaMetadata | undefined;
 
   constructor(
     shape: TShape,
     options: ObjectOptions<TPolicy>,
     checks: readonly Check<ObjectOutputWithPolicy<TShape, TPolicy>>[] = [],
+    metadata?: SchemaMetadata,
   ) {
     super(checks);
     this.shape = Object.freeze({ ...shape });
     this.unknownProperties = parseUnknownPropertyPolicy(options.unknownProperties) as TPolicy;
+    this.metadata = metadata === undefined ? undefined : freezeSchemaMetadata(metadata);
     Object.freeze(this);
+  }
+
+  override annotate(metadata: SchemaMetadata): ObjectSchemaType<TShape, TPolicy> {
+    return new ObjectSchema(this.shape as TShape, { unknownProperties: this.unknownProperties }, this.checks, metadata);
+  }
+
+  private compose<TNext extends Shape>(shape: TNext): ObjectSchemaType<TNext, TPolicy> {
+    if (this.checks.length > 0) throw new TypeError("Compose object fields before adding object-level checks.");
+    return new ObjectSchema(shape, { unknownProperties: this.unknownProperties }, [], this.metadata);
+  }
+
+  private selectedKeys(keys: readonly string[]): Set<string> {
+    if (!Array.isArray(keys) || keys.some((key) => typeof key !== "string" || !Object.prototype.hasOwnProperty.call(this.shape, key))) {
+      throw new TypeError("Object composition keys must name existing fields.");
+    }
+    return new Set(keys);
+  }
+
+  pick<const TKeys extends readonly (keyof TShape & string)[]>(keys: TKeys): ObjectSchemaType<Pick<TShape, TKeys[number]>, TPolicy> {
+    const selected = this.selectedKeys(keys);
+    return this.compose(Object.fromEntries(Object.entries(this.shape).filter(([key]) => selected.has(key))) as Pick<TShape, TKeys[number]>);
+  }
+
+  omit<const TKeys extends readonly (keyof TShape & string)[]>(keys: TKeys): ObjectSchemaType<Omit<TShape, TKeys[number]>, TPolicy> {
+    const selected = this.selectedKeys(keys);
+    return this.compose(Object.fromEntries(Object.entries(this.shape).filter(([key]) => !selected.has(key))) as Omit<TShape, TKeys[number]>);
+  }
+
+  partial(): ObjectSchemaType<PartialShape<TShape>, TPolicy> {
+    return this.compose(Object.fromEntries(Object.entries(this.shape).map(([key, value]) => [key, isOptionalSchema(toInternalSchema(value)) ? value : value.optional()])) as PartialShape<TShape>);
+  }
+
+  required(): ObjectSchemaType<RequiredShape<TShape>, TPolicy> {
+    return this.compose(Object.fromEntries(Object.entries(this.shape).map(([key, value]) => [key, new DefinedSchema(toInternalSchema(value))])) as unknown as RequiredShape<TShape>);
+  }
+
+  extend<TExtra extends Shape>(shape: TExtra): ObjectSchemaType<TShape & TExtra, TPolicy> {
+    for (const key of Object.keys(shape)) {
+      if (Object.prototype.hasOwnProperty.call(this.shape, key)) throw new TypeError(`Object extension cannot replace field "${key}".`);
+      if (!isInternalSchema(shape[key])) throw new TypeError(`Invalid schema for field "${key}".`);
+    }
+    return this.compose({ ...this.shape, ...shape } as TShape & TExtra);
   }
 
   protected parseBase(
     input: unknown,
     context: ParseContext,
-  ): ParseResult<ObjectOutputWithPolicy<TShape, TPolicy>> {
+  ): InternalParseResult<ObjectOutputWithPolicy<TShape, TPolicy>> {
     if (!isRecord(input)) {
       return failure([
         context.issue({
@@ -1916,7 +1991,7 @@ class ObjectSchema<
   protected override async parseBaseAsync(
     input: unknown,
     context: ParseContext,
-  ): Promise<ParseResult<ObjectOutputWithPolicy<TShape, TPolicy>>> {
+  ): Promise<InternalParseResult<ObjectOutputWithPolicy<TShape, TPolicy>>> {
     if (!isRecord(input)) return this.parseBase(input, context);
     const output: Record<string, unknown> = {};
     const issues: Issue[] = [];
@@ -1982,6 +2057,7 @@ class ObjectSchema<
       this.shape as TShape,
       { unknownProperties: this.unknownProperties },
       checks,
+      this.metadata,
     );
   }
 
@@ -2003,6 +2079,7 @@ class ObjectSchema<
       shape: Object.freeze(shape),
       required: Object.freeze(required),
       unknownProperties: this.unknownProperties,
+      ...(this.metadata === undefined ? {} : { metadata: this.metadata }),
     }));
   }
 }
@@ -2033,7 +2110,7 @@ class RecordSchema<TValueOutput, TValueInput>
   protected parseBase(
     input: unknown,
     context: ParseContext,
-  ): ParseResult<Readonly<Record<string, TValueOutput>>> {
+  ): InternalParseResult<Readonly<Record<string, TValueOutput>>> {
     if (!isRecord(input)) {
       return failure([
         context.issue({
@@ -2081,7 +2158,7 @@ class RecordSchema<TValueOutput, TValueInput>
   protected override async parseBaseAsync(
     input: unknown,
     context: ParseContext,
-  ): Promise<ParseResult<Readonly<Record<string, TValueOutput>>>> {
+  ): Promise<InternalParseResult<Readonly<Record<string, TValueOutput>>>> {
     if (!isRecord(input)) return this.parseBase(input, context);
     const output: Record<string, TValueOutput> = {};
     const issues: Issue[] = [];
@@ -2150,7 +2227,7 @@ class NullableSchema<TOutput, TInput>
   protected parseBase(
     input: unknown,
     context: ParseContext,
-  ): ParseResult<TOutput | null> {
+  ): InternalParseResult<TOutput | null> {
     if (input === null) {
       return success(null);
     }
@@ -2161,7 +2238,7 @@ class NullableSchema<TOutput, TInput>
   protected override parseBaseAsync(
     input: unknown,
     context: ParseContext,
-  ): Promise<ParseResult<TOutput | null>> {
+  ): Promise<InternalParseResult<TOutput | null>> {
     return input === null
       ? Promise.resolve(success(null))
       : this.innerSchema[parseAsyncSymbol](input, context);
@@ -2291,7 +2368,7 @@ class OptionalSchema<TOutput, TInput>
   protected parseBase(
     input: unknown,
     context: ParseContext,
-  ): ParseResult<TOutput | undefined> {
+  ): InternalParseResult<TOutput | undefined> {
     if (input === undefined) {
       return success(undefined);
     }
@@ -2302,7 +2379,7 @@ class OptionalSchema<TOutput, TInput>
   protected override parseBaseAsync(
     input: unknown,
     context: ParseContext,
-  ): Promise<ParseResult<TOutput | undefined>> {
+  ): Promise<InternalParseResult<TOutput | undefined>> {
     return input === undefined
       ? Promise.resolve(success(undefined))
       : this.innerSchema[parseAsyncSymbol](input, context);
@@ -2367,14 +2444,14 @@ class LazySchema<TOutput, TInput> extends BaseSchema<TOutput, TInput> {
     Object.freeze(this);
   }
 
-  protected parseBase(input: unknown, context: ParseContext): ParseResult<TOutput> {
+  protected parseBase(input: unknown, context: ParseContext): InternalParseResult<TOutput> {
     return this.resolveSchema()[parseSymbol](input, context);
   }
 
   protected override parseBaseAsync(
     input: unknown,
     context: ParseContext,
-  ): Promise<ParseResult<TOutput>> {
+  ): Promise<InternalParseResult<TOutput>> {
     return this.resolveSchema()[parseAsyncSymbol](input, context);
   }
 
@@ -2424,6 +2501,96 @@ class LazySchema<TOutput, TInput> extends BaseSchema<TOutput, TInput> {
   }
 }
 
+class DefinedSchema<TOutput, TInput> extends BaseSchema<Exclude<TOutput, undefined>, Exclude<TInput, undefined>> {
+  readonly kind = "required";
+
+  constructor(private readonly inner: InternalSchema<TOutput, TInput>, checks: readonly Check<Exclude<TOutput, undefined>>[] = []) {
+    super(checks);
+    Object.freeze(this);
+  }
+
+  private missing(value: unknown, context: ParseContext, warnings: readonly Warning[] = []): InternalParseResult<never> {
+    return failure([context.issue({ code: "invalid_type", expected: "defined value", received: value, message: "Expected a defined value." })], warnings);
+  }
+
+  private finish(result: InternalParseResult<TOutput>, context: ParseContext): InternalParseResult<Exclude<TOutput, undefined>> {
+    if (!result.success) return result;
+    return result.data === undefined ? this.missing(undefined, context, result.warnings) : result as InternalParseResult<Exclude<TOutput, undefined>>;
+  }
+
+  protected parseBase(input: unknown, context: ParseContext): InternalParseResult<Exclude<TOutput, undefined>> {
+    return input === undefined ? this.missing(input, context) : this.finish(this.inner[parseSymbol](input, context), context);
+  }
+
+  protected override async parseBaseAsync(input: unknown, context: ParseContext): Promise<InternalParseResult<Exclude<TOutput, undefined>>> {
+    return input === undefined ? this.missing(input, context) : this.finish(await this.inner[parseAsyncSymbol](input, context), context);
+  }
+
+  protected override hasAsyncBase(seen: Set<InternalSchema<any, any>>): boolean { return this.inner[asyncSymbol](seen); }
+  protected cloneWithChecks(checks: readonly Check<Exclude<TOutput, undefined>>[]): BaseSchema<Exclude<TOutput, undefined>, Exclude<TInput, undefined>> {
+    return new DefinedSchema(this.inner, checks);
+  }
+
+  [describeSymbol](context?: DescribeContext): SchemaDefinition {
+    const excludeUndefined = (definition: SchemaDefinition): SchemaDefinition => {
+      if (definition.kind === "optional") {
+        const inner = excludeUndefined(definition.inner);
+        return Object.freeze({ ...inner,
+          ...(definition.metadata === undefined ? {} : { metadata: definition.metadata }),
+          ...((definition.refinements?.length ?? 0) === 0 ? {} : { refinements: Object.freeze([...(inner.refinements ?? []), ...definition.refinements!]) }),
+        });
+      }
+      if (definition.kind === "nullable") return Object.freeze({ ...definition, inner: excludeUndefined(definition.inner) });
+      if (definition.kind === "union") return Object.freeze({ ...definition, choices: Object.freeze(definition.choices.map(excludeUndefined)) });
+      if (definition.kind === "literal" && definition.value === undefined) return Object.freeze({ kind: "never", ...(definition.metadata === undefined ? {} : { metadata: definition.metadata }) });
+      if (["unknown", "reference", "transform", "opaque", "intersection"].includes(definition.kind)) {
+        return Object.freeze({ ...definition, refinements: Object.freeze([...(definition.refinements ?? []), null]) });
+      }
+      return definition;
+    };
+    return this.describeWithRefinements(excludeUndefined(this.inner[describeSymbol](context)));
+  }
+}
+
+class PipelineSchema<TOutput, TInput, TNextOutput> extends BaseSchema<TNextOutput, TInput> {
+  readonly kind = "pipeline";
+
+  constructor(private readonly first: InternalSchema<TOutput, TInput>, private readonly next: InternalSchema<TNextOutput, any>, checks: readonly Check<TNextOutput>[] = []) {
+    super(checks);
+    Object.freeze(this);
+  }
+
+  private combine(first: InternalParseResult<TOutput> & { readonly success: true }, next: InternalParseResult<TNextOutput>): InternalParseResult<TNextOutput> {
+    const warnings = [...(first.warnings ?? []), ...(next.success ? next.warnings ?? [] : next.error.warnings)];
+    return next.success ? success(next.data, warnings) : failure(next.error.issues, warnings);
+  }
+
+  protected parseBase(input: unknown, context: ParseContext): InternalParseResult<TNextOutput> {
+    const first = this.first[parseSymbol](input, context);
+    return first.success ? this.combine(first, this.next[parseSymbol](first.data, context)) : first;
+  }
+
+  protected override async parseBaseAsync(input: unknown, context: ParseContext): Promise<InternalParseResult<TNextOutput>> {
+    const first = await this.first[parseAsyncSymbol](input, context);
+    return first.success ? this.combine(first, await this.next[parseAsyncSymbol](first.data, context)) : first;
+  }
+
+  protected override hasAsyncBase(seen: Set<InternalSchema<any, any>>): boolean {
+    return this.first[asyncSymbol](seen) || this.next[asyncSymbol](seen);
+  }
+
+  protected cloneWithChecks(checks: readonly Check<TNextOutput>[]): BaseSchema<TNextOutput, TInput> {
+    return new PipelineSchema(this.first, this.next, checks);
+  }
+
+  [describeSymbol](context?: DescribeContext): SchemaDefinition {
+    const definition: SchemaDefinition = context?.side === "output"
+      ? this.next[describeSymbol](context)
+      : Object.freeze({ kind: "transform", inner: this.first[describeSymbol](context) });
+    return this.describeWithRefinements(Object.freeze({ ...definition, refinements: Object.freeze([...(definition.refinements ?? []), null]) }));
+  }
+}
+
 class TransformSchema<TInnerOutput, TOutput, TInput>
   extends BaseSchema<TOutput, TInput>
 {
@@ -2440,7 +2607,7 @@ class TransformSchema<TInnerOutput, TOutput, TInput>
     Object.freeze(this);
   }
 
-  protected parseBase(input: unknown, context: ParseContext): ParseResult<TOutput> {
+  protected parseBase(input: unknown, context: ParseContext): InternalParseResult<TOutput> {
     const result = this.innerSchema[parseSymbol](input, context);
 
     if (!result.success) {
@@ -2465,7 +2632,7 @@ class TransformSchema<TInnerOutput, TOutput, TInput>
   protected override async parseBaseAsync(
     input: unknown,
     context: ParseContext,
-  ): Promise<ParseResult<TOutput>> {
+  ): Promise<InternalParseResult<TOutput>> {
     const result = await this.innerSchema[parseAsyncSymbol](input, context);
     if (!result.success) return result;
     try {
@@ -2525,14 +2692,14 @@ class AnnotatedSchema<TOutput, TInput> extends BaseSchema<TOutput, TInput> {
     Object.freeze(this);
   }
 
-  protected parseBase(input: unknown, context: ParseContext): ParseResult<TOutput> {
+  protected parseBase(input: unknown, context: ParseContext): InternalParseResult<TOutput> {
     return this.innerSchema[parseSymbol](input, context);
   }
 
   protected override parseBaseAsync(
     input: unknown,
     context: ParseContext,
-  ): Promise<ParseResult<TOutput>> {
+  ): Promise<InternalParseResult<TOutput>> {
     return this.innerSchema[parseAsyncSymbol](input, context);
   }
 
@@ -2641,10 +2808,7 @@ export function object<
 >(
   shape: TShape,
   options: ObjectOptions<TPolicy> = {},
-): Schema<
-  ObjectOutputWithPolicy<TShape, TPolicy>,
-  ObjectInputWithPolicy<TShape, TPolicy>
-> {
+): ObjectSchemaType<TShape, TPolicy> {
   return new ObjectSchema(shape, options);
 }
 

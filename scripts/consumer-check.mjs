@@ -116,7 +116,16 @@ for (const file of ["contract-evolution.mjs", "check-contract-evolution.mjs"]) {
   await writeFile(resolve(appDir, file), await readFile(resolve(rootDir, "examples", file)));
 }
 await run(process.execPath, [resolve(appDir, "check-contract-evolution.mjs"), cliPath], appDir);
+await writeFile(resolve(appDir, "connected-contracts.mjs"), await readFile(resolve(rootDir, "examples/connected-contracts.mjs")));
+await run(process.execPath, [resolve(appDir, "connected-contracts.mjs"), cliPath], appDir);
 
+for (const file of ["production-boundary.mjs", "production-boundary.test.mjs", "resilient-http-response.mjs"]) {
+  const source = (await readFile(resolve(rootDir, "examples", file), "utf8"))
+    .replaceAll("../packages/core/dist/index.js", "@safe-shape/core")
+    .replaceAll("../packages/http/dist/index.js", "@safe-shape/http");
+  await writeFile(resolve(appDir, file), source);
+}
+await run(process.execPath, ["--unhandled-rejections=strict", "--test", resolve(appDir, "production-boundary.test.mjs")], appDir);
 console.log("consumer-check: ok");
 
 async function run(command, args, cwd) {

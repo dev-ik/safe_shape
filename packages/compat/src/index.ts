@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { constructCounterexample, type ContractCounterexample } from "./counterexamples.js";
+import { constructCounterexample, outputWitnessValidator, type ContractCounterexample, type CounterexampleValue, type CounterexampleUnavailableReason } from "./counterexamples.js";
 export type { ContractCounterexample, CounterexampleValue, CounterexampleUnavailableReason } from "./counterexamples.js";
 import {
   describeContract,
@@ -227,6 +227,73 @@ export interface CompatibilityReport<
 
 export interface GraphCompatibilityReport extends CompatibilityReport<GraphCompatibilityFinding> {
   readonly side: ContractSide;
+}
+
+export type ConnectionCounterexample =
+  | { readonly status: "available"; readonly value: CounterexampleValue; readonly producerInput: CounterexampleValue }
+  | { readonly status: "unavailable"; readonly reason: CounterexampleUnavailableReason | "unsupported-production" };
+
+export interface ContractConnectionReport {
+  readonly producer: { readonly id: string; readonly side: "output"; readonly fingerprint: string };
+  readonly consumer: { readonly id: string; readonly side: "input"; readonly fingerprint: string };
+  readonly compatible: boolean;
+  readonly status: CompatibilityStatus;
+  readonly comparison: CompatibilityReport<GraphCompatibilityFinding>;
+  readonly migration: MigrationDiagnostics;
+  readonly counterexample: ConnectionCounterexample;
+}
+
+/** Check only the explicitly supplied producer output and consumer input. */
+export function checkContractConnection(producer: ContractSnapshotV2, consumer: ContractSnapshotV2): ContractConnectionReport {
+  const source = parseContractSnapshotV2(producer);
+  const target = parseContractSnapshotV2(consumer);
+  let projected = false;
+  const outputNode = (node: ContractGraphNode): ContractGraphNode => {
+    switch (node.kind) {
+      case "object": {
+        if (node.unknownProperties === "strip") projected = true;
+        const shape = Object.fromEntries(Object.entries(node.shape).map(([key, value]) => [key, outputNode(value)]));
+        return Object.freeze({ ...node, shape: Object.freeze(shape), unknownProperties: node.unknownProperties === "strip" ? "reject" : node.unknownProperties });
+      }
+      case "array": return Object.freeze({ ...node, item: outputNode(node.item) });
+      case "tuple": return Object.freeze({ ...node, items: Object.freeze(node.items.map(outputNode)) });
+      case "union": case "discriminatedUnion": return Object.freeze({ ...node, choices: Object.freeze(node.choices.map(outputNode)) });
+      case "record": return Object.freeze({ ...node, value: outputNode(node.value) });
+      case "optional": case "nullable": return Object.freeze({ ...node, inner: outputNode(node.inner) });
+      // Intersections can merge outputs; their accepted input intersection is
+      // not a sound description of those merged values.
+      case "intersection": projected = true; return Object.freeze({ kind: "opaque", behavior: "transform", id: null });
+      default: return node;
+    }
+  };
+  const root = outputNode(source.output.root);
+  const definitions = Object.freeze(Object.fromEntries(Object.entries(source.output.definitions).map(([id, node]) => [id, outputNode(node)])));
+  const graph = Object.freeze({ ...source.output, root, definitions });
+  let analysis = compareContractGraphs(graph, target.input, "backward");
+  let counterexample: ConnectionCounterexample = Object.freeze({ status: "unavailable", reason: "unsupported-production" });
+  const produces = outputWitnessValidator(source.input.root);
+  if (produces) {
+    const witness = constructCounterexample(root, target.input.root, "backward", "input", produces);
+    counterexample = witness.status === "available"
+      ? Object.freeze({ status: "available", value: witness.value, producerInput: witness.value })
+      : Object.freeze({ status: "unavailable", reason: witness.reason });
+  }
+  if (analysis.status === "breaking" && projected && counterexample.status !== "available") {
+    analysis = analysisFromFindings([createFinding("connection.production.unproven", "unknown", [], "backward", root, target.input.root,
+      "The output bound is not contained, but an emitted counterexample has not been established.",
+      "Review producer transformations and provide a concrete emitted value.")]);
+  }
+  const comparison: CompatibilityReport<GraphCompatibilityFinding> = Object.freeze({
+    compatible: isCompatibleStatus(analysis.status), status: analysis.status, compatibility: "backward",
+    previousFingerprint: source.output.fingerprint, nextFingerprint: target.input.fingerprint,
+    findings: Object.freeze(analysis.findings),
+  });
+  return Object.freeze({
+    producer: Object.freeze({ id: source.id, side: "output", fingerprint: source.output.fingerprint }),
+    consumer: Object.freeze({ id: target.id, side: "input", fingerprint: target.input.fingerprint }),
+    compatible: comparison.compatible, status: comparison.status, comparison,
+    migration: createMigrationDiagnostics(comparison), counterexample,
+  });
 }
 
 export interface HttpCompatibilityPresentationOptions {

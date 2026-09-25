@@ -2,6 +2,8 @@
 
 SafeShape exposes a stable runtime validation API for external boundary data.
 
+For the next-release additions, see [object composition and checked pipelines](../composable-contracts.md).
+
 ## Builders
 
 - `string(constraints?)` validates strings with optional length, pattern, and exact-format constraints.
@@ -548,3 +550,7 @@ a lazy schema. Use `describeContract()` whenever definitions are required.
 Contract IR v2 adds `enum`, `unknown`, `never`, `reference`, and `opaque`
 variants to `SchemaDefinition`. Consumers with exhaustive switches must handle
 the new explicit variants as part of their 2.0 migration.
+
+### Error materialization
+
+Private traversal accumulates diagnostics; each failed public parse constructs one ordinary `ValidationError` at its boundary. Errors remain eager native `Error` instances with message, stack, immutable issues and warnings. `safeParse` returns failures and `parse` throws as before. See [production boundaries](../production-boundaries.md) for application-owned logging and failure handling.

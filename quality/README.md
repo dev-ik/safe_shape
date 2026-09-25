@@ -33,7 +33,7 @@ checks both the resolver result and native diagnostics explicitly.
 
 
 The full release gate includes this harness. CI installs the private lockfile,
-fetches the `v3.0.0` baseline tag, and runs Node 20.10.0/24 jobs with report
+fetches the `v3.1.0` baseline tag, and runs Node 20.10.0/24 jobs with report
 artifacts. Budget misses or inconclusive ratios for changed artifacts exit 2;
 functional failures exit 1. Independent walkthrough and remote candidate CI
 remain separate gates, explicitly listed in the JSON report. The generated
@@ -46,3 +46,20 @@ library are therefore gated as one shared module-import operation, with the
 same 20% budget. Per-scenario import summaries remain diagnostic. See
 [ADR 0034](../adr/0034-release-performance-measurement.md); historical failures
 remain recorded and the updated method requires fresh candidate checks.
+
+Next-release qualification retains existing budgets against published 3.1.0.
+New composition and checked-pipeline scenarios compare SafeShape with pinned
+Zod in five alternating isolated samples; each 20,000-parse valid/invalid
+workload has a predeclared 5-second median budget. Reports retain per-call
+measurements and all samples. The benchmark runner separately budgets 1,000
+connection checks and 10,000 checked pipeline parses at 5 seconds each. These
+are fixture budgets, not cross-machine performance claims. Form and installed CI
+fixtures now exercise composition, pipelines and producer/consumer connections.
+
+Invalid-input measurements now include three separate operations: acceptance
+only (`invalidMs`), recursive issue/path/message consumption (`issuesMs`), and
+native formatting (`formattedMs`: SafeShape formatValidationError, Zod error
+message). Every mode includes parsing; formatting is intentionally vendor-specific
+and is not an equal-output comparison. Nothing is deferred out of the measured
+operation. Both added metrics use the same predeclared 20% regression budget
+against 3.1 and 5-second feature-workload budget as existing parse metrics.

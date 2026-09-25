@@ -1,6 +1,6 @@
 {
   "name": "@safe-shape/cli",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Command-line tools for SafeShape runtime contracts.",
   "type": "module",
   "publishConfig": {
@@ -17,14 +17,14 @@
     "README.md"
   ],
   "dependencies": {
-    "@safe-shape/compat": "3.1.0",
-    "@safe-shape/core": "3.1.0",
-    "@safe-shape/json-schema": "3.1.0",
-    "@safe-shape/typescript": "3.1.0",
-    "@safe-shape/validation": "3.1.0"
+    "@safe-shape/compat": "3.2.0",
+    "@safe-shape/core": "3.2.0",
+    "@safe-shape/json-schema": "3.2.0",
+    "@safe-shape/typescript": "3.2.0",
+    "@safe-shape/validation": "3.2.0"
   },
   "scripts": {
-    "build": "npm run build --workspace @safe-shape/core && npm run build --workspace @safe-shape/compat && npm run build --workspace @safe-shape/json-schema && npm run build --workspace @safe-shape/typescript && npm run build --workspace @safe-shape/validation && tsc -p tsconfig.build.json",
+    "build": "npm run build --workspace @safe-shape/core && npm run build --workspace @safe-shape/compat && npm run build --workspace @safe-shape/json-schema && npm run build --workspace @safe-shape/typescript && npm run build --workspace @safe-shape/validation && tsc -p tsconfig.build.json && node -e \"require('node:fs').chmodSync('dist/cli.js', 0o755)\"",
     "typecheck": "npm run build --workspace @safe-shape/core && npm run build --workspace @safe-shape/compat && npm run build --workspace @safe-shape/json-schema && npm run build --workspace @safe-shape/typescript && npm run build --workspace @safe-shape/validation && tsc --noEmit",
     "test": "npm run build && tsc -p tsconfig.test.json && node --test .tmp/test/tests/*.test.js"
   },

@@ -46,3 +46,10 @@ compatibility baselines were:
 Throughput is platform-sensitive. These values document the reviewed RC
 baseline; semantic status assertions and successful execution remain the
 portable release gate.
+
+## 3.2.0 candidate evidence
+
+See the [versioned comparison](release-polish-3.2.0.md) for all shared workloads,
+new composition/pipeline scenarios, bundle sizes and an investigation of invalid
+parse costs. The recorded Zod speed advantage remains visible; passing internal
+budgets is not a claim of universal performance parity.

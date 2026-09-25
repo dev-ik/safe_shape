@@ -135,7 +135,7 @@ test("rejects invalid TypeScript type names", () => {
   );
 });
 
-test("rejects recursive references until graph type generation is implemented", () => {
+test("generates recursive references with deterministic declaration names", () => {
   interface TreeNode {
     readonly children: readonly TreeNode[];
   }
@@ -146,8 +146,5 @@ test("rejects recursive references until graph type generation is implemented", 
     { id: "TreeNode" },
   );
 
-  assert.throws(
-    () => toTypeScriptType(treeSchema),
-    /does not support schema references yet/,
-  );
+  assert.equal(toTypeScriptType(treeSchema), "export type SchemaOutput = TreeNode;\n\nexport type TreeNode = {\n  children: ReadonlyArray<TreeNode>;\n};\n");
 });

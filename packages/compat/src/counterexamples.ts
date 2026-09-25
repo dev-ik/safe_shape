@@ -1,4 +1,4 @@
-import { array, boolean, enum as enumeration, literal, nullable, never, number, object, optional, string, union, unknown, type Schema } from "@safe-shape/core";
+import { array, tuple, discriminatedUnion, boolean, enum as enumeration, literal, nullable, never, number, object, optional, string, union, unknown, type Schema } from "@safe-shape/core";
 import type { CompatibilityDirection, ContractGraphNode, ContractSide } from "./index.js";
 
 type ScalarValue = string | number | boolean | null;
@@ -44,6 +44,14 @@ function reconstruct(node: ContractGraphNode, context: Validators, depth = 0): S
     case "optional": schema = optional(child(node.inner)); break;
     case "nullable": schema = nullable(child(node.inner)); break;
     case "array": schema = array(child(node.item), node.constraints); break;
+    case "tuple": {
+      if (node.items.length > 16) throw new ConstructionLimit();
+      schema = tuple(node.items.map(child)); break;
+    }
+    case "discriminatedUnion": {
+      if (node.choices.length > 8) throw new ConstructionLimit();
+      schema = discriminatedUnion(node.discriminator, node.choices.map(child) as [Schema<unknown>, ...Schema<unknown>[]]); break;
+    }
     case "union": {
       if (node.choices.length > 8) throw new ConstructionLimit();
       schema = union(node.choices.map(child) as [Schema<unknown>, ...Schema<unknown>[]]); break;
@@ -122,7 +130,7 @@ function own(node: Extract<ContractGraphNode, { kind: "object" }>, key: string):
 function* generate(node: ContractGraphNode, hint: ContractGraphNode | undefined,
   budget: SearchBudget, schemas: Map<ContractGraphNode, Schema<unknown>>): Generator<CounterexampleValue> {
   if (++budget.work > 4096) { budget.constructionLimited = true; return; }
-  if (hint?.kind === "union" && node.kind !== "union") {
+  if ((hint?.kind === "union" || hint?.kind === "discriminatedUnion") && node.kind !== "union" && node.kind !== "discriminatedUnion") {
     for (const choice of hint.choices) yield* generate(node, choice, budget, schemas);
     return;
   }
@@ -141,7 +149,7 @@ function* generate(node: ContractGraphNode, hint: ContractGraphNode | undefined,
   if (node.kind === "optional" || node.kind === "nullable") {
     if (node.kind === "nullable") yield null;
     yield* generate(node.inner, hint?.kind === "optional" || hint?.kind === "nullable" ? hint.inner : hint, budget, schemas);
-  } else if (node.kind === "union") {
+  } else if (node.kind === "union" || node.kind === "discriminatedUnion") {
     for (const choice of node.choices) yield* generate(choice, hint, budget, schemas);
   } else if (node.kind === "object") {
     const target = hint?.kind === "object" ? hint : undefined;
@@ -164,6 +172,14 @@ function* generate(node: ContractGraphNode, hint: ContractGraphNode | undefined,
       if (target) for (const key of Object.keys(target.shape)) {
         if (!Object.hasOwn(node.shape, key)) for (const value of seeds) yield { ...base, [key]: value };
       }
+    }
+  } else if (node.kind === "tuple") {
+    const values = node.items.map((item, index) => pool(item, hint?.kind === "tuple" ? hint.items[index] : hint?.kind === "array" ? hint.item : undefined));
+    if (values.some((items) => !items.length)) return;
+    const base = values.map((items) => items[0]!);
+    yield base;
+    for (let index = 0; index < values.length; index++) {
+      for (const value of values[index]!) yield base.map((item, position) => position === index ? value : item);
     }
   } else if (node.kind === "array") {
     const target = hint?.kind === "array" ? hint : undefined;
@@ -197,7 +213,8 @@ function freezeValue(value: CounterexampleValue): CounterexampleValue {
 }
 
 export function constructCounterexample(previous: ContractGraphNode, next: ContractGraphNode,
-  direction: CompatibilityDirection, side: ContractSide): ContractCounterexample {
+  direction: CompatibilityDirection, side: ContractSide,
+  acceptWitness: (value: CounterexampleValue) => boolean = () => true): ContractCounterexample {
   const context: CounterexampleContext = {
     direction, side, source: direction === "backward" ? "previous" : "next",
     target: direction === "backward" ? "next" : "previous", path: Object.freeze([]),
@@ -226,7 +243,28 @@ export function constructCounterexample(previous: ContractGraphNode, next: Contr
   for (const value of values()) {
     if (attempts++ === 128) return unavailable("candidate-limit");
     if (!withinCompositeLimit(value)) { budget.constructionLimited = true; continue; }
-    if (source.safeParse(value).success && !target.safeParse(value).success) return Object.freeze({ ...context, status: "available", value: freezeValue(value) });
+    if (source.safeParse(value).success && !target.safeParse(value).success && acceptWitness(value)) return Object.freeze({ ...context, status: "available", value: freezeValue(value) });
   }
   return unavailable(budget.constructionLimited ? "construction-limit" : "no-witness-found");
+}
+
+// Internal connection helper. Parsing the candidate itself supplies a concrete
+// producer input; equality proves that this value really can be emitted.
+export function outputWitnessValidator(input: ContractGraphNode): ((value: CounterexampleValue) => boolean) | undefined {
+  let schema: Schema<unknown>;
+  try { schema = reconstruct(input, { schemas: new Map(), nodes: 0 }); }
+  catch (error) {
+    if (error instanceof Unsupported || error instanceof ConstructionLimit) return undefined;
+    throw error;
+  }
+  const canonical = (value: unknown): string => {
+    if (value === undefined) return "undefined";
+    if (value === null || typeof value !== "object") return JSON.stringify(value);
+    if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonical((value as Record<string, unknown>)[key])}`).join(",")}}`;
+  };
+  return (value) => {
+    const result = schema.safeParse(value);
+    return result.success && canonical(result.data) === canonical(value);
+  };
 }

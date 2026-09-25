@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 const root = process.cwd();
@@ -129,6 +129,11 @@ function checkPackage(packagePath) {
     assert(manifest.bin?.["safe-shape"] === "./dist/cli.js", "@safe-shape/cli bin must expose safe-shape");
     assertExists(join(packagePath, "dist", "cli.js"), "@safe-shape/cli dist/cli.js");
     assertExists(join(packagePath, "dist", "cli.d.ts"), "@safe-shape/cli dist/cli.d.ts");
+    const executable = join(root, packagePath, "dist", "cli.js");
+    if (process.platform !== "win32" && existsSync(executable)) {
+      assert((statSync(executable).mode & 0o777) === 0o755,
+        "@safe-shape/cli dist/cli.js must have mode 0755 for reproducible executable archives");
+    }
   } else if (packageName === "safe-shape") {
     assert(manifest.exports?.["."]?.import === "./dist/index.js", "safe-shape export import");
     assert(manifest.exports?.["."]?.types === "./dist/index.d.ts", "safe-shape export types");

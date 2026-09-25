@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { renderContractReview } from "./review.js";
+import { checkConnectionsManifest, renderConnections } from "./connections.js";
 import { readFileSync, realpathSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, resolve } from "node:path";
@@ -110,6 +111,18 @@ export async function main(argv: readonly string[] = process.argv.slice(2)): Pro
 
     if (matches(parsed.command, ["contract", "check-many"])) {
       return await runContractCheckMany(parsed, json);
+    }
+
+    if (matches(parsed.command, ["contract", "check-connections"])) {
+      const manifest = getStringFlag(parsed.flags, "manifest");
+      if (!manifest) throw new CliError("missing_flag", "Missing required flag: --manifest <path>");
+      if (Object.keys(parsed.flags).some((key) => key !== "manifest" && key !== "json")) throw new CliError("invalid_flag", "check-connections accepts only --manifest and --json.");
+      let result;
+      try { result = await checkConnectionsManifest(manifest); }
+      catch (error) { throw new CliError("invalid_manifest", error instanceof Error ? error.message : "Invalid connection manifest."); }
+      if (json) writeJson(result.payload);
+      else writeText(renderConnections(result.payload.results));
+      return result.exitCode;
     }
 
     if (matches(parsed.command, ["contract", "check"])) {
@@ -516,6 +529,8 @@ async function runSchemaValidate(parsed: ParsedArgs, json: boolean): Promise<num
 }
 
 async function runSchemaTypes(parsed: ParsedArgs, json: boolean): Promise<number> {
+  const side = getStringFlag(parsed.flags, "side") ?? "output";
+  if (side !== "input" && side !== "output") throw new CliError("invalid_flag", "--side must be input or output.");
   const modulePath = getStringFlag(parsed.flags, "module");
   const exportName = getStringFlag(parsed.flags, "export") ?? "default";
   const typeName = getStringFlag(parsed.flags, "name") ?? "SchemaOutput";
@@ -530,7 +545,7 @@ async function runSchemaTypes(parsed: ParsedArgs, json: boolean): Promise<number
   }
 
   const schema = await loadSchemaExport(modulePath, exportName);
-  const source = toTypeScriptType(schema, { name: typeName });
+  const source = toTypeScriptType(schema, { name: typeName, side });
 
   if (outPath !== undefined) {
     const absoluteOutPath = resolve(process.cwd(), outPath);
@@ -816,11 +831,12 @@ function helpText(): string {
   return `safe-shape ${VERSION}
 
 Usage:
+  safe-shape [--json] contract check-connections --manifest <file>
   safe-shape [--json] contract check-many --manifest <file>
   safe-shape [--json] doctor
   safe-shape [--json] schema export --module <file> [--export <name>] [--schema <uri>] [--id <uri>] [--out <file>]
   safe-shape [--json] schema validate --module <file> [--export <name>] --input <file|-> [--out <file>]
-  safe-shape [--json] schema types --module <file> [--export <name>] [--name <type>] [--out <file>]
+  safe-shape [--json] schema types --module <file> [--export <name>] [--name <type>] [--side input|output] [--out <file>]
   safe-shape [--json] contract snapshot --module <file> [--export <name>] [--id <id>] [--format <v1|v2>] [--out <file>]
   safe-shape [--json] contract check --module <file> [--export <name>] --against <snapshot> [--compatibility <mode>] [--side <input|output>] [--out <file>]
 
@@ -829,6 +845,7 @@ Commands:
   schema export Export a SafeShape schema module to JSON Schema.
   schema validate Validate a JSON file through a SafeShape schema module.
   schema types  Generate a TypeScript type from a SafeShape schema module.
+  contract check-connections  Check producer output against consumer input snapshots.
   contract check-many  Check a manifest of contracts and aggregate results.
   contract snapshot Create a deterministic contract snapshot and fingerprint.
   contract check Compare a schema with a stored contract snapshot.

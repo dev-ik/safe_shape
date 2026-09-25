@@ -22,7 +22,7 @@ for (const file of run("git", ["ls-files", "--others", "--exclude-standard", "-z
 }
 const report = {
   schemaVersion: 1, commit: run("git", ["rev-parse", "HEAD"]).trim(), patchSha256: hash.digest("hex"),
-  baseline: run("git", ["rev-parse", "v3.0.0"]).trim(), runtime: process.version,
+  baseline: run("git", ["rev-parse", "v3.1.0"]).trim(), runtime: process.version,
   platform: process.platform, arch: process.arch, cpu: cpus()[0]?.model,
   dependencies: JSON.parse(await readFile(join(here, "package.json"), "utf8")).dependencies,
   commands: ["npm run build", "npm ci --prefix quality", "npm run quality:check"],
@@ -30,10 +30,10 @@ const report = {
   pending: ["Independent developer walkthrough", "Configured CI run for final versioned candidate"],
 };
 try {
-  console.log("quality: creating matched 3.0 baseline and installed consumers");
+  console.log("quality: creating matched 3.1 baseline and installed consumers");
   const base = join(output, "baseline");
   await mkdir(base);
-  const archive = execFileSync("git", ["archive", "v3.0.0"], { cwd: root, maxBuffer: 32 * 1024 * 1024 });
+  const archive = execFileSync("git", ["archive", "v3.1.0"], { cwd: root, maxBuffer: 32 * 1024 * 1024 });
   execFileSync("tar", ["-x", "-C", base], { input: archive });
   await mkdir(join(base, "node_modules/@safe-shape"), { recursive: true });
   await symlink(join(root, "node_modules/@types"), join(base, "node_modules/@types"));
@@ -69,7 +69,9 @@ try {
   const ci = await install("ci", packages);
   for (const file of ["contract-evolution.mjs", "check-contract-evolution.mjs"]) await writeFile(join(ci, file), await readFile(join(root, "examples", file)));
   run(process.execPath, [join(ci, "check-contract-evolution.mjs")], ci);
-  report.integrations.ci = "passed: single and batch outcomes, baselines unchanged";
+  await writeFile(join(ci, "connected-contracts.mjs"), await readFile(join(root, "examples/connected-contracts.mjs")));
+  run(process.execPath, [join(ci, "connected-contracts.mjs")], ci);
+  report.integrations.ci = "passed: evolution and producer/consumer connections, baselines unchanged";
 
   const formBuild = await build({ entryPoints: [join(here, "form.mjs")], bundle: true, write: false, format: "iife", globalName: "FormFixture", platform: "browser", metafile: true,
     alias: { "@safe-shape/core": join(form, "node_modules/@safe-shape/core/dist/index.js") } });
@@ -105,6 +107,14 @@ assert.equal(recovered.kind, 'recovered'); assert.equal(recovered.data.name, 'ca
 `);
   run(process.execPath, [join(server, "check.mjs")]);
   report.integrations.server = "passed: request paths, warnings, response recovery";
+  for (const file of ["production-boundary.mjs", "production-boundary.test.mjs", "resilient-http-response.mjs"]) {
+    const source = (await readFile(join(root, "examples", file), "utf8"))
+      .replaceAll("../packages/core/dist/index.js", "@safe-shape/core")
+      .replaceAll("../packages/http/dist/index.js", "@safe-shape/http");
+    await writeFile(join(server, file), source);
+  }
+  run(process.execPath, ["--unhandled-rejections=strict", "--test", join(server, "production-boundary.test.mjs")], server);
+  report.integrations.production = "passed: installed request/response boundaries, next-request recovery, unexpected exceptions, sync/async/pending logger failures";
 
   console.log("quality: declaration consumers and compiler fixtures");
   await symlink(join(here, "node_modules/zod"), join(ci, "node_modules/zod"));
@@ -150,7 +160,7 @@ assert.equal(recovered.kind, 'recovered'); assert.equal(recovered.data.name, 'ca
   for (const name of names) for (const library of ["safe", "baseline", "zod"]) {
     const samples = report.samples.filter((sample) => sample.library === library && sample.name === name);
     const summary = { name, library };
-    for (const metric of ["importMs", "constructionMs", "firstParseMs", "validMs", "invalidMs", "heapBytes"]) {
+    for (const metric of ["importMs", "constructionMs", "firstParseMs", "validMs", "invalidMs", "issuesMs", "formattedMs", "heapBytes"]) {
       const values = samples.map((sample) => sample[metric]);
       summary[metric] = { median: median(values), min: Math.min(...values), max: Math.max(...values) };
     }
@@ -161,7 +171,17 @@ assert.equal(recovered.kind, 'recovered'); assert.equal(recovered.data.name, 'ca
     const compatUrl = pathToFileURL(library === "safe" ? join(ci, "node_modules/@safe-shape/compat/dist/index.js") : join(base, "packages/compat/dist/index.js")).href;
     report.contractSamples.push({ library, repetition, ...JSON.parse(run(process.execPath, [join(here, "measure-contract.mjs"), modules[library], compatUrl])) });
   }
+  report.newFeatureSamples = [];
+  for (let repetition = 0; repetition < 5; repetition++) for (const name of ["composition", "pipeline"]) {
+    for (const library of repetition % 2 ? ["zod", "safe"] : ["safe", "zod"]) {
+      report.newFeatureSamples.push({ library, repetition, ...JSON.parse(run(process.execPath, ["--expose-gc", join(here, "measure.mjs"), library, modules[library], name])) });
+    }
+  }
   report.regressions = [];
+  for (const name of ["composition", "pipeline"]) for (const metric of ["validMs", "invalidMs", "issuesMs", "formattedMs"]) {
+    const duration = median(report.newFeatureSamples.filter((entry) => entry.library === "safe" && entry.name === name).map((entry) => entry[metric])) * 20_000;
+    if (duration > 5000) report.regressions.push({ name, metric, duration, absoluteBudgetMs: 5000 });
+  }
   report.measurementNoise = [];
   report.inconclusive = [];
   const recordRegression = (entry, identicalArtifacts = false) => {
@@ -171,7 +191,7 @@ assert.equal(recovered.kind, 'recovered'); assert.equal(recovered.data.name, 'ca
   for (const name of names) {
     const candidate = report.summary.find((entry) => entry.name === name && entry.library === "safe");
     const baseline = report.summary.find((entry) => entry.name === name && entry.library === "baseline");
-    for (const metric of ["validMs", "invalidMs", "heapBytes"]) {
+    for (const metric of ["validMs", "invalidMs", "issuesMs", "formattedMs", "heapBytes"]) {
       const budget = metric === "heapBytes" ? 1.25 : 1.20;
       if (baseline[metric].median <= 0 || candidate[metric].median <= 0) {
         const entry = { name, metric, reason: "Nonpositive resource sample prevents a reliable ratio" };

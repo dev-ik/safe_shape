@@ -142,7 +142,22 @@ const stringCounterexamplePrevious = compat.createContractSnapshotV2(string({ mi
 const stringCounterexampleNext = compat.createContractSnapshotV2(string({ minLength: 3 }));
 const compositeCounterexamplePrevious = compat.createContractSnapshotV2(object({ user: object({ name: string({ minLength: 2 }) }), events: array(number(), { minLength: 1 }) }));
 const compositeCounterexampleNext = compat.createContractSnapshotV2(object({ user: object({ name: string({ minLength: 3 }) }), events: array(number(), { minLength: 1 }) }));
+const connectionProducer = compat.createContractSnapshotV2(object({ state: core.enumeration(["active", "paused"]) }));
+const connectionConsumer = compat.createContractSnapshotV2(object({ state: literal("active") }));
+const checkedPipeline = string().transform(Number).pipe(number({ minimum: 0 }));
 const cases = [
+  {
+    name: "contract connection check",
+    iterations: 1_000,
+    run: () => compat.checkContractConnection(connectionProducer, connectionConsumer),
+    accept: (result) => result.status === "breaking" && result.counterexample.status === "available" && result.counterexample.value.state === "paused",
+  },
+  {
+    name: "checked pipeline parse",
+    iterations: 10_000,
+    run: () => checkedPipeline.safeParse("42"),
+    accept: (result) => result.success && result.data === 42,
+  },
   {
     name: "contract composite counterexample",
     iterations: 1_000,
@@ -308,7 +323,7 @@ const cases = [
 const results = [];
 for (const benchmarkCase of cases) {
   const result = runCase(benchmarkCase);
-  if (["contract scalar counterexample", "contract string counterexample", "contract composite counterexample"].includes(benchmarkCase.name) && result.duration_ms > 5000) {
+  if (["contract connection check", "checked pipeline parse", "contract scalar counterexample", "contract string counterexample", "contract composite counterexample"].includes(benchmarkCase.name) && result.duration_ms > 5000) {
     throw new Error(`${benchmarkCase.name} budget exceeded: ${benchmarkCase.iterations} calls must complete within 5 seconds.`);
   }
   results.push(result);

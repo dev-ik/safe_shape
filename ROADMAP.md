@@ -1,29 +1,18 @@
 # Roadmap
 
-Current release: **3.0.0**. Next target: **3.1.0 — Trusted Contract Evolution**.
+Current published release: **3.1.0**, verified in the
+[release record](docs/release-candidate-3.1.0.md). The old 3.2 working scope was
+incorporated into 3.1.0; historical roadmaps do not describe a pending publication.
 
-The user authorized release on 2026-09-11, superseding the previous publication
-hold. The unpublished 3.2 working scope is included in the
-[3.1.0 versioned candidate](docs/release-candidate-3.1.0.md). Stable quality gates
-remain mandatory; authorization does not mark them complete.
+The next development release focuses on composable runtime contracts, checked
+pipelines, recursive TypeScript artifacts, explicit producer/consumer connections
+and a verified adoption journey from Zod. Runtime first, immutable schemas, explicit
+conversion and API stability remain mandatory.
 
-SafeShape is a runtime contract platform. Zod is a quality benchmark for
-validation ergonomics, type inference, performance, and integration, not a
-feature checklist or a requirement to copy its API.
-
-The next release strengthens the workflow: change a contract, understand the
-impact on producers and consumers, and review the migration in CI.
-
-The selected implementation is complete: multi-contract checking, aggregate
-reports, compatibility evidence, consumer examples, and benchmark outcome checks.
-Release readiness additionally requires the [quality contract](docs/release-quality-3.1.md):
-contract-evolution correctness, type inference, SafeShape workflow budgets, installed
-integrations, and an independent documentation walkthrough. These gates precede
-final review, versioning, candidate verification, and approved publication.
-
-See the [3.1 release roadmap](docs/roadmap-3.1.md) for the remaining checklist,
-the [current roadmap](docs/roadmap.md) for context, and the
-[implementation plan](docs/implementation-plan-3.1.md) for technical scope.
+See [the implementation plan](docs/implementation-plan-next.md),
+[RFC 0048](rfc/0048-composable-runtime-contracts.md), and
+[ADR 0035](adr/0035-composition-and-connection-boundaries.md). The additive candidate version is 3.2.0;
+publication follows separate release authorization and final qualification.
 
 ## v1.0.0 Stable API
 

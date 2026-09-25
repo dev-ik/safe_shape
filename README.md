@@ -296,10 +296,20 @@ Runnable examples live in [examples](examples/README.md):
 npm run examples:check
 ```
 
+## Next Release Development
+
+The working tree adds immutable object composition, checked pipelines, recursive
+TypeScript declarations and explicit producer/consumer connection checks. These
+additions are not included in published 3.1.0. See the
+[implementation plan](docs/implementation-plan-next.md),
+[usage guide](docs/composable-contracts.md), and
+[Zod migration guide](docs/migration-from-zod.md).
+
 ## Project Status
 
-SafeShape is on the `3.1.0` stable release line.
-See the [release notes and verification](docs/release-candidate-3.1.0.md).
+SafeShape is preparing the `3.2.0` release; the latest published version is 3.1.0.
+See the [3.2.0 candidate notes](docs/release-candidate-3.2.0.md) and
+[verified 3.1.0 publication](docs/release-candidate-3.1.0.md).
 The release gate covers
 metadata checks, build, typecheck, tests, examples, benchmarks, consumer tarball
 installation, npm audit, and package dry-run.

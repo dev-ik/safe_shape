@@ -308,3 +308,11 @@ are rejected.
 See [contract counterexamples](../counterexamples.md) for the additive
 `createContractCounterexamples()` API, supported scalar domain, and explicit
 unavailable outcomes. Introduced in 3.1.0.
+
+## Producer/consumer connections (next release)
+
+`checkContractConnection(producerSnapshotV2, consumerSnapshotV2)` checks producer
+output against consumer input and returns `ContractConnectionReport` with explicit
+identities, comparison, migration and `ConnectionCounterexample` data. See the
+[connection API and CLI guide](../contract-connections.md) for projection limits,
+producible witnesses, recursive proofs, manifest format and exit semantics.

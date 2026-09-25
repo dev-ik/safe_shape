@@ -186,3 +186,11 @@ exit 2 for migration or review. Inspect all `results`, not only the exit code.
 Manifest paths are relative to the manifest file, making the same list usable
 from a different working directory. Baseline creation and approval remain
 explicit per-contract operations.
+
+## Explicit connections (next release)
+
+Use `safe-shape --json contract check-connections --manifest connections.json`
+to check registered producer output against consumer input snapshots. See the
+[connection manifest guide](contract-connections.md) and the runnable
+[connected-contracts example](../examples/connected-contracts.mjs). These checks
+read reviewed baselines; they do not discover deployments or replace snapshots.

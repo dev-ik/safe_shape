@@ -55,9 +55,13 @@ function toTypeScriptType(schema: Schema<any, any>, options?: TypeScriptTypeOpti
 
 interface TypeScriptTypeOptions {
   readonly name?: string;
+  readonly side?: "input" | "output";
 }
 ```
 
-Recursive `lazy()` references are rejected until graph-aware declaration
-generation is implemented. The generator does not silently replace recursive
-definitions with `unknown`.
+The next-release development API supports recursive `lazy()` references, reuse
+and mutual recursion through deterministic named declarations. Invalid or
+unproductive alias cycles fail explicitly. `side: "input" | "output"` selects
+the contract graph; output is the default. Opaque outputs remain `unknown`.
+Existing acyclic default formatting is preserved. The published 3.1.0 exporter
+still rejects references.

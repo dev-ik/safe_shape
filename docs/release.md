@@ -149,6 +149,11 @@ npm ci --prefix quality --ignore-scripts
 
 The full gate runs installed consumer, compiler, browser-bundle, and matched
 baseline checks through `npm run quality:check`, and audits its isolated
-lockfile. Keep the local `v3.0.0` baseline tag available. CI fetches release tags,
+lockfile. Keep the local `v3.1.0` baseline tag available. CI fetches release tags,
 checks Node 20.10.0 and Node 24, and retains the quality JSON report. Local
 success does not mark remote CI or the independent developer walkthrough done.
+
+The CLI build normalizes `dist/cli.js` to executable mode `0755`. The metadata
+gate checks this on POSIX hosts so a clean checkout and a previously installed
+workspace produce the same archive permissions. Installed consumer checks run
+the actual `safe-shape` executable.

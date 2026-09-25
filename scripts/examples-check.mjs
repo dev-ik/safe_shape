@@ -189,7 +189,13 @@ const evolution = spawnSync(process.execPath, [
 ], { cwd: rootDir, encoding: "utf8" });
 if (evolution.error) throw evolution.error;
 assert.equal(evolution.status, 0, evolution.stdout + evolution.stderr);
-console.log("examples-check: ok");
+const connected = spawnSync(process.execPath, [resolve(rootDir, "examples/connected-contracts.mjs"), cliPath], { cwd: rootDir, encoding: "utf8" });
+if (connected.error) throw connected.error;
+assert.equal(connected.status, 0, connected.stdout + connected.stderr);
+const production = spawnSync(process.execPath, ["--unhandled-rejections=strict", "--test", resolve(rootDir, "examples/production-boundary.test.mjs")], { cwd: rootDir, encoding: "utf8" });
+if (production.error) throw production.error;
+assert.equal(production.status, 0, production.stdout + production.stderr);
+console.log("examples-check: ok (including production rejection, recovery and logger failures)");
 
 function runCli(args) {
   return new Promise((resolveRun, reject) => {

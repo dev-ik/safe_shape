@@ -47,6 +47,17 @@ test("exports primitive schemas", () => {
   assert.deepEqual(toJsonSchema(neverSchema()), { not: {} });
 });
 
+test("checked pipelines never export an invented exact acceptance or output schema", () => {
+  let calls = 0;
+  const pipeline = string().transform((value) => { calls++; return value.length; }).pipe(number());
+  for (const side of ["input", "output"] as const) {
+    const result = safeToJsonSchema(pipeline, { side });
+    assert.equal(result.success, false);
+    if (!result.success) assert.ok(result.issues.some((issue) => issue.code === "json_schema.refinement.unrepresentable"));
+  }
+  assert.equal(calls, 0);
+});
+
 test("exports native constraints without approximation", () => {
   assert.deepEqual(toJsonSchema(string({ minLength: 1, maxLength: 100 })), {
     type: "string",

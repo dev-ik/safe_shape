@@ -45,7 +45,7 @@ export function readUserResponse(
 
 function reportSafely(report, event) {
   try {
-    report(event);
+    void Promise.resolve(report(event)).catch(() => undefined);
   } catch {
     // Telemetry must not control the response recovery path.
   }
@@ -53,7 +53,14 @@ function reportSafely(report, event) {
 
 function readFallbackSafely(fallback) {
   try {
-    return fallback();
+    const value = fallback();
+    // This example has a synchronous fallback contract. Isolate an accidental
+    // async callback's rejection instead of leaving it unhandled.
+    if (value !== null && (typeof value === "object" || typeof value === "function") && typeof value.then === "function") {
+      void Promise.resolve(value).catch(() => undefined);
+      return undefined;
+    }
+    return value;
   } catch {
     return undefined;
   }

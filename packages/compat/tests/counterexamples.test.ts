@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { array, lazy, nullable, optional, tuple, union, boolean, enum as enumSchema, literal, never, number, object, string, unknown, type Schema } from "@safe-shape/core";
+import { array, discriminatedUnion, lazy, nullable, optional, tuple, union, boolean, enum as enumSchema, literal, never, number, object, string, unknown, type Schema } from "@safe-shape/core";
 import { createContractCounterexamples, createContractSnapshot, createContractSnapshotV2 } from "../src/index.js";
 
 test("scalar witnesses independently satisfy runtime containment violations in both formats and directions", () => {
@@ -52,7 +52,7 @@ test("finds finite and adjacent numeric witnesses with honest unavailable outcom
 test("does not execute opaque callbacks or approximate composite and output domains", () => {
   let calls = 0;
   for (const schema of [number().refine(() => { calls++; return true; }, { id: "rule" }),
-    tuple([number()]), string({ pattern: "a" }), literal(undefined), literal(-0)]) {
+    string({ pattern: "a" }), literal(undefined), literal(-0)]) {
     const result = createContractCounterexamples(createContractSnapshot(schema), createContractSnapshot(never()))[0]!;
     assert.equal(result.status === "unavailable" && result.reason, "unsupported-domain");
   }

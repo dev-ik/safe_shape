@@ -34,10 +34,11 @@ prove the absence of breakage, or locate actual deployed consumers.
 
 JSON scalar literal, enum, boolean, number (native constraints), string with
 native `minLength`/`maxLength`, unknown, and never; finite objects, arrays,
-ordinary unions, optional and nullable wrappers around these nodes.
+ordinary unions, optional and nullable wrappers around these nodes. The next-release
+development implementation also supports discriminated unions and tuples.
 Object policies and optional property absence are preserved. Refinements,
 special encoded literals (including negative zero), string pattern/format rules,
-references, discriminated unions, tuples, intersections and transforms are
+references, intersections and transforms are
 unsupported. Output-side construction is unavailable: validating a possible
 output alone would not prove that a producer can emit it.
 
@@ -132,3 +133,7 @@ The string length fixture has the same separate 10,000-call / 5-second budget.
 The composite fixture has a predeclared 1,000-call / 5-second budget.
 This is a workflow guard for this fixture, not a universal latency guarantee or
 a comparison against Zod. Existing release quality budgets still apply.
+
+The next-release tuple/tagged support retains the existing budgets: at most 16
+tuple items and 8 tagged branches. Both original runtime schemas independently
+validate returned witnesses in both directions and snapshot formats.

@@ -343,3 +343,14 @@ bounded synthetic root examples. See [semantics and limits](../counterexamples.m
 The default reports and command exit codes are unchanged.
 Use `--markdown` for [review artifacts](../contract-review.md) on either check
 command; it cannot be combined with `--json` or `--out`.
+
+## Next-release CLI additions
+
+`schema types --side input|output` selects the type-generation graph; output is
+the default. Recursive declarations now use named graph definitions.
+
+`contract check-connections --manifest file [--json]` checks explicit producer
+output/consumer input v2 snapshots without loading schema modules or changing
+baselines. See the [manifest and result specification](../contract-connections.md).
+
+`contract check-connections` text output includes producer/consumer identities, diagnostic paths, reasons, suggestions and a confirmed emitted counterexample or its unavailability reason. JSON shape and exit-code precedence remain unchanged. See [connection reports](../contract-connections.md).

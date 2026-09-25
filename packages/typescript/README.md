@@ -44,5 +44,7 @@ objects keep only their declared output properties.
 `transform()` output types are emitted as `unknown` because mapper return types
 are not available through runtime schema introspection.
 
-Recursive `lazy()` references are rejected until graph-aware declaration
-generation is implemented.
+The next-release development generator supports recursive `lazy()` graphs,
+reused definitions, mutual recursion and `side: "input" | "output"` (output
+by default). Opaque outputs remain `unknown`; unproductive alias cycles fail
+explicitly. Published 3.1.0 still rejects references.

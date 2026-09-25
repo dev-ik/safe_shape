@@ -1,6 +1,6 @@
 {
   "name": "@safe-shape/compat",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Contract snapshots and compatibility analysis for SafeShape.",
   "type": "module",
   "publishConfig": {
@@ -20,7 +20,7 @@
     "README.md"
   ],
   "dependencies": {
-    "@safe-shape/core": "3.1.0"
+    "@safe-shape/core": "3.2.0"
   },
   "scripts": {
     "build": "npm run build --workspace @safe-shape/core && tsc -p tsconfig.build.json",

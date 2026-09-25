@@ -1,5 +1,10 @@
 # SafeShape 3.1 — Trusted Contract Evolution
 
+Historical planning record. Publication of the combined scope is verified in
+[the 3.1.0 release record](release-candidate-3.1.0.md); remaining checklists below
+reflect their original development dates. Current work follows
+[the next-release plan](implementation-plan-next.md).
+
 Status: selected features and automated quality qualification implemented; final evidence and independent walkthrough pending.
 
 Last updated: 2026-09-10

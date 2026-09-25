@@ -6,6 +6,10 @@ SafeShape documentation is organized by the task you need to complete.
 
 ## Start Here
 
+- [Production boundaries](production-boundaries.md): reject invalid operations, isolate logger failures and keep subsequent requests running.
+- [Composable contracts](composable-contracts.md), [producer/consumer connections](contract-connections.md), and [migration from Zod](migration-from-zod.md): next-release development APIs.
+
+
 - [Quick start](quick-start.md): install SafeShape, validate input, inspect
   diagnostics, and create a contract baseline.
 - [Project integration](integration.md): package choices, TypeScript setup,

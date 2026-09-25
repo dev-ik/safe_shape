@@ -1,6 +1,6 @@
 # Composable runtime contracts
 
-Development API for the next release; published 3.1.0 does not contain these additions.
+Available in SafeShape 3.2.0 and later. See the [release notes](release-candidate-3.2.0.md).
 
 ## Reuse an object without copying its fields
 

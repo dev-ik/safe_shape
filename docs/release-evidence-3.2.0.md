@@ -1,7 +1,9 @@
 # SafeShape 3.2.0 initial local qualification evidence
 
 Historical run before production/diagnostics polish. See the
-[current qualification](release-polish-3.2.0.md) for the rebuilt candidate.
+[polish qualification](release-polish-3.2.0.md) for the rebuilt candidate and
+[verified publication](release-candidate-3.2.0.md#verified-publication) for the
+final archive hashes.
 
 Final command: `npm --fetch-retries=0 run prepare:release`, exit **0**.
 Log: `/tmp/safe-shape-320-candidate.log`. Registry access was available for audits.

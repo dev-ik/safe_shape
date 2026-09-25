@@ -9,7 +9,7 @@ Build first, install the isolated pinned tooling with
 The release gate also runs this command; CI installs the tooling explicitly.
 Reports are written to `.tmp/quality/report.json` and include exact dependency
 versions, source/patch identity, raw performance samples, and pending external
-checks. The matched baseline requires the local `v3.0.0` tag.
+checks. The current matched baseline requires the local `v3.1.0` tag.
 
 `packages/compat/tests/generated.test.ts` uses fixed seed `0x5afe31`, 42 schemas
 from a bounded nested grammar, and 119 values. It challenges safe proofs in all

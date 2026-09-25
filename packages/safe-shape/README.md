@@ -40,6 +40,16 @@ Standard JSON Schema V1 input/output conversion.
 Use `safeToJsonSchema()` when build tooling needs structured diagnostics for
 unrepresentable refinements or opaque output without catching exceptions.
 
+## Composable and connected contracts
+
+Since 3.2.0, use immutable object `pick`, `omit`, `partial`, `required`, `extend`
+and `shape`, plus checked `pipe(next)` stages. `toTypeScriptType()` generates
+recursive declarations with input/output side selection, and
+`checkContractConnection()` checks producer-output to consumer-input v2 snapshots.
+See [composition](../../docs/composable-contracts.md),
+[connections](../../docs/contract-connections.md) and
+[migration from Zod](../../docs/migration-from-zod.md).
+
 ## Production Response Recovery
 
 Use the re-exported `recoverHttpResponse()` helper to detect deployed response

@@ -88,3 +88,19 @@ synthetic input witnesses for supported scalar and finite composite roots. Resul
 unsupported domains and exhausted searches return explicit unavailable reasons.
 See [semantics and examples](../../docs/counterexamples.md). Introduced in
 3.1.0; it does not change comparison reports.
+
+Since 3.2.0, supported counterexample roots also include tuples and
+discriminated unions within the documented bounds.
+
+## Producer/consumer connections
+
+`checkContractConnection(producerSnapshot, consumerSnapshot)` compares an
+explicit producer's output against a consumer's input using v2 snapshots.
+Different snapshot ids identify the parties. The immutable report includes
+migration diagnostics and a producible counterexample when supported; absence
+of a witness never proves compatibility.
+
+Use CLI `contract check-connections --manifest connections.json` to check a
+reviewed list without changing its snapshots. See the
+[connection guide](../../docs/contract-connections.md) for the manifest, output
+projection, opaque behavior and exit codes. These APIs are available since 3.2.0.

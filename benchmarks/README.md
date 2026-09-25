@@ -38,3 +38,10 @@ The string-length counterexample fixture has the same separate budget and
 asserts the expected `aa` witness on every invocation.
 The finite composite fixture checks 1,000 complete nested-object witnesses
 within a separate predeclared 5-second budget.
+
+## Composition and connection budgets
+
+The connection fixture checks 1,000 producer/consumer pairs, and the checked
+pipeline fixture parses 10,000 values. Each has its own predeclared five-second
+budget and validates outcomes. These guards do not replace the separate matched
+baseline and SafeShape/Zod measurements in the quality harness.

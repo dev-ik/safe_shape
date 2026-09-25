@@ -20,15 +20,25 @@ npm install safe-shape
 
 ## Первая схема
 
-```ts
-import { integer, object, string, toFieldErrors, type Infer } from "safe-shape";
+Сохраните схему в `src/contracts/user.ts` и экспортируйте её для команд CLI ниже:
 
-const User = object({
+```ts
+import { integer, object, string, type Infer } from "safe-shape";
+
+export const User = object({
   id: string({ minLength: 1 }),
   age: integer({ minimum: 0 }).optional(),
 });
 
-type User = Infer<typeof User>;
+export type User = Infer<typeof User>;
+```
+
+Используйте её из `src/example.ts`. Модуль схемы не должен писать в лог при
+импорте, чтобы JSON-вывод CLI содержал только результат команды:
+
+```ts
+import { toFieldErrors } from "safe-shape";
+import { User } from "./contracts/user.js";
 
 const result = User.safeParse({ id: "user_1", age: 42 });
 
@@ -45,15 +55,19 @@ if (!result.success) {
 `{ age: "42" }` автоматически: изменение входных данных требует явного
 `transform()`.
 
+Для async-правил используйте `await User.safeParseAsync(input)`. Как логировать
+невалидные операции и продолжать обрабатывать следующие запросы, описано в
+[руководстве по production-границам](../production-boundaries.md) (EN).
+
 ## Диагностика
 
 Каждая неуспешная проверка содержит стабильные структурированные issues:
 
 ```ts
-const result = User.safeParse({ id: "", age: -1 });
+const invalidResult = User.safeParse({ id: "", age: -1 });
 
-if (!result.success) {
-  for (const issue of result.error.issues) {
+if (!invalidResult.success) {
+  for (const issue of invalidResult.error.issues) {
     console.error(issue.code, issue.path, issue.message);
   }
 }
@@ -65,9 +79,9 @@ HTTP helpers, Standard Schema и CLI.
 При необходимости преобразуйте issues в неизменяемую структуру для формы:
 
 ```ts
-const fieldErrors = result.success
+const fieldErrors = invalidResult.success
   ? {}
-  : toFieldErrors(result.error.issues);
+  : toFieldErrors(invalidResult.error.issues);
 // { id: ["Expected a string with at least 1 code points."], ... }
 ```
 
@@ -98,6 +112,7 @@ safe-shape --json schema types \
 Создайте проверенный baseline формата v2:
 
 ```sh
+mkdir -p .safe-shape
 safe-shape contract snapshot \
   --module ./dist/contracts/user.js \
   --export User \
@@ -122,6 +137,9 @@ CI-задаче, которая должна обнаруживать измен
 
 ## Что дальше
 
+- [Композиция объектов и проверяемые цепочки](../composable-contracts.md) (EN)
+- [Связи producer/consumer](../contract-connections.md) (EN)
+- [Переход с Zod](../migration-from-zod.md) (EN)
 - [Миграция с 1.x на 2.0](migration-1-to-2.md)
 - [Полный Core API](../api/core.md) (EN)
 - [Совместимость контрактов](../api/compat.md) (EN)

@@ -63,7 +63,8 @@ production tests (including installed consumers), existing benchmark/migration
 checks, clean audits and eight verified archives. Error workloads improved by
 2.56×–4.26× against the preceding candidate in the direct paired experiment;
 issue consumption and formatting retain the gain. See the
-[current qualification and artifact hashes](release-polish-3.2.0.md).
+[qualification measurements](release-polish-3.2.0.md). The final published
+archive hashes are recorded under [verified publication](#verified-publication).
 
 See [final readiness verification](release-readiness-3.2.0.md) for Node 24, the
 fresh-project/browser pass, executable packaging correction and final CI branch.

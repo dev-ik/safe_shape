@@ -24,6 +24,11 @@ Snapshot v1 remains the default for existing non-recursive baselines. Omit
 `--format v2` when creating v1, and omit `--side` when checking it. The check
 command detects the stored format.
 
+Before the first local `contracts:snapshot` run, create `.safe-shape` and build
+the exported schema module. Keep that module free of console output when
+consuming CLI JSON. Baseline creation belongs to the reviewed local workflow,
+not to the CI check job.
+
 ## Portable Shell Gate
 
 The same commands work in any CI system with Node.js and npm:
@@ -187,7 +192,7 @@ Manifest paths are relative to the manifest file, making the same list usable
 from a different working directory. Baseline creation and approval remain
 explicit per-contract operations.
 
-## Explicit connections (next release)
+## Explicit connections (since 3.2.0)
 
 Use `safe-shape --json contract check-connections --manifest connections.json`
 to check registered producer output against consumer input snapshots. See the

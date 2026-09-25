@@ -59,9 +59,15 @@ interface TypeScriptTypeOptions {
 }
 ```
 
-The next-release development API supports recursive `lazy()` references, reuse
+Since 3.2.0, the API supports recursive `lazy()` references, reuse
 and mutual recursion through deterministic named declarations. Invalid or
 unproductive alias cycles fail explicitly. `side: "input" | "output"` selects
 the contract graph; output is the default. Opaque outputs remain `unknown`.
-Existing acyclic default formatting is preserved. The published 3.1.0 exporter
-still rejects references.
+Existing acyclic default formatting is preserved. Versions before 3.2.0 reject
+references.
+
+On the input side, transforms retain their original input types and stripping
+objects allow an `unknown` string index for accepted extra properties. On the
+output side, stripping objects contain only declared fields; `pipe(next)` uses
+the checked next-stage type. Generated types describe structure, not every
+runtime constraint or the exact set of values a transform can produce.

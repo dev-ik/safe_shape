@@ -2,6 +2,30 @@
 
 Runtime schemas, parsing, diagnostics, and type inference for SafeShape.
 
+## Composition and checked pipelines
+
+Since 3.2.0, `object()` exposes frozen `shape` and immutable `pick`, `omit`,
+`partial`, `required` and add-only `extend` operations. Compose before applying
+object-level refinements; field rules, annotations and unknown-property policy
+are preserved. `extend` rejects existing field names.
+
+```ts
+import { number, object, string } from "@safe-shape/core";
+
+const User = object({ id: string(), name: string() });
+const CreateUser = User.omit(["id"]);
+const UpdateUser = CreateUser.partial();
+const Page = string({ pattern: "^[0-9]+$" })
+  .transform(Number)
+  .pipe(number({ integer: true, minimum: 1 }));
+```
+
+`pipe(next)` checks each stage's output and preserves the original input type.
+Use async parsing when either stage contains async rules. See the
+[composition guide](../../docs/composable-contracts.md) for inference and tooling
+limits, and [production boundaries](../../docs/production-boundaries.md) for
+logging and controlled failure handling.
+
 ## Usage
 
 ```ts
@@ -129,7 +153,10 @@ const periodSchema = object({ start: number(), end: number() }).refineWithIssues
 
 Relative paths compose with containing schemas. Custom rules stay opaque in
 Contract IR and are rejected by JSON Schema exporters rather than approximated.
-Async collectors, warnings, and arbitrary issue payloads are not supported.
+Use `refineAsyncWithDiagnostics()` for async collectors and
+`warnWithDiagnostics()` / `warnAsyncWithDiagnostics()` for warning collectors.
+Structured diagnostic context is passed through immutable JSON `params`;
+arbitrary executable payloads are not supported.
 
 Use `groupIssuesByPath(issues)` for lossless immutable path groups and
 `toFieldErrors(issues, options?)` for a form-oriented error record. Field

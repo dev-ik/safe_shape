@@ -47,7 +47,7 @@ same 20% budget. Per-scenario import summaries remain diagnostic. See
 [ADR 0034](../adr/0034-release-performance-measurement.md); historical failures
 remain recorded and the updated method requires fresh candidate checks.
 
-Next-release qualification retains existing budgets against published 3.1.0.
+The 3.2.0 qualification retains existing budgets against published 3.1.0.
 New composition and checked-pipeline scenarios compare SafeShape with pinned
 Zod in five alternating isolated samples; each 20,000-parse valid/invalid
 workload has a predeclared 5-second median budget. Reports retain per-call

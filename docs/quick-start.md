@@ -20,15 +20,25 @@ npm install safe-shape
 
 ## Define and Run a Contract
 
-```ts
-import { integer, object, string, toFieldErrors, type Infer } from "safe-shape";
+Save the schema in `src/contracts/user.ts` and export it for the CLI commands below:
 
-const User = object({
+```ts
+import { integer, object, string, type Infer } from "safe-shape";
+
+export const User = object({
   id: string({ minLength: 1 }),
   age: integer({ minimum: 0 }).optional(),
 });
 
-type User = Infer<typeof User>;
+export type User = Infer<typeof User>;
+```
+
+Use it from `src/example.ts`. Keep the schema module free of logging so CLI JSON
+output contains only the command result:
+
+```ts
+import { toFieldErrors } from "safe-shape";
+import { User } from "./contracts/user.js";
 
 const result = User.safeParse({ id: "user_1", age: 42 });
 
@@ -44,15 +54,19 @@ if (!result.success) {
 invalid value should throw. SafeShape does not coerce `{ age: "42" }`; input
 changes require an explicit transform.
 
+For async rules, use `await User.safeParseAsync(input)`. To log invalid operations
+and continue serving later requests, follow the
+[production boundary guide](production-boundaries.md).
+
 ## Inspect Diagnostics
 
 Every failed result contains stable, structured issues:
 
 ```ts
-const result = User.safeParse({ id: "", age: -1 });
+const invalidResult = User.safeParse({ id: "", age: -1 });
 
-if (!result.success) {
-  for (const issue of result.error.issues) {
+if (!invalidResult.success) {
+  for (const issue of invalidResult.error.issues) {
     console.error(issue.code, issue.path, issue.message);
   }
 }
@@ -64,9 +78,9 @@ HTTP helpers, Standard Schema, and the CLI.
 Project issues into a form-friendly immutable record when needed:
 
 ```ts
-const fieldErrors = result.success
+const fieldErrors = invalidResult.success
   ? {}
-  : toFieldErrors(result.error.issues);
+  : toFieldErrors(invalidResult.error.issues);
 // { id: ["Expected a string with at least 1 code points."], ... }
 ```
 
@@ -97,6 +111,7 @@ safe-shape --json schema types \
 Create a reviewed v2 baseline:
 
 ```sh
+mkdir -p .safe-shape
 safe-shape contract snapshot \
   --module ./dist/contracts/user.js \
   --export User \
@@ -120,6 +135,9 @@ Commit reviewed baselines. Do not regenerate them inside the CI check job.
 
 ## Next Steps
 
+- [Object composition and checked pipelines](composable-contracts.md)
+- [Producer/consumer connections](contract-connections.md)
+- [Migrating from Zod](migration-from-zod.md)
 - [Project integration](integration.md)
 - [Core API](api/core.md)
 - [Contract compatibility](api/compat.md)

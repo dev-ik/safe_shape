@@ -4,7 +4,9 @@ Errors must explain what, where, why and how to fix.
 
 ## Public API
 
-Diagnostics are derived from validation issues.
+Native `Diagnostic` is the union of error `Issue` and non-fatal `Warning`.
+Both preserve structural paths. Formatting produces a `FormattedDiagnostic`
+with a rendered path, without changing the native diagnostic.
 
 Each diagnostic contains:
 
@@ -13,16 +15,22 @@ Each diagnostic contains:
 - `message`
 - `expected`
 - `received`
-- `suggestion`
+- `severity` (`error` or `warning`)
+
+Optional `suggestion`, `ruleId`, immutable JSON `params` and ordered recursive
+`branches` retain guidance, rule identity, structured context and union failures.
 
 The public diagnostics helpers are:
 
 - `createDiagnostic(issue)`
+- `createFormattedDiagnostic(diagnostic)` for an issue or warning
 - `createDiagnostics(issues)`
 - `formatIssuePath(path)`
 - `formatDiagnostic(diagnostic)`
 - `formatIssues(issues)`
 - `formatValidationError(error)`
+- `formatDiagnostics(diagnostics, options?)`
+- `formatWarnings(warnings, options?)`
 - `groupIssuesByPath(issues)`
 - `toFieldErrors(issues, options?)`
 
@@ -46,6 +54,12 @@ Formatted diagnostics include:
 message formatter. Their default output remains unchanged. The formatter is
 also available to `toFieldErrors()` and is never stored globally or on a
 schema.
+
+Native success results expose optional `warnings`; failures retain warnings on
+`result.error.warnings`. Use `formatWarnings()` for their presentation.
+Warnings do not fail validation and are separate from `error.issues`. See the
+[core diagnostic reference](api/core.md#warnings-and-async-rules) for constructors and
+custom rule APIs.
 
 `groupIssuesByPath()` groups by native structural path, preserves first-seen
 path and issue order, and returns frozen copies of every container while

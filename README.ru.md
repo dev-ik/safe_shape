@@ -110,7 +110,9 @@ const result = await Name.safeParseAsync("x");
 
 ## CLI
 
-CLI превращает runtime-контракты в проверяемые артефакты:
+CLI превращает runtime-контракты в проверяемые артефакты. Скомпилируйте модуль с
+экспортируемой схемой без логирования при импорте, как в
+[быстром старте](docs/ru/quick-start.md):
 
 ```sh
 safe-shape --json schema export \
@@ -129,6 +131,7 @@ safe-shape --json schema types \
 Зафиксируйте baseline контракта и блокируйте несовместимые изменения в CI:
 
 ```sh
+mkdir -p .safe-shape
 safe-shape contract snapshot \
   --module ./dist/contracts/user.js \
   --export User \

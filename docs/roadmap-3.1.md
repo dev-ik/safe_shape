@@ -3,7 +3,8 @@
 Historical planning record. Publication of the combined scope is verified in
 [the 3.1.0 release record](release-candidate-3.1.0.md); remaining checklists below
 reflect their original development dates. Current work follows
-[the next-release plan](implementation-plan-next.md).
+[the completed 3.2.0 plan](implementation-plan-next.md) and
+[its publication record](release-candidate-3.2.0.md).
 
 Status: selected features and automated quality qualification implemented; final evidence and independent walkthrough pending.
 

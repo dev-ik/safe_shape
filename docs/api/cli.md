@@ -4,6 +4,10 @@
 
 Installing the umbrella `safe-shape` package also exposes the same binary.
 
+Paths are relative to the current working directory unless a command explicitly
+uses manifest-relative paths. Create the parent directory before passing
+`--out`; the CLI writes the file but does not create missing directories.
+
 ## Commands
 
 ```sh
@@ -14,6 +18,8 @@ safe-shape schema types --module ./schema.mjs --export userSchema --name User
 safe-shape contract snapshot --module ./schema.mjs --export userSchema --id user --out ./user.contract.json
 safe-shape contract snapshot --module ./tree.mjs --export treeSchema --id tree --format v2 --out ./tree.contract.json
 safe-shape --json contract check --module ./tree.mjs --export treeSchema --against ./tree.contract.json --side input
+safe-shape --json contract check-many --manifest ./contracts.json
+safe-shape --json contract check-connections --manifest ./connections.json
 ```
 
 ## Doctor
@@ -145,6 +151,7 @@ error instead of emitting an incomplete declaration.
 fingerprint:
 
 ```sh
+mkdir -p .safe-shape
 safe-shape contract snapshot \
   --module ./schema.mjs \
   --export userSchema \
@@ -344,7 +351,7 @@ The default reports and command exit codes are unchanged.
 Use `--markdown` for [review artifacts](../contract-review.md) on either check
 command; it cannot be combined with `--json` or `--out`.
 
-## Next-release CLI additions
+## Type generation and connections (since 3.2.0)
 
 `schema types --side input|output` selects the type-generation graph; output is
 the default. Recursive declarations now use named graph definitions.

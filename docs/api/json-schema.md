@@ -90,9 +90,11 @@ const outputSchema = standard["~standard"].jsonSchema.output({
 ```
 
 Both methods emit the selected target's official `$schema` URI and delegate to
-the corresponding Contract IR side. The adapter retains synchronous `validate`,
-`StandardJSONSchemaV1.InferInput`, and `InferOutput`. Its entity, protocol
-object, converter, and generated artifacts are immutable.
+the corresponding Contract IR side. Conversion is synchronous. The adapter
+retains the original schema's `validate`: synchronous for sync-only schemas,
+promise-based for schemas with async rules. It also preserves
+`StandardJSONSchemaV1.InferInput` and `InferOutput`. Its entity, protocol object,
+converter, and generated artifacts are immutable.
 
 `draft-2020-12` and `draft-07` are supported. `openapi-3.0` and unknown future
 targets throw `TypeError` rather than silently changing semantics.

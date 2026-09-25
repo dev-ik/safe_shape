@@ -1,6 +1,6 @@
 # Migrating schemas from Zod
 
-The next release adds object composition and checked pipelines. Migrate one
+SafeShape 3.2.0 adds object composition and checked pipelines. Migrate one
 boundary first, compare accepted values and produced outputs, then expand.
 The repository's quality fixtures pin the comparison version in
 [`quality/package.json`](../quality/package.json).

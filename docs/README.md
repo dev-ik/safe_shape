@@ -7,8 +7,7 @@ SafeShape documentation is organized by the task you need to complete.
 ## Start Here
 
 - [Production boundaries](production-boundaries.md): reject invalid operations, isolate logger failures and keep subsequent requests running.
-- [Composable contracts](composable-contracts.md), [producer/consumer connections](contract-connections.md), and [migration from Zod](migration-from-zod.md): next-release development APIs.
-
+- [Composable contracts](composable-contracts.md), [producer/consumer connections](contract-connections.md), and [migration from Zod](migration-from-zod.md): available in 3.2.0.
 
 - [Quick start](quick-start.md): install SafeShape, validate input, inspect
   diagnostics, and create a contract baseline.
@@ -52,11 +51,11 @@ SafeShape documentation is organized by the task you need to complete.
 - [Testing](testing.md)
 - [Performance](performance.md)
 - [Roadmap](roadmap.md)
-- [3.0 to 3.1 candidate migration notes](migration-3.0-to-3.1.md)
+- [3.0 to 3.1 migration notes](migration-3.0-to-3.1.md)
 - [3.1 release quality contract](release-quality-3.1.md)
 - [3.1 release roadmap](roadmap-3.1.md)
 - [3.1 implementation plan](implementation-plan-3.1.md)
-- [3.2 working roadmap](roadmap-3.2.md)
+- [Historical 3.2 working roadmap, shipped in 3.1](roadmap-3.2.md)
 - [Contract counterexamples](counterexamples.md)
 - [Markdown contract review](contract-review.md)
 - [3.1.0 release record](release-candidate-3.1.0.md)

@@ -309,7 +309,7 @@ See [contract counterexamples](../counterexamples.md) for the additive
 `createContractCounterexamples()` API, supported scalar domain, and explicit
 unavailable outcomes. Introduced in 3.1.0.
 
-## Producer/consumer connections (next release)
+## Producer/consumer connections (since 3.2.0)
 
 `checkContractConnection(producerSnapshotV2, consumerSnapshotV2)` checks producer
 output against consumer input and returns `ContractConnectionReport` with explicit

@@ -44,7 +44,8 @@ objects keep only their declared output properties.
 `transform()` output types are emitted as `unknown` because mapper return types
 are not available through runtime schema introspection.
 
-The next-release development generator supports recursive `lazy()` graphs,
+Since 3.2.0, the generator supports recursive `lazy()` graphs,
 reused definitions, mutual recursion and `side: "input" | "output"` (output
 by default). Opaque outputs remain `unknown`; unproductive alias cycles fail
-explicitly. Published 3.1.0 still rejects references.
+explicitly. Versions before 3.2.0 reject references. See the
+[API reference](../../docs/api/typescript.md) for side selection and limits.

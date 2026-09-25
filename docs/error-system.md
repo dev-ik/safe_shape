@@ -1,7 +1,15 @@
 # Error System
 
-Issue model: code, path, expected, received, message, suggestion, and optional
-recursive union branches.
+Issue model: severity `error`, code, path, expected, received, message, optional
+suggestion, rule id, structured parameters and recursive union branches.
+Non-fatal diagnostics use the separate `Warning` type and warning channel.
+
+`ValidationError` extends native `Error` and exposes frozen `issues` and
+`warnings` arrays. `safeParse()` returns it in a failure result; `parse()` throws
+it. Since 3.2.0, nested parsing carries diagnostics internally and constructs the
+native error at the public boundary. Message and stack remain available without
+changing global stack settings. See [parsing](parser.md) and
+[production boundaries](production-boundaries.md) for failure handling.
 
 ## Issue Codes
 

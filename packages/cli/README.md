@@ -2,6 +2,9 @@
 
 Command-line tooling for SafeShape runtime contracts.
 
+Install the published CLI in your project with `npm install --save-dev @safe-shape/cli`,
+or install `safe-shape` to include the runtime and tooling packages.
+
 ## Install Locally
 
 From the repository root:
@@ -32,6 +35,8 @@ safe-shape schema types --module ./schema.mjs --export userSchema --name User --
 safe-shape contract snapshot --module ./schema.mjs --export userSchema --id user --out ./user.contract.json
 safe-shape contract snapshot --module ./tree.mjs --export treeSchema --id tree --format v2 --out ./tree.contract.json
 safe-shape --json contract check --module ./tree.mjs --export treeSchema --against ./tree.contract.json --side input
+safe-shape --json contract check-many --manifest ./contracts.json
+safe-shape --json contract check-connections --manifest ./connections.json
 ```
 
 `--export` defaults to `default`.
@@ -56,7 +61,16 @@ With `--json`, they return `json_schema_export_failed` plus machine-readable
 `error.issues` on stderr.
 
 `schema validate` accepts `--input -` for stdin and `--out <file>` for a full
-validation report.
+validation report. It awaits async schemas automatically.
+
+Since 3.2.0, `schema types` supports recursive declarations and
+`--side input|output` (output by default).
+
+`contract check-connections --manifest` checks explicit producer-output to
+consumer-input v2 snapshots. It reads snapshots without loading schema modules
+or replacing baselines. Exit codes are 0 for all compatible, 2 for migration or
+manual review, and 1 for operational errors. See the
+[connection manifest and reports](../../docs/contract-connections.md).
 
 `contract snapshot` writes v1 by default. Pass `--format v2` for recursive
 input/output graph snapshots. `contract check` detects either stored format and

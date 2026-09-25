@@ -2,7 +2,7 @@
 
 SafeShape exposes a stable runtime validation API for external boundary data.
 
-For the next-release additions, see [object composition and checked pipelines](../composable-contracts.md).
+For the APIs introduced in 3.2.0, see [object composition and checked pipelines](../composable-contracts.md).
 
 ## Builders
 
@@ -123,6 +123,7 @@ Every `Schema<TOutput, TInput = TOutput>` has:
 - `refineAsync()`, `refineAsyncWithDiagnostics()`, `warnAsync()`, and
   `warnAsyncWithDiagnostics()` for explicit promise-returning rules.
 - `transform(mapper, options)` returning a new schema with a mapped output type.
+- `pipe(next)` validating the previous stage's output while preserving the original input type.
 - `nullable()` returning a new nullable schema.
 - `optional()` returning a new optional schema.
 - `annotate(metadata)` returning a new annotated schema.

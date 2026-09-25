@@ -2,11 +2,14 @@
 
 This run predates the final CLI packaging correction. See the
 [additional readiness verification](release-readiness-3.2.0.md) for that fix,
-Node 24 and fresh-project/browser checks.
+Node 24 and fresh-project/browser checks. The
+[publication record](release-candidate-3.2.0.md#verified-publication) contains
+the final published archive hashes.
 
 Final command: `npm --fetch-retries=0 run prepare:release`, exit **0**.
 Log: `/tmp/safe-shape-polish-release.log`. This run supersedes the
-[initial candidate evidence](release-evidence-3.2.0.md) for current artifacts.
+[initial candidate evidence](release-evidence-3.2.0.md) for the artifacts tested
+at this stage; it predates the final CLI archive metadata fix.
 
 ## Changes and correctness
 

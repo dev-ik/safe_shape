@@ -68,8 +68,9 @@ Failed ordinary `union()` schemas expose the same immutable recursive branch
 diagnostics through the umbrella export and `validateSchema()` reports.
 `refine(..., { path })` and `refineWithIssues(collector, { id })` expose the
 same synchronous addressable custom diagnostics as `@safe-shape/core`.
-All schemas expose synchronous Standard Schema V1 validation and transform-aware
-input/output inference through the re-exported `StandardSchemaV1` type.
+All schemas expose Standard Schema V1 validation: synchronous for sync-only
+schemas and promise-based for schemas containing async rules. Transform-aware
+input/output inference uses the re-exported `StandardSchemaV1` type.
 `createStandardJsonSchema()` and `StandardJSONSchemaV1` are also re-exported for
 side-aware Standard JSON Schema conversion.
 `safeToJsonSchema()`, `JsonSchemaExportResult`, and `JsonSchemaExportError` are
@@ -77,6 +78,13 @@ re-exported for immutable machine-readable artifact diagnostics.
 `groupIssuesByPath()` and `toFieldErrors()` expose lossless and form-oriented
 diagnostic projections. `recoverHttpResponse()` exposes the framework-neutral
 validated fallback flow from `@safe-shape/http`.
+
+Since 3.2.0, object schemas expose immutable `shape`, `pick`, `omit`, `partial`,
+`required` and add-only `extend`; all schemas expose checked `pipe(next)`.
+The umbrella also exports `checkContractConnection()` and recursive TypeScript
+declaration generation with input/output side selection. See
+[composition](../composable-contracts.md), [connections](../contract-connections.md)
+and [TypeScript generation](typescript.md) for semantics and limits.
 
 Installing this package also installs `@safe-shape/cli`, which provides the
 `safe-shape` CLI binary.

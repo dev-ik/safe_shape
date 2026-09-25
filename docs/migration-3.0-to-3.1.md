@@ -1,6 +1,9 @@
-# Updating from SafeShape 3.0 to the 3.1 Candidate
+# Updating from SafeShape 3.0 to 3.1
 
-3.1 is not published yet. These notes describe the current candidate.
+SafeShape 3.1.0 was published on 2026-09-11. These migration notes also apply
+when upgrading directly from 3.0 to 3.2. See the
+[3.1 release record](release-candidate-3.1.0.md) and
+[3.2 release notes](release-candidate-3.2.0.md).
 
 Existing single-contract commands and ordinary snapshot formats remain in place.
 `contract check-many --manifest` is an opt-in project workflow; see the CLI

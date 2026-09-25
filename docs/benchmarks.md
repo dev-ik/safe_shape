@@ -26,9 +26,12 @@ graph snapshot and compatibility pipeline. Compatibility cases assert their
 expected status on every measured iteration, so a semantic regression fails the
 scenario rather than producing a misleading throughput result.
 
-The release check treats benchmarks as execution evidence, not as a fixed
-performance threshold. This avoids unstable CI failures while still proving that
-the benchmark suite runs against the built release artifacts.
+All scenarios assert their expected outcomes. Counterexample construction,
+connection checks and checked pipelines also enforce their predeclared
+five-second fixture budgets; see [the benchmark runner](../benchmarks/README.md).
+Other smoke timings are execution evidence. The separate
+[quality harness](../quality/README.md) enforces matched-baseline latency,
+memory, compiler and bundle regression budgets.
 
 ## 2.0 Release Candidate Review
 
@@ -47,7 +50,7 @@ Throughput is platform-sensitive. These values document the reviewed RC
 baseline; semantic status assertions and successful execution remain the
 portable release gate.
 
-## 3.2.0 candidate evidence
+## 3.2.0 release evidence
 
 See the [versioned comparison](release-polish-3.2.0.md) for all shared workloads,
 new composition/pipeline scenarios, bundle sizes and an investigation of invalid

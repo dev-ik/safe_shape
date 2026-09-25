@@ -167,8 +167,10 @@ function acceptsStandardSchema(schema: StandardSchemaV1, input: unknown) {
 acceptsStandardSchema(userSchema, input);
 ```
 
-SafeShape validation is synchronous. Standard failures expose message and path
-while retaining the richer native SafeShape issue fields at runtime. Import
+Standard Schema validation is synchronous for sync-only schemas and returns a
+Promise for schemas containing async rules. Await the result when accepting
+arbitrary schemas. Standard failures expose message and path while retaining
+the richer native SafeShape issue fields at runtime. Import
 `type StandardSchemaV1` from `@safe-shape/core` when local Standard Schema types
 are useful; structural compatibility also works with
 `@standard-schema/spec`.
@@ -227,6 +229,11 @@ if (!result.success) {
 The HTTP package is framework-neutral. Map your framework request object into
 the contract sections you want to validate.
 
+Use `safeParseAsync`, `validateSchemaAsync` and the HTTP helpers' async variants
+for schemas with async rules. See [production boundaries](production-boundaries.md)
+for a complete handler that logs failures, rejects the affected operation,
+contains logger errors and continues processing later requests.
+
 For deployed response drift, keep validation strict while changing only the
 application failure policy. The [production response recovery
 guide](production-response-recovery.md) shows how to report immutable issues,
@@ -251,7 +258,9 @@ Expose contract tooling from your project scripts:
 ```
 
 The CLI loads JavaScript ESM modules by file path. Compile TypeScript contract
-modules before running CLI commands against them. Snapshot v1 remains the
+modules before running CLI commands against them, keep module imports free of
+console output, and create `.safe-shape` before the first snapshot write.
+Snapshot v1 remains the
 default; v2 is explicit and supports recursive contracts plus independent input
 and output checks. JSON compatibility results include migration diagnostics.
 

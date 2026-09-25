@@ -111,7 +111,8 @@ rules before parsing. See [Migrating from 2.x to 3.0](docs/migration-2-to-3.md).
 ## CLI Example
 
 SafeShape also ships a CLI. Use it to turn runtime contracts into generated
-artifacts:
+artifacts. Compile an exported schema module without import-time logging, as in
+the [quick start](docs/quick-start.md):
 
 ```sh
 safe-shape --json schema export \
@@ -132,6 +133,7 @@ safe-shape --json schema types \
 Store a reviewable contract baseline and block incompatible changes in CI:
 
 ```sh
+mkdir -p .safe-shape
 safe-shape contract snapshot \
   --module ./dist/contracts/user.js \
   --export User \
@@ -175,19 +177,21 @@ example.
 
 ## Release Metrics
 
-Current stable release gate:
+Verified [3.2.0 release gate](docs/release-candidate-3.2.0.md):
 
 | Signal | Status |
 | --- | --- |
 | Packages | 8 publishable packages |
-| Unit tests | 220 passing tests |
-| Consumer install | Tarball install smoke check passes |
+| Package tests | 274 passing tests |
+| Consumer install | Tarball and published npm installation checks pass |
 | Examples | Runnable examples pass |
 | Security audit | 0 known vulnerabilities |
-| Benchmarks | 22 runtime, diagnostics, projection, and compatibility scenarios |
+| Benchmarks | 29 runtime, diagnostics, composition, connection, and compatibility scenarios |
 | Package dry run | `npm pack --workspaces --dry-run` passes |
 
-Sample local benchmark run on Node.js `v20.10.0` / macOS arm64:
+The following historical 3.0 sample used Node.js `v20.10.0` / macOS arm64.
+For 3.2.0 measurements and qualification, see the
+[benchmark evidence](docs/release-polish-3.2.0.md).
 
 | Scenario | Throughput |
 | --- | ---: |
@@ -214,8 +218,10 @@ Sample local benchmark run on Node.js `v20.10.0` / macOS arm64:
 | Contract compatibility narrowing breaking | 40,501 ops/sec |
 | Recursive contract v2 compatibility widening safe | 11,190 ops/sec |
 
-Benchmark results are execution evidence, not fixed release thresholds. Re-run
-them locally with:
+These historical throughput values are not release thresholds. Current benchmark
+cases assert outcomes, and selected workflows enforce predeclared fixture budgets;
+the separate quality harness checks matched-baseline regressions. See the
+[benchmark policy](docs/benchmarks.md). Run the smoke suite locally with:
 
 ```sh
 npm run build

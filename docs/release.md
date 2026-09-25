@@ -106,11 +106,12 @@ GitHub Actions OIDC.
 Prepare and tag a release only after `npm run prepare:release` succeeds:
 
 ```sh
+RELEASE_VERSION="$(node -p 'require("./package.json").version')"
 git add -A
-git commit -m "release: v3.0.0"
+git commit -m "release: v${RELEASE_VERSION}"
 git push origin main
-git tag -a v3.0.0 -m "Release v3.0.0"
-git push origin v3.0.0
+git tag -a "v${RELEASE_VERSION}" -m "Release v${RELEASE_VERSION}"
+git push origin "v${RELEASE_VERSION}"
 ```
 
 Then open GitHub Actions, choose `Publish npm packages`, select the release tag,

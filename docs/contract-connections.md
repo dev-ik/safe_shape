@@ -1,6 +1,6 @@
 # Explicit producer and consumer connections
 
-Development API for the next release; published 3.1.0 remains unchanged.
+Available in SafeShape 3.2.0 and later. See the [release notes](release-candidate-3.2.0.md).
 
 ```ts
 import { checkContractConnection, createContractSnapshotV2, enumeration, object } from "safe-shape";

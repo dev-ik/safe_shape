@@ -312,7 +312,8 @@ TypeScript declarations and explicit producer/consumer connection checks. See th
 
 ## Project Status
 
-SafeShape is on the `3.2.0` stable release line.
+SafeShape is preparing the `3.2.1` release; the latest published version is 3.2.0.
+This patch publishes the corrected package READMEs; see the [3.2.1 release record](docs/release-3.2.1.md).
 See the [release notes and verified publication](docs/release-candidate-3.2.0.md).
 The release gate covers
 metadata checks, build, typecheck, tests, examples, benchmarks, consumer tarball

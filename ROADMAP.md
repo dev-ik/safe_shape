@@ -1,7 +1,8 @@
 # Roadmap
 
-Current published release: **3.2.0**, verified in the
-[release record](docs/release-candidate-3.2.0.md).
+Current published release: **3.2.1**, verified in the
+[release record](docs/release-3.2.1.md). This patch updates npm documentation;
+the runtime features below were introduced in 3.2.0.
 
 The release adds composable runtime contracts, checked pipelines, recursive
 TypeScript artifacts, explicit producer/consumer connections and a documented

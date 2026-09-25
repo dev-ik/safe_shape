@@ -177,7 +177,7 @@ example.
 
 ## Release Metrics
 
-Verified [3.2.0 release gate](docs/release-candidate-3.2.0.md):
+Verified [3.2.1 release gate](docs/release-3.2.1.md):
 
 | Signal | Status |
 | --- | --- |
@@ -312,9 +312,9 @@ TypeScript declarations and explicit producer/consumer connection checks. See th
 
 ## Project Status
 
-SafeShape is preparing the `3.2.1` release; the latest published version is 3.2.0.
-This patch publishes the corrected package READMEs; see the [3.2.1 release record](docs/release-3.2.1.md).
-See the [release notes and verified publication](docs/release-candidate-3.2.0.md).
+SafeShape is on the `3.2.1` stable release line.
+This patch publishes corrected package READMEs; see the [verified 3.2.1 release](docs/release-3.2.1.md).
+For runtime features introduced in 3.2.0, see its [release notes](docs/release-candidate-3.2.0.md).
 The release gate covers
 metadata checks, build, typecheck, tests, examples, benchmarks, consumer tarball
 installation, npm audit, and package dry-run.

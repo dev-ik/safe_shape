@@ -119,3 +119,10 @@ cover 230 Markdown files. Historical evidence and normative RFC/ADR remain Engli
 Remote CI for the final commit and the independent developer walkthrough remain
 pending. No commit, release tag, remote push or publication was performed by this
 preparation. Local gate success does not mark those qualifications complete.
+
+## Publication authorization
+
+The owner explicitly instructed publication after disclosure that the independent
+developer walkthrough remained incomplete. This is authorization to proceed with
+that limitation, not a claim that a human walkthrough passed. Final-commit CI
+will still be required before dispatching the publishing workflow.

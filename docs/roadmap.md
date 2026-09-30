@@ -5,7 +5,7 @@
 Current development: [3.3 implementation and qualification](implementation-plan-3.3.md).
 
 Status: historical roadmap through 3.1; superseded by [the current plan](implementation-plan-next.md).
-Published release: [3.2.0](release-candidate-3.2.0.md). The following prior planning
+Published release: [3.2.1](release-3.2.1.md). The following prior planning
 sections are retained as history.
 
 Last updated: 2026-09-10

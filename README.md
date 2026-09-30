@@ -177,7 +177,7 @@ example.
 
 ## Release Metrics
 
-Verified [3.2.0 release gate](docs/release-candidate-3.2.0.md):
+Verified [3.2.1 release gate](docs/release-3.2.1.md):
 
 | Signal | Status |
 | --- | --- |

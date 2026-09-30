@@ -4,7 +4,7 @@
     {
       "english": "README.md",
       "russian": "README.ru.md",
-      "englishSha256": "a1bec5745f6770139be8367a0878c8c17487118494616e9b39eaf4b990bf33fe",
+      "englishSha256": "8cf96c87d717430f2f0b8171e5e6559e86d1ca14dc7f2ff2ccf09c03048ff34e",
       "russianSha256": "1981cb63f11684cb0d37d62e5713427de19bebbd29f30d4f7a05a4fe1a49bfd6"
     },
     {
@@ -238,8 +238,8 @@
     {
       "english": "docs/release-3.2.1.md",
       "russian": "docs/ru/release-3.2.1.md",
-      "englishSha256": "25fc129252f6d97f9abfcd365bea7e129fa3319dee9ae6b325126921b07a331e",
-      "russianSha256": "07889de78859f3fde5fef7c029946a8a7e7cf20cc9db0ee3275299c1aed548b9"
+      "englishSha256": "d4d2bed53623c09c8326cd58258079765e882a4012a02f4e7ce3dd15d49bce0d",
+      "russianSha256": "b04f51d518f0dbd5af62a2b81d817645df796ee369eabea5c84d1ec99c7fb4ea"
     },
     {
       "english": "docs/release-quality-3.1.md",
@@ -256,8 +256,8 @@
     {
       "english": "docs/roadmap.md",
       "russian": "docs/ru/roadmap.md",
-      "englishSha256": "1481730f9e1ae361ea2ec688d5c6fb745e0e5888d131d3e96f55e466aac8af8d",
-      "russianSha256": "c5e8cf87ca0706bc7da7e06a6adeb39ef67098e1791b609dfd8a41e67a5b4e23"
+      "englishSha256": "789c69c151debcd5ded00d00e99eac8ef9b98ab4a6d279cf25aad1e98363345e",
+      "russianSha256": "5377de0a9a783c7218f51d6c6b28060de3bc074cdc90e101e84dadbaa07b74a8"
     },
     {
       "english": "docs/testing.md",

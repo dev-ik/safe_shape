@@ -1,5 +1,6 @@
 import {
   describeContract,
+  describeOutputBound,
   type Schema,
   type SchemaDefinition,
   type StandardSchemaV1,
@@ -11,6 +12,7 @@ export type JsonSchema = Readonly<Record<string, unknown>>;
 export type JsonSchemaTarget = "draft-2020-12" | "draft-07";
 
 export interface JsonSchemaOptions {
+  readonly mode?: "exact" | "output-bound";
   readonly id?: string;
   readonly schema?: string;
   readonly side?: "input" | "output";
@@ -22,6 +24,7 @@ export type JsonSchemaExportIssueCode =
   | "json_schema.dialect.conflict"
   | "json_schema.id.invalid"
   | "json_schema.output.opaque"
+  | "json_schema.output.bound"
   | "json_schema.refinement.unrepresentable"
   | "json_schema.target.unsupported";
 
@@ -135,14 +138,21 @@ export function safeToJsonSchema(
   let target: JsonSchemaTarget = "draft-2020-12";
 
   try {
+    if (options.mode !== undefined && options.mode !== "exact" && options.mode !== "output-bound") {
+      throw new TypeError("Unsupported JSON Schema export mode.");
+    }
+    if (options.mode === "output-bound" && options.side !== "output") {
+      throw new TypeError('Output-bound export requires side: "output".');
+    }
     target = resolveJsonSchemaTarget(options, side);
     const id = options.id === undefined
       ? undefined
       : validateJsonSchemaId(options.id, side, target);
-    const description = describeContract(schema);
     const issues: JsonSchemaExportIssue[] = [];
     const context: ConversionContext = Object.freeze({ issues, side, target });
-    const graph = description[side];
+    const graph = options.mode === "output-bound"
+      ? describeOutputBound(schema).graph
+      : describeContract(schema)[side];
     const definitions: Record<string, JsonSchema> = {};
     const definitionsKeyword = target === "draft-07" ? "definitions" : "$defs";
 
@@ -180,7 +190,10 @@ export function safeToJsonSchema(
     return Object.freeze({
       success: true,
       schema: artifact,
-      warnings: EMPTY_WARNINGS,
+      warnings: options.mode === "output-bound" ? Object.freeze([Object.freeze({ ...createExportIssue({
+        code: "json_schema.output.bound", path: [], side, target,
+        message: "This schema bounds successful outputs; it does not prove that every accepted value can be produced.",
+      }), severity: "warning" as const })]) : EMPTY_WARNINGS,
     });
   } catch (error) {
     if (error instanceof JsonSchemaExportError) {

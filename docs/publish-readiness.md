@@ -1,5 +1,7 @@
 # Publish Readiness
 
+**English** | [Русский](ru/publish-readiness.md)
+
 SafeShape packages are published only after explicit release approval. Use this
 checklist before running the trusted-publishing workflow.
 
@@ -9,6 +11,7 @@ checklist before running the trusted-publishing workflow.
 - Confirm all workspace packages use the intended release version.
 - Confirm no breaking API changes were introduced without an RFC.
 - Confirm new public APIs have docs and tests.
+- Confirm current guides and all packaged READMEs have reviewed Russian counterparts.
 - Confirm package-boundary architecture changes have an ADR.
 - Confirm package versions are aligned with the root version.
 - Confirm package dependency direction still matches `docs/package-architecture.md`.

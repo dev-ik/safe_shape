@@ -3,6 +3,7 @@ import { constructCounterexample, outputWitnessValidator, type ContractCounterex
 export type { ContractCounterexample, CounterexampleValue, CounterexampleUnavailableReason } from "./counterexamples.js";
 import {
   describeContract,
+  describeOutputBound,
   describeSchema,
   type ArrayConstraints,
   type NumberConstraints,
@@ -241,6 +242,49 @@ export interface ContractConnectionReport {
   readonly comparison: CompatibilityReport<GraphCompatibilityFinding>;
   readonly migration: MigrationDiagnostics;
   readonly counterexample: ConnectionCounterexample;
+}
+
+export interface SchemaConnectionOptions {
+  readonly producerId?: string;
+  readonly consumerId?: string;
+}
+
+export interface SchemaConnectionReport extends ContractConnectionReport {
+  readonly evidence: "output-bound";
+}
+
+/** Prove containment of successful outputs without executing application callbacks. */
+export function checkSchemaConnection(
+  producer: Schema<any, any>,
+  consumer: Schema<any, any>,
+  options: SchemaConnectionOptions = {},
+): SchemaConnectionReport {
+  const producerId = validateId(options.producerId ?? "producer");
+  const consumerId = validateId(options.consumerId ?? "consumer");
+  const source = definitionGraphToSnapshot(describeOutputBound(producer).graph);
+  const target = definitionGraphToSnapshot(describeContract(consumer).input);
+  let analysis = compareContractGraphs(source, target, "backward");
+  if (!isCompatibleStatus(analysis.status)) {
+    analysis = analysisFromFindings(analysis.findings.map((finding) =>
+      finding.status === "breaking" || finding.status === "risky"
+        ? Object.freeze({ ...finding, code: "connection.production.unproven", status: "unknown" as const,
+          message: "The output bound is not contained; this does not establish that the producer emits a rejected value.",
+          suggestion: "Review the producer and consumer at this path; provide a concrete emitted value before declaring a breaking connection.",
+        }) : finding));
+  }
+  const comparison: CompatibilityReport<GraphCompatibilityFinding> = Object.freeze({
+    compatible: isCompatibleStatus(analysis.status), status: analysis.status, compatibility: "backward",
+    previousFingerprint: source.fingerprint, nextFingerprint: target.fingerprint,
+    findings: Object.freeze(analysis.findings),
+  });
+  return Object.freeze({
+    evidence: "output-bound",
+    producer: Object.freeze({ id: producerId, side: "output", fingerprint: source.fingerprint }),
+    consumer: Object.freeze({ id: consumerId, side: "input", fingerprint: target.fingerprint }),
+    compatible: comparison.compatible, status: comparison.status, comparison,
+    migration: createMigrationDiagnostics(comparison),
+    counterexample: Object.freeze({ status: "unavailable", reason: "unsupported-production" }),
+  });
 }
 
 /** Check only the explicitly supplied producer output and consumer input. */

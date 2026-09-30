@@ -1,5 +1,7 @@
 # @safe-shape/http
 
+**English** | [Русский](README.ru.md)
+
 Framework-neutral HTTP boundary helpers for SafeShape runtime contracts.
 
 ## Usage

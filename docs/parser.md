@@ -1,5 +1,7 @@
 # Parser
 
+**English** | [Русский](ru/parser.md)
+
 Validation pipeline: Input -> Parser -> Result -> Diagnostics.
 
 ## Parsing entry points
@@ -34,3 +36,8 @@ diagnostic paths and warning order.
 
 `ParseContext` and traversal results are private. See the
 [core reference](api/core.md) for the public result types.
+
+The 3.3.0 caches completed async discovery only for immutable graph
+roots; partial recursive traversals are never cached. Layers without checks
+reuse their already immutable parse result. Public diagnostics and Error stacks
+remain unchanged.

@@ -1,5 +1,7 @@
 # Composable runtime contracts
 
+**English** | [Русский](ru/composable-contracts.md)
+
 Available in SafeShape 3.2.0 and later. See the [release notes](release-candidate-3.2.0.md).
 
 ## Reuse an object without copying its fields
@@ -31,6 +33,9 @@ throws at runtime. An arbitrary cross-field callback cannot safely be projected
 onto a different shape. Field-level refinements, warnings and async rules remain.
 
 ## Validate every stage
+
+The 3.3.0 adds a separately labelled [output-bound workflow](checked-output.md)
+for export and connection proofs while preserving the exact behavior below.
 
 ```ts
 const Page = string({ pattern: "^[0-9]+$" })

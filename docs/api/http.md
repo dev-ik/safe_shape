@@ -1,5 +1,7 @@
 # HTTP API
 
+**English** | [Русский](../ru/api/http.md)
+
 `@safe-shape/http` provides framework-neutral helpers for validating HTTP boundary data
 with `@safe-shape/core` schemas.
 

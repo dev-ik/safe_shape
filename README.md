@@ -312,9 +312,9 @@ TypeScript declarations and explicit producer/consumer connection checks. See th
 
 ## Project Status
 
-SafeShape is preparing the `3.2.1` release; the latest published version is 3.2.0.
-This patch publishes the corrected package READMEs; see the [3.2.1 release record](docs/release-3.2.1.md).
-See the [release notes and verified publication](docs/release-candidate-3.2.0.md).
+SafeShape is preparing the `3.3.0` release; this candidate is not yet published.
+See the [3.3.0 release notes](docs/release-3.3.0.md) for checked output contracts, runtime improvements and upgrade instructions.
+See the [3.3 verification evidence](docs/release-evidence-3.3.md).
 The release gate covers
 metadata checks, build, typecheck, tests, examples, benchmarks, consumer tarball
 installation, npm audit, and package dry-run.

@@ -115,11 +115,17 @@ The same installed-consumer runner includes a nested payload with arrays/unions
 and exercises [Markdown review](../docs/contract-review.md) for single and mixed
 batch outcomes.
 
-## Next-release connected contracts
+## Connected contracts (since 3.2.0)
 
 `node examples/connected-contracts.mjs packages/cli/dist/cli.js` exercises object
 composition, checked query conversion, recursive declaration generation and a
 producer/consumer CI manifest. It also runs against installed release tarballs.
+
+## Checked output bounds (upcoming 3.3)
+
+`node examples/checked-output.mjs` exercises explicit query conversion, output-bound
+JSON Schema export, a proven connection and a non-contained bound requiring review.
+It runs in both the workspace and installed consumers.
 
 ## Production request boundary
 

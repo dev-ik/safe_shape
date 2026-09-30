@@ -1,8 +1,13 @@
 # Core API
 
+**English** | [Русский](../ru/api/core.md)
+
 SafeShape exposes a stable runtime validation API for external boundary data.
 
 For the APIs introduced in 3.2.0, see [object composition and checked pipelines](../composable-contracts.md).
+
+For the 3.3.0 API `describeOutputBound()` and its separate
+`SchemaOutputBound` wrapper, see [checked output bounds](../checked-output.md).
 
 ## Builders
 

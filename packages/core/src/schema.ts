@@ -17,6 +17,7 @@ const parseAsyncSymbol: unique symbol = Symbol("safeShape.parseAsync");
 const asyncSymbol: unique symbol = Symbol("safeShape.async");
 const optionalSymbol: unique symbol = Symbol("safeShape.optional");
 const describeSymbol: unique symbol = Symbol("safeShape.describe");
+const asyncRoots = new WeakMap<InternalSchema<any, any>, boolean>();
 
 export const SCHEMA_CONTRACT_FORMAT = "safe-shape.contract-ir/v2" as const;
 
@@ -375,6 +376,11 @@ export interface SchemaContractGraph {
   readonly definitions: Readonly<Record<string, SchemaDefinition>>;
 }
 
+export interface SchemaOutputBound {
+  readonly format: "safe-shape.output-bound/v1";
+  readonly graph: SchemaContractGraph;
+}
+
 export interface SchemaContractDescription {
   readonly format: typeof SCHEMA_CONTRACT_FORMAT;
   readonly input: SchemaContractGraph;
@@ -385,6 +391,7 @@ type ContractSide = "input" | "output";
 
 interface DescribeContext {
   readonly side: ContractSide;
+  readonly outputBound?: boolean;
   readonly definitions: Map<string, SchemaDefinition>;
   readonly owners: Map<string, InternalSchema<any, any>>;
   readonly resolving: Set<string>;
@@ -580,7 +587,7 @@ abstract class BaseSchema<TOutput, TInput = TOutput>
   [parseSymbol](input: unknown, context: ParseContext): InternalParseResult<TOutput> {
     const parsed = this.parseBase(input, context);
 
-    if (!parsed.success) {
+    if (!parsed.success || this.checks.length === 0) {
       return parsed;
     }
 
@@ -592,7 +599,7 @@ abstract class BaseSchema<TOutput, TInput = TOutput>
     context: ParseContext,
   ): Promise<InternalParseResult<TOutput>> {
     const parsed = await this.parseBaseAsync(input, context);
-    if (!parsed.success) return parsed;
+    if (!parsed.success || this.checks.length === 0) return parsed;
     return this.applyChecksAsync(parsed.data, input, context, parsed.warnings ?? []);
   }
 
@@ -612,13 +619,20 @@ abstract class BaseSchema<TOutput, TInput = TOutput>
     return false;
   }
 
-  protected hasAsyncRules(seen: Set<InternalSchema<any, any>> = new Set()): boolean {
+  protected hasAsyncRules(seen?: Set<InternalSchema<any, any>>): boolean {
+    if (seen === undefined) {
+      const cached = asyncRoots.get(this);
+      if (cached !== undefined) return cached;
+      const result = this.hasAsyncRules(new Set());
+      asyncRoots.set(this, result);
+      return result;
+    }
     if (seen.has(this)) return false;
     seen.add(this);
     return this.checks.some((check) => check.execution === "async") || this.hasAsyncBase(seen);
   }
 
-  [asyncSymbol](seen: Set<InternalSchema<any, any>> = new Set()): boolean {
+  [asyncSymbol](seen?: Set<InternalSchema<any, any>>): boolean {
     return this.hasAsyncRules(seen);
   }
 
@@ -2584,6 +2598,9 @@ class PipelineSchema<TOutput, TInput, TNextOutput> extends BaseSchema<TNextOutpu
   }
 
   [describeSymbol](context?: DescribeContext): SchemaDefinition {
+    if (context?.outputBound) {
+      return this.describeWithRefinements(this.next[describeSymbol](context));
+    }
     const definition: SchemaDefinition = context?.side === "output"
       ? this.next[describeSymbol](context)
       : Object.freeze({ kind: "transform", inner: this.first[describeSymbol](context) });
@@ -2876,12 +2893,38 @@ export function describeContract(
   });
 }
 
+/** An upper bound on successful output values, not an exact output contract. */
+export function describeOutputBound(schema: Schema<any, any>): SchemaOutputBound {
+  const graph = describeContractGraph(schema, "output", true);
+  const project = (node: SchemaDefinition): SchemaDefinition => {
+    switch (node.kind) {
+      case "object": return Object.freeze({ ...node,
+        shape: Object.freeze(Object.fromEntries(Object.entries(node.shape).map(([key, value]) => [key, project(value)]))),
+        unknownProperties: node.unknownProperties === "strip" ? "reject" : node.unknownProperties,
+      });
+      case "array": return Object.freeze({ ...node, item: project(node.item) });
+      case "tuple": return Object.freeze({ ...node, items: Object.freeze(node.items.map(project)) });
+      case "union": case "discriminatedUnion": return Object.freeze({ ...node, choices: Object.freeze(node.choices.map(project)) });
+      case "record": return Object.freeze({ ...node, value: project(node.value) });
+      case "optional": case "nullable": return Object.freeze({ ...node, inner: project(node.inner) });
+      case "intersection": return Object.freeze({ kind: "opaque", behavior: "transform" });
+      default: return node;
+    }
+  };
+  return Object.freeze({ format: "safe-shape.output-bound/v1", graph: Object.freeze({
+    root: project(graph.root),
+    definitions: Object.freeze(Object.fromEntries(Object.entries(graph.definitions).map(([id, node]) => [id, project(node)]))),
+  }) });
+}
+
 function describeContractGraph(
   schema: Schema<any, any>,
   side: ContractSide,
+  outputBound = false,
 ): SchemaContractGraph {
   const context: DescribeContext = {
     side,
+    outputBound,
     definitions: new Map(),
     owners: new Map(),
     resolving: new Set(),

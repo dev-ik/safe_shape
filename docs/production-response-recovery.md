@@ -1,5 +1,7 @@
 # Production Response Recovery
 
+**English** | [Русский](ru/production-response-recovery.md)
+
 Runtime response validation detects contract drift after deployment. A client
 can report that drift without treating invalid network data as trusted
 application data or crashing the whole interface.

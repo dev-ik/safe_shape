@@ -1,5 +1,7 @@
 # Package Architecture
 
+**English** | [Русский](ru/package-architecture.md)
+
 Packages:
 
 - `safe-shape`: umbrella package that re-exports public APIs from runtime and tooling packages.

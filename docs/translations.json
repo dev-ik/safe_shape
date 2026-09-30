@@ -1,0 +1,399 @@
+{
+  "version": 1,
+  "pairs": [
+    {
+      "english": "README.md",
+      "russian": "README.ru.md",
+      "englishSha256": "a1bec5745f6770139be8367a0878c8c17487118494616e9b39eaf4b990bf33fe",
+      "russianSha256": "1981cb63f11684cb0d37d62e5713427de19bebbd29f30d4f7a05a4fe1a49bfd6"
+    },
+    {
+      "english": "docs/README.md",
+      "russian": "docs/ru/README.md",
+      "englishSha256": "5bd9a7cb9a2704028e5d378d3fdc189baf80c4b6f6b7be81bc0942f187b39dea",
+      "russianSha256": "7068125c7d84fccdcd2cfde3804a6af48cfa05fc5c84984d37ac5efb3f6482bd"
+    },
+    {
+      "english": "docs/api/cli.md",
+      "russian": "docs/ru/api/cli.md",
+      "englishSha256": "f05ed19efd37aa50727d985d02333ac77bfbe5dcd33a1d0629cf514474cd305b",
+      "russianSha256": "3ef1b4d225fa003549c9fc7926b84f61725169253d1334af7182904d86548106"
+    },
+    {
+      "english": "docs/api/compat.md",
+      "russian": "docs/ru/api/compat.md",
+      "englishSha256": "6af6fc3fa57dd75d88317649c4d32e8cfb5d0eac62f5a5b4130f2bfac6df3875",
+      "russianSha256": "7bafad306f379c493aeecc76d368ac7ce17972c0ed6d5ec0e89f9adaee5da757"
+    },
+    {
+      "english": "docs/api/core.md",
+      "russian": "docs/ru/api/core.md",
+      "englishSha256": "51786a6da938404dd920efa35a3384d56c718fcddc04efa1d7ada0f0e88fe417",
+      "russianSha256": "298e7cb111d43e17133dda5eaee2878c67a24147f4cccc771b7509446a3abd61"
+    },
+    {
+      "english": "docs/api/http.md",
+      "russian": "docs/ru/api/http.md",
+      "englishSha256": "e5d1e9797a76b0f5b434c183927229111419d830176496ac48ce346a4207fe58",
+      "russianSha256": "95fdf75c0d9db31592d19999109c9dbc7b2b6d3f69b0bdfceab0ba447651b925"
+    },
+    {
+      "english": "docs/api/json-schema.md",
+      "russian": "docs/ru/api/json-schema.md",
+      "englishSha256": "589c2298faa9ace48b59d8a67dabfb5671a913559f8eff15e1c09010e5927b6b",
+      "russianSha256": "5f7e91c522335e629cc172756d3aacfa62a17febdd6606cbedb1b0ffb36e20e6"
+    },
+    {
+      "english": "docs/api/safe-shape.md",
+      "russian": "docs/ru/api/safe-shape.md",
+      "englishSha256": "1f2de28f62069c13fc75a3749e258e64eaf3c8e10ced390d091cb25f326eb633",
+      "russianSha256": "bc2b841b988e6a33c24770a2a80636f52916ce2636c4b1969c3d85da644b1e7f"
+    },
+    {
+      "english": "docs/api/typescript.md",
+      "russian": "docs/ru/api/typescript.md",
+      "englishSha256": "1d16b359c505652740e2d3a1f2601b3195203aabcb7099d10cc98875c6bf9ff4",
+      "russianSha256": "d3ccce5dc0edbe02a4a6f740f1a67148de50618eb32863742540e4c0b831110a"
+    },
+    {
+      "english": "docs/api/validation.md",
+      "russian": "docs/ru/api/validation.md",
+      "englishSha256": "e0e3972b90b3f80b3858cc35eb086821af0ff9624f237b388d002a83894b919e",
+      "russianSha256": "efd6917a11251f23f8bc6c2475c084e6c8b18198181a557299599db2a7d93089"
+    },
+    {
+      "english": "docs/api-guidelines.md",
+      "russian": "docs/ru/api-guidelines.md",
+      "englishSha256": "d72f3a7666cad0982889ae2ec26a685181d5b8f4d82b3e8c786dad670b3a0ffa",
+      "russianSha256": "77afb04af76bc6bd900a55a6dff82d80fe115b054e9ddb56dd5890582fc44b52"
+    },
+    {
+      "english": "docs/benchmarks.md",
+      "russian": "docs/ru/benchmarks.md",
+      "englishSha256": "b0441cd2f702c3ee13428d5ae7a390b75fe4c454ce1b90f12fe2b463b77c6379",
+      "russianSha256": "72d6972c9b916968ee3523be93b95ff412ce693783a8006c9b45560bde612dc9"
+    },
+    {
+      "english": "docs/checked-output.md",
+      "russian": "docs/ru/checked-output.md",
+      "englishSha256": "808314bef508e1bdbdd1cad1ee173d4e797d0343f82b822fa858714518efa4f1",
+      "russianSha256": "47dfe69033186528900a4ebc1716250ce89e13ba1329d32766cce8caa94289d5"
+    },
+    {
+      "english": "docs/ci.md",
+      "russian": "docs/ru/ci.md",
+      "englishSha256": "571ed6ee00fd0d4c155f6279e5bc97e1d8887fc1d10c5c476f4e540c087d95a3",
+      "russianSha256": "e70045cec60a20cf074f284da1be8116b35aa16e00bdf7b1636a26f66f656ecf"
+    },
+    {
+      "english": "docs/compatibility-matrix.md",
+      "russian": "docs/ru/compatibility-matrix.md",
+      "englishSha256": "dbc056052873b7a0942b1ee81b3792a1f6ad5ef2b61fb7d9eae2b1f8e19d0fa7",
+      "russianSha256": "2d11b721d80b00e690523a6639f133f0ff828dc72c00729ece46075bb20cb830"
+    },
+    {
+      "english": "docs/composable-contracts.md",
+      "russian": "docs/ru/composable-contracts.md",
+      "englishSha256": "dfc414e3ced51cb98e25175a01b9847448be31734a36618a763027105e4c85fa",
+      "russianSha256": "b3103b51349d3c11d1b8903a335497ca5bbb11756b7b1d9cec4920240f4deb16"
+    },
+    {
+      "english": "docs/contract-connections.md",
+      "russian": "docs/ru/contract-connections.md",
+      "englishSha256": "043a78f7cf52bf23f55936fa8d9b9ec133f6ddf4914dac2fc65471d9bcd0501c",
+      "russianSha256": "958707a526168953070e7a426b7bee000a9aefa12f44acbe923e3b10016c7174"
+    },
+    {
+      "english": "docs/contract-review.md",
+      "russian": "docs/ru/contract-review.md",
+      "englishSha256": "08310b6c70829405978f8b1add1c9046be1cce07e29c671395e626daf8c6a9dc",
+      "russianSha256": "c8a4355058face9a75660361157ae5711780bec13d9864335b62c37652a795e2"
+    },
+    {
+      "english": "docs/counterexamples.md",
+      "russian": "docs/ru/counterexamples.md",
+      "englishSha256": "b3335f4f1a43ef3e965edf5f36379c14351b80205e226eff9da4a013df3afa8f",
+      "russianSha256": "f108539f9b94dc4946d6c0043a5ec51b22c041f82048c36c30377704cec42720"
+    },
+    {
+      "english": "docs/design-principles.md",
+      "russian": "docs/ru/design-principles.md",
+      "englishSha256": "4ff328fc75ea348c9ebfcd4cddac28c18e1de6a85f73433245d1823eb9224d2d",
+      "russianSha256": "06c8e4226278628a02fd867c2732930dc8e4c19571031a607d61198850fa47e2"
+    },
+    {
+      "english": "docs/diagnostics.md",
+      "russian": "docs/ru/diagnostics.md",
+      "englishSha256": "1a6099719f56f9025dab8435c2b70283e7819de27ffc3b7e32b37d45cbf53728",
+      "russianSha256": "b2d0960ebcfadcf9e2cec57cb25410193f35302a3c6a6597519b15ffb587f78b"
+    },
+    {
+      "english": "docs/error-system.md",
+      "russian": "docs/ru/error-system.md",
+      "englishSha256": "8799d5d2d825624e768d5e06f9dc9a764865f9d8db2684b6326989aa52b8c367",
+      "russianSha256": "1eb9e98ce49e35597434e94b363f853b78f3e8851abc6fe904f7ea0a7f8b9552"
+    },
+    {
+      "english": "docs/goals.md",
+      "russian": "docs/ru/goals.md",
+      "englishSha256": "0572aa6e2ef1b6f5283952f1c49c2d9c213e0fc226bb0fcfa4ba668182f84898",
+      "russianSha256": "39af6c31ef396c92dc6e111b1e501821374d6339249d6294b5fad730effa97a7"
+    },
+    {
+      "english": "docs/immutability.md",
+      "russian": "docs/ru/immutability.md",
+      "englishSha256": "41cb89d883994f9806b978738e7cd3e4eb5e0b1bc1176300b5cdcef3868c0de0",
+      "russianSha256": "808b342173102fd5d05dd162272fc33b3f0b204c99b372e048d44a7b0c7dd697"
+    },
+    {
+      "english": "docs/implementation-plan-3.3.md",
+      "russian": "docs/ru/implementation-plan-3.3.md",
+      "englishSha256": "c166b68a2d48c055f250b6348b024967fe348cc05b3055ff19926c861221624f",
+      "russianSha256": "22573ebe15005b80222c2096bcbd3db52ae906e6dd4e2af407b2819fd6d1f292"
+    },
+    {
+      "english": "docs/integration.md",
+      "russian": "docs/ru/integration.md",
+      "englishSha256": "1aedd157ed1f7eb425db9c33846930f0cad9b160fc89d49549f4401fe93ad93c",
+      "russianSha256": "b19f897eb6cf1a643a6959bc2e433ca6e4a678edcd8711595df63873631f3b1d"
+    },
+    {
+      "english": "docs/migration-1-to-2.md",
+      "russian": "docs/ru/migration-1-to-2.md",
+      "englishSha256": "0623999334a319c4290b93e460a442caaa3ba48484faaa41d2f275a6172e4f2b",
+      "russianSha256": "2da2382cc261a4b80ba468adc307e5bd2f79bfbc5459552f8aecc566574f6af2"
+    },
+    {
+      "english": "docs/migration-2-to-3.md",
+      "russian": "docs/ru/migration-2-to-3.md",
+      "englishSha256": "3891f99691b72742d1ee6059ed3b7a7a276c1f6df03b462706091126513d221d",
+      "russianSha256": "2a2622e6bf2752c6e787c13fc82b772b875876ecd199211f207e7230fcc42e04"
+    },
+    {
+      "english": "docs/migration-3.0-to-3.1.md",
+      "russian": "docs/ru/migration-3.0-to-3.1.md",
+      "englishSha256": "9f8ac51392a19ef540d46da8b924f450b386518a069532abcdf5291d8853fbda",
+      "russianSha256": "cd2777e2117d722c9c2c97ab05f946297bf2be9e36050992dfcc3def2a879090"
+    },
+    {
+      "english": "docs/migration-from-zod.md",
+      "russian": "docs/ru/migration-from-zod.md",
+      "englishSha256": "b236e62baffb7ee2c76a59195fc602d95ecee895131d4a93f3ef785f56fb29af",
+      "russianSha256": "bd004910e9bef3d553b97a180a2af627448a4c8165ff529504ee3136fde29789"
+    },
+    {
+      "english": "docs/naming.md",
+      "russian": "docs/ru/naming.md",
+      "englishSha256": "cd3a9abf20f345ad27ccbb80f708d26fc957ef4995799248bdb3cfd22372764c",
+      "russianSha256": "296c4f2f8c068036760f4f9a93736b128c5812341a5d1db071084fef7490daa3"
+    },
+    {
+      "english": "docs/package-architecture.md",
+      "russian": "docs/ru/package-architecture.md",
+      "englishSha256": "2cc9bf6525fa780cbe4f4b3a15a803b95a86e8e818ebcb5f6bda4171318dddd9",
+      "russianSha256": "27f05368d3e8d5ac2278b90f4b25a1b5bc68689002fc5a763b4102e1b5f35c3e"
+    },
+    {
+      "english": "docs/parser.md",
+      "russian": "docs/ru/parser.md",
+      "englishSha256": "d587289a72386b57c6e9d5e6552333b43f59a96421ba7c21a8b286314e62b1cd",
+      "russianSha256": "8a0dac1ac88ab7fbc0734ec15956ea1bfd9f4b192424a8275a159a5e8d5f3f66"
+    },
+    {
+      "english": "docs/performance.md",
+      "russian": "docs/ru/performance.md",
+      "englishSha256": "c9fa8dc9fade83ab3bb6c64f4de411adaa9fd0887703018cc9369b4448e65349",
+      "russianSha256": "074e322f35e00d7290fb689e2dff1f233cbadac690c0bb05e8b3482d5b455ec5"
+    },
+    {
+      "english": "docs/philosophy.md",
+      "russian": "docs/ru/philosophy.md",
+      "englishSha256": "6b38133e7ad4ba8a3619b90d06e4217b8be9123d1ff24c82a669351c8b8e95b6",
+      "russianSha256": "78c13e21782245665d94a3240b6a3d4a604a760fd7030c865998f83ae0d798d0"
+    },
+    {
+      "english": "docs/production-boundaries.md",
+      "russian": "docs/ru/production-boundaries.md",
+      "englishSha256": "2314e1321084150b4e38f3725d38b1684bc49d3877204921b090dcb7fc63e7f9",
+      "russianSha256": "a7f479b3e60417e213124c981360cc33568e1dd37840075d181f9098e02c8ed4"
+    },
+    {
+      "english": "docs/production-response-recovery.md",
+      "russian": "docs/ru/production-response-recovery.md",
+      "englishSha256": "f2ccded946c6d384030e2242c1d85b45a14d7f7c3af0c73f5fb5fa2abac1a8ae",
+      "russianSha256": "5bb309a40cb9bb189eb955a0cc26daab2f651103b946da382b8993a9e9dc5e12"
+    },
+    {
+      "english": "docs/publish-readiness.md",
+      "russian": "docs/ru/publish-readiness.md",
+      "englishSha256": "f47e8f7356dba9a110187a8dafdf582f24c703ca12eab7001c0cf1f0f7ac5847",
+      "russianSha256": "d6f24ad9640d7bd7074d43aea71904cc37fc0c160c57d506afce1d3920277641"
+    },
+    {
+      "english": "docs/quick-start.md",
+      "russian": "docs/ru/quick-start.md",
+      "englishSha256": "c0a6d01783c976ade7e820406207256f9635a30ead5a4a21a50146d25720bb08",
+      "russianSha256": "2ba02f06438cd5459f511c6fe9bcd226fa5737d787b727cc8074cd91de6ec4c3"
+    },
+    {
+      "english": "docs/release-3.2.1.md",
+      "russian": "docs/ru/release-3.2.1.md",
+      "englishSha256": "25fc129252f6d97f9abfcd365bea7e129fa3319dee9ae6b325126921b07a331e",
+      "russianSha256": "07889de78859f3fde5fef7c029946a8a7e7cf20cc9db0ee3275299c1aed548b9"
+    },
+    {
+      "english": "docs/release-quality-3.1.md",
+      "russian": "docs/ru/release-quality-3.1.md",
+      "englishSha256": "db8afeabab467d50120424fb1d560b2b4ee61f4bf726cf55b64865274f195719",
+      "russianSha256": "d00ada3fb513909138c4381504cc510430ea9427b00d4c3d92bb1a08f5b05410"
+    },
+    {
+      "english": "docs/release.md",
+      "russian": "docs/ru/release.md",
+      "englishSha256": "fcdc6a0735f8209e610fbfd3e460b3b389df9b9ece9c06f7e9823c73a4de5abd",
+      "russianSha256": "eee72a56aa3a908d016f14af6993099d95864b47d5bde3d3be3c3fa110e0de8c"
+    },
+    {
+      "english": "docs/roadmap.md",
+      "russian": "docs/ru/roadmap.md",
+      "englishSha256": "1481730f9e1ae361ea2ec688d5c6fb745e0e5888d131d3e96f55e466aac8af8d",
+      "russianSha256": "c5e8cf87ca0706bc7da7e06a6adeb39ef67098e1791b609dfd8a41e67a5b4e23"
+    },
+    {
+      "english": "docs/testing.md",
+      "russian": "docs/ru/testing.md",
+      "englishSha256": "caf4f80a0d2a2480912115cd6701823c65cddfef71d0d7b0d5c8d1792653c829",
+      "russianSha256": "cbea53503de38de8534088da0f9a2d5c0a1328407a1f4cf8f64ffca61b1388ce"
+    },
+    {
+      "english": "docs/translations.md",
+      "russian": "docs/ru/translations.md",
+      "englishSha256": "a5e32cbb276abf4a35dd972e4b36b9a2d58de3b68257f2f476bc1a532735c785",
+      "russianSha256": "0481205cc1c8e5935e998a20977d7e6d77fd5fa2d2cea4b3a749503bdadb42a8"
+    },
+    {
+      "english": "docs/type-system.md",
+      "russian": "docs/ru/type-system.md",
+      "englishSha256": "c5787528f77aee18ef818192dccf3cb509b29efb6eb27ddfbda15eb6c6d9bc14",
+      "russianSha256": "a72630c1871f354689efe691df4e92aa685a53dcd7e2843db57b2486cd8b58a4"
+    },
+    {
+      "english": "docs/validation-model.md",
+      "russian": "docs/ru/validation-model.md",
+      "englishSha256": "8b3b9107dc9b1a003fc490b74d87f61eaeaf5758a892da81631ecfeb4e1dc771",
+      "russianSha256": "3616f94eaa2a184aa676054367093078fa73491f92cba427dc1352bb24ec8bdb"
+    },
+    {
+      "english": "packages/cli/README.md",
+      "russian": "packages/cli/README.ru.md",
+      "englishSha256": "74fd3c31b572c8ae293342361d05433e54efdb53527d150fa8de84015a5921b9",
+      "russianSha256": "0ce31af79e3634c6cab7f06b33489b31b74391c7108add9096e78e01b1d97cf7"
+    },
+    {
+      "english": "packages/compat/README.md",
+      "russian": "packages/compat/README.ru.md",
+      "englishSha256": "e143a79d1a4e1841ca72ddd10b9fdec1be218cfa05c28f249e9144c24ee8c1dd",
+      "russianSha256": "3aa928c4f542172309f75fd1779eb01d9bde6ab38cbf5cc6e62acb2696952ee6"
+    },
+    {
+      "english": "packages/core/README.md",
+      "russian": "packages/core/README.ru.md",
+      "englishSha256": "7b1a0dc498c6029bc7a561d3a931de8abfba232e503b9dfc83aa870ac29da722",
+      "russianSha256": "1f1ad10a5b2b4330faa2fad440e9938cdc3145db0de5c041b0b131cc3242b57a"
+    },
+    {
+      "english": "packages/http/README.md",
+      "russian": "packages/http/README.ru.md",
+      "englishSha256": "c055eac3c60059278920a3c54ac9599f1bd8948dde8cddbda640a14e3d0ff071",
+      "russianSha256": "09f5d3ae5755655bfd04395ef121e51250d06258721477265128ba5162f9b51f"
+    },
+    {
+      "english": "packages/json-schema/README.md",
+      "russian": "packages/json-schema/README.ru.md",
+      "englishSha256": "0a2410ae6d2d8f0045587a90f47db4e489400d7598e2408c2d3b1e4e6368db6a",
+      "russianSha256": "23748ffd80407453d51eb851d3891d8f41624c4eb6504a639c6144414570f7eb"
+    },
+    {
+      "english": "packages/safe-shape/README.md",
+      "russian": "packages/safe-shape/README.ru.md",
+      "englishSha256": "6c1928f74d77957a67fbdfe35175fc8ee9f67546307f4d2ffd6f31b9133b2468",
+      "russianSha256": "a1c47fbe046b6a4c4836b9c3e1a77683f667eef6ce8498f91cf6e849649ec11c"
+    },
+    {
+      "english": "packages/typescript/README.md",
+      "russian": "packages/typescript/README.ru.md",
+      "englishSha256": "837949302af7f472f11a6df9554099c94a582def56673a31830f9ffd49ce71c7",
+      "russianSha256": "3dcd28c81a5fd0f1768ce00687f0a3de9c4f39a78df973cbee51e12774f1abb7"
+    },
+    {
+      "english": "packages/validation/README.md",
+      "russian": "packages/validation/README.ru.md",
+      "englishSha256": "1aa3c97f5254387df9720ac0080a330d96b68adb775e0748c2320a312133e494",
+      "russianSha256": "d3ba32c7ce072e73cc65f465d0448e2d47ac4539571ea37c6eebd7380f312a11"
+    },
+    {
+      "english": "docs/release-3.3.0.md",
+      "russian": "docs/ru/release-3.3.0.md",
+      "englishSha256": "70c46f41ea020349b32794ab54261cd3799d076a86be7c66a215b7769f54ad93",
+      "russianSha256": "0ccabf30c7184dfa3799ef907cdb77b02d81328a47e16c07fc1c781587560d73"
+    }
+  ],
+  "englishOnly": [
+    {
+      "path": "docs/implementation-plan-2.0.md",
+      "reason": "Historical planning or source-identified release evidence; preserved in English and labelled EN in Russian navigation."
+    },
+    {
+      "path": "docs/implementation-plan-3.1.md",
+      "reason": "Historical planning or source-identified release evidence; preserved in English and labelled EN in Russian navigation."
+    },
+    {
+      "path": "docs/implementation-plan-next.md",
+      "reason": "Historical planning or source-identified release evidence; preserved in English and labelled EN in Russian navigation."
+    },
+    {
+      "path": "docs/release-candidate-3.1.0.md",
+      "reason": "Historical planning or source-identified release evidence; preserved in English and labelled EN in Russian navigation."
+    },
+    {
+      "path": "docs/release-candidate-3.2.0.md",
+      "reason": "Historical planning or source-identified release evidence; preserved in English and labelled EN in Russian navigation."
+    },
+    {
+      "path": "docs/release-evidence-3.1.md",
+      "reason": "Historical planning or source-identified release evidence; preserved in English and labelled EN in Russian navigation."
+    },
+    {
+      "path": "docs/release-evidence-3.2.0.md",
+      "reason": "Historical planning or source-identified release evidence; preserved in English and labelled EN in Russian navigation."
+    },
+    {
+      "path": "docs/release-evidence-3.2.md",
+      "reason": "Historical planning or source-identified release evidence; preserved in English and labelled EN in Russian navigation."
+    },
+    {
+      "path": "docs/release-evidence-3.3.md",
+      "reason": "Historical planning or source-identified release evidence; preserved in English and labelled EN in Russian navigation."
+    },
+    {
+      "path": "docs/release-polish-3.2.0.md",
+      "reason": "Historical planning or source-identified release evidence; preserved in English and labelled EN in Russian navigation."
+    },
+    {
+      "path": "docs/release-readiness-3.2.0.md",
+      "reason": "Historical planning or source-identified release evidence; preserved in English and labelled EN in Russian navigation."
+    },
+    {
+      "path": "docs/roadmap-2.0.md",
+      "reason": "Historical planning or source-identified release evidence; preserved in English and labelled EN in Russian navigation."
+    },
+    {
+      "path": "docs/roadmap-3.1.md",
+      "reason": "Historical planning or source-identified release evidence; preserved in English and labelled EN in Russian navigation."
+    },
+    {
+      "path": "docs/roadmap-3.2.md",
+      "reason": "Historical planning or source-identified release evidence; preserved in English and labelled EN in Russian navigation."
+    }
+  ]
+}

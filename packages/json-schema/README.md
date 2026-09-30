@@ -1,6 +1,12 @@
 # @safe-shape/json-schema
 
+**English** | [Русский](README.ru.md)
+
 JSON Schema export for SafeShape runtime contracts.
+
+The 3.3.0 adds explicit `mode: "output-bound"` with `side: "output"`.
+Safe export labels the result with `json_schema.output.bound`; default exact
+export remains unchanged. See [the guide](../../docs/checked-output.md).
 
 ## Usage
 

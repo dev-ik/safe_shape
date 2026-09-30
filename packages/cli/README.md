@@ -1,5 +1,7 @@
 # @safe-shape/cli
 
+**English** | [Русский](README.ru.md)
+
 Command-line tooling for SafeShape runtime contracts.
 
 Install the published CLI in your project with `npm install --save-dev @safe-shape/cli`,

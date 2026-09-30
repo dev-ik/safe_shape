@@ -1,5 +1,7 @@
 # SafeShape 3.2.0: composable and connected runtime contracts
 
+Current development: [the 3.3 plan](implementation-plan-3.3.md).
+
 Completed and published on 2026-09-25. See the
 [release record](release-candidate-3.2.0.md) for verification and the explicit
 owner-approved exception to the independent human walkthrough gate.

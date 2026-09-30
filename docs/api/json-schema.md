@@ -1,6 +1,12 @@
 # JSON Schema API
 
+**English** | [Русский](../ru/api/json-schema.md)
+
 `@safe-shape/json-schema` exports SafeShape schemas to JSON Schema-compatible objects.
+
+For the 3.3.0 explicit `mode: "output-bound"` export, its required
+`side: "output"` and `json_schema.output.bound` warning, see
+[checked output bounds](../checked-output.md). `mode: "exact"` remains the default.
 
 ## Export
 

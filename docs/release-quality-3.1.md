@@ -1,5 +1,7 @@
 # SafeShape 3.1 Release Quality Contract
 
+**English** | [Русский](ru/release-quality-3.1.md)
+
 Status: automated qualification and all local constituent release gates passed; independent walkthrough and final versioned CI remain open.
 
 Last updated: 2026-09-10

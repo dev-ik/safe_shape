@@ -1,5 +1,7 @@
 # Release Workflow
 
+**English** | [Русский](ru/release.md)
+
 SafeShape packages are published only after explicit release approval.
 
 ## Release Readiness
@@ -14,6 +16,7 @@ This performs:
 
 - package metadata and boundary checks;
 - local documentation links and EN/RU navigation checks;
+- current-guide translation coverage and reviewed source hashes;
 - build;
 - typecheck;
 - tests;
@@ -58,6 +61,7 @@ Do not publish until all are true:
 
 - selected package manifests are intentionally publishable;
 - public API docs exist;
+- current English and Russian guides and packaged READMEs are aligned;
 - project integration documentation exists;
 - tests cover the public API;
 - runnable examples pass;

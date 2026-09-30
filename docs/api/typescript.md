@@ -1,5 +1,7 @@
 # TypeScript
 
+**English** | [Русский](../ru/api/typescript.md)
+
 `@safe-shape/typescript` generates TypeScript type declarations from SafeShape
 runtime schemas.
 

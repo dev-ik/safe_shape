@@ -1,5 +1,7 @@
 # CLI
 
+**English** | [Русский](../ru/api/cli.md)
+
 `@safe-shape/cli` provides the `safe-shape` binary.
 
 Installing the umbrella `safe-shape` package also exposes the same binary.
@@ -142,8 +144,8 @@ The generated type is based on runtime schema introspection. `transform()` outpu
 types are emitted as `unknown` because mapper return types are not available at
 runtime.
 
-Recursive type generation is not available yet; `schema types` reports a CLI
-error instead of emitting an incomplete declaration.
+Since 3.2.0, recursive type generation emits named graph declarations.
+Unproductive alias cycles fail explicitly instead of emitting an incomplete declaration.
 
 ## Contract Snapshot
 

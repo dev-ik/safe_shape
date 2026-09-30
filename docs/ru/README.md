@@ -2,51 +2,53 @@
 
 [English](../README.md) | **Русский**
 
-Русская документация начинается с основных пользовательских сценариев. Полные
-API reference пока остаются на английском и доступны из этого же оглавления.
+Актуальные пользовательские руководства, API и инструкции эксплуатации доступны
+на русском. Названия API, коды ошибок и команды сохраняются как в коде.
+Исторические release records и нормативные RFC/ADR отмечены как английские источники.
 
 ## Начало работы
 
-- [Границы production](../production-boundaries.md): обработка невалидных операций, изоляция сбоев логгера и продолжение работы приложения.
-- [Композиция контрактов](../composable-contracts.md), [связи producer/consumer](../contract-connections.md), [переход с Zod](../migration-from-zod.md) (EN): доступны в 3.2.0.
+- [Быстрый старт](quick-start.md) и [интеграция](integration.md).
+- [Композиция контрактов](composable-contracts.md), [связи producer/consumer](contract-connections.md).
+- [Описание релиза 3.3.0](release-3.3.0.md): изменения, обновление и статус подготовки.
+- [Проверяемые выходные границы](checked-output.md): API версии 3.3.0.
+- [Переход с Zod](migration-from-zod.md).
+- [Production-границы](production-boundaries.md) и [восстановление ответа](production-response-recovery.md).
+- Миграция [1.x → 2.0](migration-1-to-2.md), [2.x → 3.0](migration-2-to-3.md), [3.0 → 3.1](migration-3.0-to-3.1.md).
+- [Главный README](../../README.ru.md).
 
-- [Быстрый старт](quick-start.md): установка, первая схема, диагностика и
-  baseline контракта.
-- [Миграция с 1.x на 2.0](migration-1-to-2.md): изменения, требующие внимания,
-  и безопасный порядок обновления.
-- [Миграция с 2.x на 3.0](migration-2-to-3.md): warnings, диагностика и явный async.
-- [Миграция с 3.0 на 3.1](../migration-3.0-to-3.1.md) (EN).
-- [Главный README](../../README.ru.md): обзор платформы и сравнение с Zod.
-- [Интеграция в проект](../integration.md) (EN): пакеты, Standard Schema, HTTP,
-  CLI и CI.
+## Справочник API
 
-## API Reference
+- [Общий пакет](api/safe-shape.md).
+- [Core: схемы, parsing, типы и диагностика](api/core.md).
+- [Snapshots и совместимость](api/compat.md).
+- [CLI](api/cli.md).
+- [HTTP](api/http.md).
+- [JSON Schema](api/json-schema.md).
+- [Генерация TypeScript](api/typescript.md).
+- [Отчёты валидации](api/validation.md).
 
-- [Общий пакет `safe-shape`](../api/safe-shape.md) (EN)
-- [Core schemas и parsing](../api/core.md) (EN)
-- [Snapshots и совместимость контрактов](../api/compat.md) (EN)
-- [CLI](../api/cli.md) (EN)
-- [HTTP helpers](../api/http.md) (EN)
-- [JSON Schema](../api/json-schema.md) (EN)
-- [Генерация TypeScript](../api/typescript.md) (EN)
-- [Validation reports](../api/validation.md) (EN)
+## Устройство платформы
 
-## Архитектура и эксплуатация
+- [Принципы](design-principles.md), [миссия](goals.md), [философия](philosophy.md).
+- [Модель валидации](validation-model.md), [parsing](parser.md), [система типов](type-system.md).
+- [Диагностика](diagnostics.md), [ошибки](error-system.md), [неизменяемость](immutability.md).
+- [Архитектура пакетов](package-architecture.md).
+- [Матрица совместимости](compatibility-matrix.md), [контрпримеры](counterexamples.md), [Markdown review](contract-review.md).
+- [Правила API](api-guidelines.md) и [именование](naming.md).
 
-- [Модель совместимости](../compatibility-matrix.md) (EN)
-- [Диагностика](../diagnostics.md) (EN)
-- [Архитектура пакетов](../package-architecture.md) (EN)
-- [Проверки контрактов в CI](../ci.md) (EN)
-- [Release workflow](../release.md) (EN)
-- [Benchmarks](../benchmarks.md) (EN)
-- [Roadmap](../roadmap.md) (EN)
-- [Критерии качества релиза 3.1](../release-quality-3.1.md) (EN)
-- [Исторический roadmap выпуска 3.1](../roadmap-3.1.md) (EN)
-- [План реализации 3.1: эволюция контрактов](../implementation-plan-3.1.md) (EN)
-- [Исторический roadmap 3.2, вошедший в релиз 3.1](../roadmap-3.2.md) (EN)
-- [Релиз 3.2.0: возможности и подтверждение публикации](../release-candidate-3.2.0.md) (EN)
-- [Релиз 3.2.1: исправления документации npm-пакетов](../release-3.2.1.md) (EN)
+## Разработка и выпуск
 
-Архитектурные решения находятся в [`adr/`](../../adr/), а принятые предложения
-по публичному API — в [`rfc/`](../../rfc/). Эти документы сохраняются на
-английском как единый нормативный источник.
+- [CI](ci.md), [тестирование](testing.md), [производительность](performance.md), [benchmarks](benchmarks.md).
+- [Критерии качества](release-quality-3.1.md).
+- [Процесс релиза](release.md) и [готовность к публикации](publish-readiness.md).
+- [Текущий план развития](roadmap.md) и [реализация 3.3](implementation-plan-3.3.md).
+- [Поддержка переводов](translations.md).
+
+## Архив и нормативные источники (EN)
+
+История измерений и решений сохраняется без переписывания результатов:
+[релиз 3.1](../release-candidate-3.1.0.md), [релиз 3.2](../release-candidate-3.2.0.md),
+[patch 3.2.1](../release-3.2.1.md), [свидетельства 3.3](../release-evidence-3.3.md).
+Полный список исторических исключений есть в [реестре переводов](../translations.json).
+[ADR](../../adr/) и [RFC](../../rfc/) — единые нормативные источники на английском.

@@ -1,5 +1,7 @@
 # Contract Checks in CI
 
+**English** | [Русский](ru/ci.md)
+
 SafeShape contract checks are provider-neutral: commit a reviewed snapshot,
 rebuild the current schema module, and compare it with the stored baseline.
 Never update a baseline automatically in a compatibility job. A baseline

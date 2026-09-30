@@ -1,7 +1,12 @@
 # @safe-shape/compat
 
+**English** | [Русский](README.ru.md)
+
 Deterministic contract snapshots and conservative compatibility analysis for
 SafeShape runtime contracts.
+
+The 3.3.0 adds live-schema `checkSchemaConnection()` with explicit
+output-bound evidence. See [semantics](../../docs/checked-output.md).
 
 ```ts
 import { object, string } from "@safe-shape/core";

@@ -1,7 +1,14 @@
 # Contract Compatibility
 
+**English** | [Русский](../ru/api/compat.md)
+
 `@safe-shape/compat` creates deterministic contract snapshots and compares
 contract versions conservatively.
+
+The 3.3.0 `checkSchemaConnection(producer, consumer, options?)` API proves
+containment from explicit output bounds. `SchemaConnectionOptions` supplies
+optional `producerId`/`consumerId`; `SchemaConnectionReport` labels its evidence
+as `output-bound`. See [semantics and limits](../checked-output.md).
 
 ## Snapshots
 

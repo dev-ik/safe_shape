@@ -1,5 +1,7 @@
 # Immutability
 
+**English** | [Русский](ru/immutability.md)
+
 Every schema operation returns a new schema.
 
 ## Runtime Guarantees

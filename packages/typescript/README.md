@@ -1,5 +1,7 @@
 # @safe-shape/typescript
 
+**English** | [Русский](README.ru.md)
+
 TypeScript declaration generation for SafeShape runtime contracts.
 
 ## Usage

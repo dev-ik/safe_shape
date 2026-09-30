@@ -57,10 +57,17 @@ await run("npm", [
   ...packages.map((packageInfo) => resolve(tarballDir, packageInfo.tarball)),
 ], appDir);
 
+for (const packageInfo of packages) {
+  const russianReadme = await readFile(resolve(appDir, "node_modules", packageInfo.name, "README.ru.md"), "utf8");
+  assert.match(russianReadme, /Русский/);
+}
+
 await writeFile(resolve(appDir, "schema.mjs"), schemaModuleSource(), "utf8");
 await writeFile(resolve(appDir, "consumer.mjs"), consumerSource(), "utf8");
 
 await run(process.execPath, [resolve(appDir, "consumer.mjs")], appDir);
+await writeFile(resolve(appDir, "checked-output.mjs"), await readFile(resolve(rootDir, "examples/checked-output.mjs")));
+await run(process.execPath, [resolve(appDir, "checked-output.mjs")], appDir);
 
 const cliPath = resolve(appDir, "node_modules", ".bin", "safe-shape");
 const doctor = await run(cliPath, ["--json", "doctor"], appDir);

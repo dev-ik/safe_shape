@@ -41,6 +41,10 @@ within a separate predeclared 5-second budget.
 
 ## Composition and connection budgets
 
+For 3.3, the checked-output connection fixture performs 1,000 live-schema bound
+checks with a predeclared five-second budget. Every result must prove compatibility,
+label output-bound evidence and report no fabricated counterexample.
+
 The connection fixture checks 1,000 producer/consumer pairs, and the checked
 pipeline fixture parses 10,000 values. Each has its own predeclared five-second
 budget and validates outcomes. These guards do not replace the separate matched

@@ -1,5 +1,7 @@
 # Diagnostics
 
+**English** | [Русский](ru/diagnostics.md)
+
 Errors must explain what, where, why and how to fix.
 
 ## Public API

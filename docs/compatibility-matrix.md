@@ -1,5 +1,7 @@
 # Compatibility Rule Matrix
 
+**English** | [Русский](ru/compatibility-matrix.md)
+
 This document is the normative SafeShape 2.0 compatibility matrix. For each
 requested direction, `source` is the set of values being migrated and `target`
 is the receiving contract:

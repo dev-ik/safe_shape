@@ -1,5 +1,7 @@
 # Benchmarks
 
+**English** | [Русский](ru/benchmarks.md)
+
 SafeShape includes a dependency-free benchmark smoke suite.
 
 Run:

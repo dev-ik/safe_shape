@@ -190,6 +190,8 @@ const evolution = spawnSync(process.execPath, [
 if (evolution.error) throw evolution.error;
 assert.equal(evolution.status, 0, evolution.stdout + evolution.stderr);
 const connected = spawnSync(process.execPath, [resolve(rootDir, "examples/connected-contracts.mjs"), cliPath], { cwd: rootDir, encoding: "utf8" });
+const checkedOutput = spawnSync(process.execPath, [resolve(rootDir, "examples/checked-output.mjs")], { cwd: rootDir, encoding: "utf8" });
+assert.equal(checkedOutput.status, 0, checkedOutput.stderr || checkedOutput.stdout);
 if (connected.error) throw connected.error;
 assert.equal(connected.status, 0, connected.stdout + connected.stderr);
 const production = spawnSync(process.execPath, ["--unhandled-rejections=strict", "--test", resolve(rootDir, "examples/production-boundary.test.mjs")], { cwd: rootDir, encoding: "utf8" });

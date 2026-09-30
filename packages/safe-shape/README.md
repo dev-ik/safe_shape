@@ -1,6 +1,11 @@
 # safe-shape
 
+**English** | [Русский](README.ru.md)
+
 Umbrella package for SafeShape runtime contracts and tooling.
+
+The 3.3.0 re-exports `describeOutputBound()` and `checkSchemaConnection()`;
+see [checked output bounds](../../docs/checked-output.md).
 
 Install this package when a project wants the full SafeShape surface available
 through one dependency:

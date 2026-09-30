@@ -1,5 +1,7 @@
 # Project Integration
 
+**English** | [Русский](ru/integration.md)
+
 This guide shows how to use SafeShape as packages inside another TypeScript
 project.
 

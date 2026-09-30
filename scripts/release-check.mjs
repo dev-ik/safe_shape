@@ -121,8 +121,9 @@ function checkPackage(packagePath) {
     assert(manifest.publishConfig?.access === "public", `${packageName} publishConfig.access must be public`);
   }
   assert(manifest.engines?.node === ">=20.10", `${packageName} must declare Node >=20.10`);
-  assertArrayEqual(manifest.files, ["dist", "README.md"], `${packageName} files`);
+  assertArrayEqual(manifest.files, ["dist", "README.md", "README.ru.md"], `${packageName} files`);
   assertExists(join(packagePath, "README.md"), `${packageName} README.md`);
+  assertExists(join(packagePath, "README.ru.md"), `${packageName} README.ru.md`);
   assertExists(packageDocs.get(packageName), `${packageName} API documentation`);
 
   if (packageName === "@safe-shape/cli") {

@@ -1,5 +1,7 @@
 # @safe-shape/validation
 
+**English** | [Русский](README.ru.md)
+
 JSON-friendly validation reports for SafeShape runtime contracts.
 
 ## Usage

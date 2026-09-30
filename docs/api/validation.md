@@ -1,5 +1,7 @@
 # Validation
 
+**English** | [Русский](../ru/api/validation.md)
+
 `@safe-shape/validation` turns SafeShape parse results into JSON-friendly
 validation reports.
 

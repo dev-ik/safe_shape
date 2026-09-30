@@ -1,6 +1,11 @@
 # @safe-shape/core
 
+**English** | [Русский](README.ru.md)
+
 Runtime schemas, parsing, diagnostics, and type inference for SafeShape.
+
+For the 3.3.0 `describeOutputBound()` API, see
+[checked output bounds](../../docs/checked-output.md).
 
 ## Composition and checked pipelines
 

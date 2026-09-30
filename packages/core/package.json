@@ -1,6 +1,6 @@
 {
   "name": "@safe-shape/core",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "description": "Runtime contracts for TypeScript.",
   "type": "module",
   "publishConfig": {
@@ -17,7 +17,8 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "README.ru.md"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",

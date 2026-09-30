@@ -1,5 +1,7 @@
 # Updating from SafeShape 3.0 to 3.1
 
+**English** | [Русский](ru/migration-3.0-to-3.1.md)
+
 SafeShape 3.1.0 was published on 2026-09-11. These migration notes also apply
 when upgrading directly from 3.0 to 3.2. See the
 [3.1 release record](release-candidate-3.1.0.md) and

@@ -1,6 +1,11 @@
 # Explicit producer and consumer connections
 
+**English** | [Русский](ru/contract-connections.md)
+
 Available in SafeShape 3.2.0 and later. See the [release notes](release-candidate-3.2.0.md).
+
+For the 3.3.0 live-schema `checkSchemaConnection()` API and checked output
+bounds, see [the separate workflow](checked-output.md). This snapshot API is unchanged.
 
 ```ts
 import { checkContractConnection, createContractSnapshotV2, enumeration, object } from "safe-shape";

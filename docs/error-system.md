@@ -1,5 +1,7 @@
 # Error System
 
+**English** | [Русский](ru/error-system.md)
+
 Issue model: severity `error`, code, path, expected, received, message, optional
 suggestion, rule id, structured parameters and recursive union branches.
 Non-fatal diagnostics use the separate `Warning` type and warning channel.

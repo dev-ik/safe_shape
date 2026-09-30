@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { checkTranslations } from "./docs-translations.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const ignoredDirectories = new Set([
@@ -12,7 +13,7 @@ const ignoredDirectories = new Set([
   "release-artifacts",
 ]);
 const markdownFiles = listMarkdownFiles(root);
-const failures = [];
+const failures = checkTranslations(root);
 
 for (const file of markdownFiles) {
   checkLocalTargets(file);

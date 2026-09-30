@@ -1,7 +1,13 @@
 # SafeShape Umbrella Package
 
+**English** | [Русский](../ru/api/safe-shape.md)
+
 `safe-shape` is the umbrella package for projects that want the complete
 SafeShape runtime and tooling surface from one dependency.
+
+The 3.3.0 also re-exports `describeOutputBound`, `SchemaOutputBound`,
+`checkSchemaConnection`, `SchemaConnectionOptions` and `SchemaConnectionReport`.
+See [checked output bounds](../checked-output.md).
 
 ## Install
 

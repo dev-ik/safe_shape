@@ -8,7 +8,7 @@ Runtime-контракты для TypeScript: одна схема валидир
 
 [![npm package](https://img.shields.io/npm/v/safe-shape?label=npm%20safe-shape)](https://www.npmjs.com/package/safe-shape)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D20.10-339933)](package.json)
-[![TypeScript](https://img.shields.io/badge/types-TypeScript-3178c6)](docs/type-system.md)
+[![TypeScript](https://img.shields.io/badge/types-TypeScript-3178c6)](docs/ru/type-system.md)
 [![ESM](https://img.shields.io/badge/module-ESM-4b5563)](package.json)
 
 <p align="center">
@@ -170,7 +170,7 @@ Reporting, storage, retry и UI-политика остаются в коде п
 не ослабляет production-схему. Типизированный
 сценарий, рекомендации по telemetry, CI-проверка совместимости и исполняемый
 пример приведены в руководстве
-[Production Response Recovery](docs/production-response-recovery.md) (EN).
+[Production Response Recovery](docs/ru/production-response-recovery.md).
 
 ## Пакеты
 
@@ -204,13 +204,13 @@ Reporting, storage, retry и UI-политика остаются в коде п
 - [Быстрый старт](docs/ru/quick-start.md)
 - [Миграция с 1.x на 2.0](docs/ru/migration-1-to-2.md)
 - [Миграция с 2.x на 3.0](docs/ru/migration-2-to-3.md)
-- [Полный каталог документации](docs/README.md) (EN)
-- [Core API](docs/api/core.md) (EN)
-- [Совместимость контрактов](docs/api/compat.md) (EN)
-- [CLI API](docs/api/cli.md) (EN)
-- [HTTP API](docs/api/http.md) (EN)
-- [Production Response Recovery](docs/production-response-recovery.md) (EN)
-- [JSON Schema API](docs/api/json-schema.md) (EN)
+- [Полный каталог документации](docs/ru/README.md)
+- [Core API](docs/ru/api/core.md)
+- [Совместимость контрактов](docs/ru/api/compat.md)
+- [CLI API](docs/ru/api/cli.md)
+- [HTTP API](docs/ru/api/http.md)
+- [Production Response Recovery](docs/ru/production-response-recovery.md)
+- [JSON Schema API](docs/ru/api/json-schema.md)
 
 ## Локальная разработка
 
@@ -236,9 +236,9 @@ npm run examples:check
 
 ## Статус проекта
 
-SafeShape готовит релиз `3.2.1`; последняя опубликованная версия — 3.2.0.
-Patch обновляет README npm-пакетов; см. [запись о релизе 3.2.1](docs/release-3.2.1.md).
-См. [состав релиза и результаты проверок](docs/release-candidate-3.2.0.md).
+SafeShape готовит релиз `3.3.0`; этот кандидат ещё не опубликован.
+См. [описание релиза 3.3.0](docs/ru/release-3.3.0.md): проверяемые выходные контракты, улучшения runtime и инструкции обновления.
+См. [результаты проверок 3.3 (EN)](docs/release-evidence-3.3.md).
 Release gate проверяет
 метаданные, сборку, типы, тесты, примеры, benchmarks, установку tarball в
 тестовый consumer-проект, npm audit и package dry-run.
@@ -248,5 +248,5 @@ Release gate проверяет
 В SafeShape 3.2.0 добавлены композиция объектов, проверяемые цепочки преобразований,
 рекурсивные декларации TypeScript и проверки связей producer/consumer. См.
 [план реализации](docs/implementation-plan-next.md),
-[руководство](docs/composable-contracts.md) и
-[переход с Zod](docs/migration-from-zod.md).
+[руководство](docs/ru/composable-contracts.md) и
+[переход с Zod](docs/ru/migration-from-zod.md).

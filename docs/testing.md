@@ -1,6 +1,12 @@
 # Testing
 
+**English** | [Русский](ru/testing.md)
+
 Unit, integration, type, regression and fuzz tests.
+
+The 3.3 output-bound tests cover callback non-execution, recursive graphs,
+conservative connection decisions, unchanged exact export and root async-cache
+soundness. The checked-output journey also runs from installed consumer archives.
 
 ## Release quality
 

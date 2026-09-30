@@ -1,5 +1,7 @@
 # Migrating schemas from Zod
 
+**English** | [Русский](ru/migration-from-zod.md)
+
 SafeShape 3.2.0 adds object composition and checked pipelines. Migrate one
 boundary first, compare accepted values and produced outputs, then expand.
 The repository's quality fixtures pin the comparison version in

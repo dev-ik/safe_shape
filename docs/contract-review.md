@@ -1,5 +1,7 @@
 # Contract review artifacts
 
+**English** | [Русский](ru/contract-review.md)
+
 Introduced in 3.1.0. Generate Markdown from the existing
 compatibility, migration and optional counterexample reports:
 

@@ -1,5 +1,7 @@
 # Production failures without stopping the application
 
+**English** | [Русский](ru/production-boundaries.md)
+
 Runtime validation and application availability are separate responsibilities.
 Handle invalid data at each request, message or component boundary: report the
 violation and reject that operation, or recover with data checked by the same

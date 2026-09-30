@@ -1,5 +1,7 @@
 # Contract counterexamples
 
+**English** | [Русский](ru/counterexamples.md)
+
 Introduced in 3.1.0. See the [release status](release-candidate-3.1.0.md).
 
 `createContractCounterexamples(previousSnapshot, nextSnapshot, options?)` from

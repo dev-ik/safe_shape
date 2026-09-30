@@ -1,5 +1,7 @@
 # SafeShape 3.2.1 documentation patch
 
+**English** | [Русский](ru/release-3.2.1.md)
+
 Status: publication authorized; release verification in progress.
 
 This patch publishes corrected package READMEs to npm. All eight packages,

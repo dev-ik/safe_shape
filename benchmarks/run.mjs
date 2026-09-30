@@ -145,7 +145,14 @@ const compositeCounterexampleNext = compat.createContractSnapshotV2(object({ use
 const connectionProducer = compat.createContractSnapshotV2(object({ state: core.enumeration(["active", "paused"]) }));
 const connectionConsumer = compat.createContractSnapshotV2(object({ state: literal("active") }));
 const checkedPipeline = string().transform(Number).pipe(number({ minimum: 0 }));
+const checkedConsumer = number();
 const cases = [
+  {
+    name: "checked output connection",
+    iterations: 1_000,
+    run: () => compat.checkSchemaConnection(checkedPipeline, checkedConsumer),
+    accept: (result) => result.compatible && result.evidence === "output-bound" && result.counterexample.status === "unavailable",
+  },
   {
     name: "contract connection check",
     iterations: 1_000,
@@ -323,7 +330,7 @@ const cases = [
 const results = [];
 for (const benchmarkCase of cases) {
   const result = runCase(benchmarkCase);
-  if (["contract connection check", "checked pipeline parse", "contract scalar counterexample", "contract string counterexample", "contract composite counterexample"].includes(benchmarkCase.name) && result.duration_ms > 5000) {
+  if (["checked output connection", "contract connection check", "checked pipeline parse", "contract scalar counterexample", "contract string counterexample", "contract composite counterexample"].includes(benchmarkCase.name) && result.duration_ms > 5000) {
     throw new Error(`${benchmarkCase.name} budget exceeded: ${benchmarkCase.iterations} calls must complete within 5 seconds.`);
   }
   results.push(result);

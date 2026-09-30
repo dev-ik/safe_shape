@@ -2,8 +2,8 @@
 
 **English** | [Русский](ru/implementation-plan-3.3.md)
 
-Status: implemented; versioned 3.3.0 candidate, not published. Final release
-qualification is pending. The mission is to build the best
+Status: implemented and published as 3.3.0. Automated qualification and final CI
+passed; the owner authorized publication with the disclosed incomplete human walkthrough. The mission is to build the best
 runtime contract platform for TypeScript, with correctness before performance,
 immutable schemas, rich diagnostics and stable APIs.
 

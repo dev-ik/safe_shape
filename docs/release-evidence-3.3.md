@@ -1,7 +1,7 @@
 # SafeShape 3.3 development evidence
 
-Status: versioned 3.3.0 candidate; no tag or publication. Full release
-qualification and independent developer walkthrough are recorded separately below.
+Status: published as 3.3.0. The chronological qualification record below retains
+earlier candidate statuses; verified publication is recorded in the final section.
 
 ## Paired runtime measurements
 
@@ -126,3 +126,41 @@ The owner explicitly instructed publication after disclosure that the independen
 developer walkthrough remained incomplete. This is authorization to proceed with
 that limitation, not a claim that a human walkthrough passed. Final-commit CI
 will still be required before dispatching the publishing workflow.
+
+## Verified publication
+
+Signed tag `v3.3.0` points to `71f185afdca2265b1ea353d61ef69c14daf4ef92`.
+[Exact-candidate CI](https://github.com/dev-ik/safe_shape/actions/runs/36698500585)
+passed on Node 20.10.0 and Node 24. All sixteen archives from both jobs matched
+the eight locally qualified archives byte for byte.
+
+The [publishing workflow](https://github.com/dev-ik/safe_shape/actions/runs/36699374763)
+repeated the full preparation gate, published all eight packages through npm
+trusted publishing and created [SafeShape v3.3.0](https://github.com/dev-ik/safe_shape/releases/tag/v3.3.0).
+Registry version/latest, SHA-512 integrity, SHA-1, downloaded archive bytes and
+registry READMEs match the qualified release. All eight GitHub assets match too.
+
+npm selected the packaged `README.ru.md` as the displayed README for all eight
+packages. Registry text matches that Russian file exactly; both `README.md` and
+`README.ru.md` are present in each verified archive.
+
+A fresh project with a clean npm cache installed all eight packages from npm.
+Public imports, the executable CLI doctor and the checked-output journey passed
+under strict unhandled-rejection handling: parsing, explicit bound export, safe
+connection proof and conservative manual review. This automated journey does not
+count as the incomplete independent human walkthrough; the owner authorized
+publication after that limitation was disclosed.
+
+Machine-readable records are in `.tmp/readiness-3.3.0/`. Post-publication status
+and navigation edits do not alter the release tag or packaged artifacts.
+
+Final archive SHA-256 values:
+
+- `safe-shape-core-3.3.0.tgz`: `cc7ef28de494ea28dc32810c8def85147021bfe7b6e2144a9e59ab0304745fa5`
+- `safe-shape-compat-3.3.0.tgz`: `ae0ae2209e4dcca368a6c490a595c63ce2c572bee149cbb5a6121eb8ad4c7a7f`
+- `safe-shape-http-3.3.0.tgz`: `e42e539c8ec84164241286457fca538cfe81dec716926ca6cdf030833ce9fb31`
+- `safe-shape-json-schema-3.3.0.tgz`: `f93727a6039a431df0fb9dff392608b6394ced0d7b2dc0f4585255ed4c776dd2`
+- `safe-shape-typescript-3.3.0.tgz`: `008454158f6f960c90c5fe695211b57e517fff4e8bac07cfd5e64236ade162d1`
+- `safe-shape-validation-3.3.0.tgz`: `30b9869fe26fe7fcb9f0672573f663f7654c8cbceacdd786b2bcef0b6f10f0a1`
+- `safe-shape-cli-3.3.0.tgz`: `b19566b12d11f46fc4566b36d7448316b9eebbf267a4a102f6702ad269f76e1e`
+- `safe-shape-3.3.0.tgz`: `a36ba6c3c41b2083c8d237f69e08ffb6d85a2b2827b14bb1f835a2f01870695a`

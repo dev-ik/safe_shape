@@ -4,8 +4,8 @@
     {
       "english": "README.md",
       "russian": "README.ru.md",
-      "englishSha256": "8cf96c87d717430f2f0b8171e5e6559e86d1ca14dc7f2ff2ccf09c03048ff34e",
-      "russianSha256": "1981cb63f11684cb0d37d62e5713427de19bebbd29f30d4f7a05a4fe1a49bfd6"
+      "englishSha256": "ec32baeb516c9d3029470c9681054db84b565173b37be065f83e93a155d676d9",
+      "russianSha256": "66a0fe48619fcad1134f6cdb68f1ff312d6d379513ae77806ecf81a151c1b44c"
     },
     {
       "english": "docs/README.md",
@@ -76,8 +76,8 @@
     {
       "english": "docs/checked-output.md",
       "russian": "docs/ru/checked-output.md",
-      "englishSha256": "808314bef508e1bdbdd1cad1ee173d4e797d0343f82b822fa858714518efa4f1",
-      "russianSha256": "47dfe69033186528900a4ebc1716250ce89e13ba1329d32766cce8caa94289d5"
+      "englishSha256": "452d858b432aad9b5b060762dbe6ce48b03c164702d935352009b7ba4238ad69",
+      "russianSha256": "2253235f974a8d869cef79159653d74605f38755296785e3d423df52e0c65516"
     },
     {
       "english": "docs/ci.md",
@@ -148,8 +148,8 @@
     {
       "english": "docs/implementation-plan-3.3.md",
       "russian": "docs/ru/implementation-plan-3.3.md",
-      "englishSha256": "c166b68a2d48c055f250b6348b024967fe348cc05b3055ff19926c861221624f",
-      "russianSha256": "22573ebe15005b80222c2096bcbd3db52ae906e6dd4e2af407b2819fd6d1f292"
+      "englishSha256": "649cbe73b261b7f1c731119d4ae94a853913a4ff02f36a8c0dbbd120cb0b13fc",
+      "russianSha256": "286b53f0f605394cd51c1715e18a03d4c8ee01c93bcf5ef67ad31f0fd4de6e72"
     },
     {
       "english": "docs/integration.md",
@@ -334,8 +334,8 @@
     {
       "english": "docs/release-3.3.0.md",
       "russian": "docs/ru/release-3.3.0.md",
-      "englishSha256": "70c46f41ea020349b32794ab54261cd3799d076a86be7c66a215b7769f54ad93",
-      "russianSha256": "0ccabf30c7184dfa3799ef907cdb77b02d81328a47e16c07fc1c781587560d73"
+      "englishSha256": "dca45058a258bc88838519a42ca56956e9b2c14473cfa613e47497ef6129f970",
+      "russianSha256": "0199bcdbe5c6da695e155abeb50eb16749f41f1226f1bf5732bfe23e74947263"
     }
   ],
   "englishOnly": [

@@ -2,8 +2,10 @@
 
 **English** | [Русский](ru/release-3.3.0.md)
 
-Status: local release candidate; not published. Remote CI on the final commit
-and an independent developer walkthrough are still required.
+Status: published. Final-commit CI passed on Node 20.10.0 and Node 24.
+The owner authorized publication after disclosure that the independent developer
+walkthrough was incomplete; it is not recorded as passed. See the
+[publication evidence](release-evidence-3.3.md).
 
 ## Changes
 
@@ -32,8 +34,7 @@ only when an upper bound is appropriate; opaque final transforms remain unsuppor
 
 After publication, install `npm install safe-shape@3.3.0`, or update every scoped
 SafeShape package you use to `3.3.0` together. Node.js >=20.10 and ESM are required.
-Before publication, use the local tarballs prepared by `npm run prepare:release`;
-the registry command is not a way to install this unpublished candidate.
+For local archive preparation, use `npm run prepare:release`.
 
 ## Release qualification
 

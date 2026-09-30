@@ -2,7 +2,7 @@
 
 **English** | [Русский](ru/checked-output.md)
 
-Requires SafeShape 3.3.0. The local release candidate includes these APIs;
+Requires SafeShape 3.3.0. This release includes these APIs;
 3.2.x packages do not. See the [release notes](release-3.3.0.md).
 
 ```ts

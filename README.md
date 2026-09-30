@@ -177,16 +177,16 @@ example.
 
 ## Release Metrics
 
-Verified [3.2.1 release gate](docs/release-3.2.1.md):
+Verified [3.3.0 release gate](docs/release-evidence-3.3.md):
 
 | Signal | Status |
 | --- | --- |
 | Packages | 8 publishable packages |
-| Package tests | 274 passing tests |
+| Package tests | 286 passing tests |
 | Consumer install | Tarball and published npm installation checks pass |
 | Examples | Runnable examples pass |
 | Security audit | 0 known vulnerabilities |
-| Benchmarks | 29 runtime, diagnostics, composition, connection, and compatibility scenarios |
+| Benchmarks | 30 runtime, diagnostics, composition, connection, and compatibility scenarios |
 | Package dry run | `npm pack --workspaces --dry-run` passes |
 
 The following historical 3.0 sample used Node.js `v20.10.0` / macOS arm64.
@@ -312,7 +312,7 @@ TypeScript declarations and explicit producer/consumer connection checks. See th
 
 ## Project Status
 
-SafeShape is preparing the `3.3.0` release; this candidate is not yet published.
+SafeShape is on the `3.3.0` stable release line.
 See the [3.3.0 release notes](docs/release-3.3.0.md) for checked output contracts, runtime improvements and upgrade instructions.
 See the [3.3 verification evidence](docs/release-evidence-3.3.md).
 The release gate covers

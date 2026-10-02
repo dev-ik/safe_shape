@@ -245,6 +245,7 @@ Use narrower packages when you want strict dependency boundaries:
 | `@safe-shape/core` | Runtime schemas, parsing, diagnostics, and type inference |
 | `@safe-shape/compat` | Deterministic snapshots and compatibility analysis |
 | `@safe-shape/http` | Framework-neutral HTTP boundary helpers |
+| `@safe-shape/api` | Endpoint catalogs, validated fetch clients, OpenAPI and API evolution checks |
 | `@safe-shape/json-schema` | JSON Schema export |
 | `@safe-shape/typescript` | TypeScript declaration generation |
 | `@safe-shape/validation` | JSON-friendly validation reports |
@@ -312,9 +313,9 @@ TypeScript declarations and explicit producer/consumer connection checks. See th
 
 ## Project Status
 
-SafeShape is on the `3.3.0` stable release line.
-See the [3.3.0 release notes](docs/release-3.3.0.md) for checked output contracts, runtime improvements and upgrade instructions.
-See the [3.3 verification evidence](docs/release-evidence-3.3.md).
+SafeShape is preparing the `3.4.0` release; all nine packages share this version.
+See the [3.4.0 release notes](docs/release-3.4.0.md) for endpoint catalogs, validated fetch clients, OpenAPI and API evolution checks.
+See the [3.4 qualification evidence](docs/release-evidence-3.4.md).
 The release gate covers
 metadata checks, build, typecheck, tests, examples, benchmarks, consumer tarball
 installation, npm audit, and package dry-run.

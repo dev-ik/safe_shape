@@ -52,7 +52,7 @@ try {
     baseline: await artifactHash(join(base, "packages/core/dist")),
   };
   const tarballs = join(output, "tarballs"); await mkdir(tarballs);
-  const packages = ["core", "compat", "http", "json-schema", "typescript", "validation", "cli", "safe-shape"];
+  const packages = ["core", "compat", "http", "json-schema", "typescript", "validation", "api", "cli", "safe-shape"];
   const paths = {};
   for (const pkg of packages) {
     const packed = JSON.parse(run("npm", ["--cache", join(root, ".npm-cache"), "pack", "--json", "--ignore-scripts", "--pack-destination", tarballs], join(root, "packages", pkg)));

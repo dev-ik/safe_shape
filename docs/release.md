@@ -79,8 +79,9 @@ Publish order must follow dependency direction:
 4. `@safe-shape/json-schema`
 5. `@safe-shape/typescript`
 6. `@safe-shape/validation`
-7. `@safe-shape/cli`
-8. `safe-shape`
+7. `@safe-shape/api`
+8. `@safe-shape/cli`
+9. `safe-shape`
 
 Use [publish-readiness.md](publish-readiness.md) before publishing packages.
 

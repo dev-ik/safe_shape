@@ -6,7 +6,7 @@ SafeShape documentation is organized by the task you need to complete.
 
 ## Start Here
 
-- [3.3.0 release notes](release-3.3.0.md): changes, upgrade and qualification status.
+- [3.4.0 release notes](release-3.4.0.md): changes, upgrade and qualification status.
 - [Checked output bounds](checked-output.md): 3.3.0 export and connection proofs.
 - [3.3 implementation plan](implementation-plan-3.3.md): runtime efficiency, checked outputs and complete current EN/RU guides.
 
@@ -23,6 +23,8 @@ SafeShape documentation is organized by the task you need to complete.
 - [Migrating from 2.x to 3.0](migration-2-to-3.md): warnings, native
   diagnostics, and explicit async parsing
   and the recommended upgrade order.
+
+- [Endpoint catalogs, clients, OpenAPI and API checks](api/api.md): 3.4 additive workflow.
 
 ## API Reference
 

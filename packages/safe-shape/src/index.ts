@@ -4,3 +4,4 @@ export * from "@safe-shape/http";
 export * from "@safe-shape/json-schema";
 export * from "@safe-shape/typescript";
 export * from "@safe-shape/validation";
+export * from "@safe-shape/api";

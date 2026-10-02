@@ -11,10 +11,14 @@ Packages:
 - `@safe-shape/json-schema`: JSON Schema export built on core schema descriptions.
 - `@safe-shape/typescript`: TypeScript declaration generation built on core schema descriptions.
 - `@safe-shape/validation`: JSON-friendly validation reports built on core schemas.
-- `@safe-shape/cli`: command-line tooling built on compat, core, json-schema, typescript, and validation.
+- `@safe-shape/api`: endpoint catalogs and fetch clients, OpenAPI and API compatibility; depends on core/http/json-schema/compat. Its browser `./client` entry excludes Node tooling.
+- `@safe-shape/cli`: command-line tooling built on api, compat, core, json-schema, typescript, and validation.
 
 Dependency direction:
 
+- `safe-shape -> api`
+- `api -> core/http/json-schema/compat`
+- `cli -> api`
 - `safe-shape -> core`
 - `safe-shape -> compat`
 - `safe-shape -> http`

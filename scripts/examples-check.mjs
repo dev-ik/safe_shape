@@ -197,6 +197,8 @@ assert.equal(connected.status, 0, connected.stdout + connected.stderr);
 const production = spawnSync(process.execPath, ["--unhandled-rejections=strict", "--test", resolve(rootDir, "examples/production-boundary.test.mjs")], { cwd: rootDir, encoding: "utf8" });
 if (production.error) throw production.error;
 assert.equal(production.status, 0, production.stdout + production.stderr);
+const apiWorkflow = spawnSync(process.execPath, [resolve(rootDir, "examples/api-workflow.mjs")], { cwd: rootDir, encoding: "utf8" });
+assert.equal(apiWorkflow.status, 0, apiWorkflow.stderr || apiWorkflow.stdout);
 console.log("examples-check: ok (including production rejection, recovery and logger failures)");
 
 function runCli(args) {

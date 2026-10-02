@@ -10,6 +10,8 @@ Paths are relative to the current working directory unless a command explicitly
 uses manifest-relative paths. Create the parent directory before passing
 `--out`; the CLI writes the file but does not create missing directories.
 
+See [API workflow commands](api.md) for `api export`, `api snapshot` and `api check`.
+
 ## Commands
 
 ```sh

@@ -4,20 +4,20 @@
     {
       "english": "README.md",
       "russian": "README.ru.md",
-      "englishSha256": "ec32baeb516c9d3029470c9681054db84b565173b37be065f83e93a155d676d9",
-      "russianSha256": "66a0fe48619fcad1134f6cdb68f1ff312d6d379513ae77806ecf81a151c1b44c"
+      "englishSha256": "7e002fa816cbd726ce07b7c816026bf25da9998be21f7abca4fb03ad84fab761",
+      "russianSha256": "b038e66a3fb6c86a6446d7b1adc4e93d0a991ae69a9dcaeaef249cfdcbc320c8"
     },
     {
       "english": "docs/README.md",
       "russian": "docs/ru/README.md",
-      "englishSha256": "5bd9a7cb9a2704028e5d378d3fdc189baf80c4b6f6b7be81bc0942f187b39dea",
-      "russianSha256": "7068125c7d84fccdcd2cfde3804a6af48cfa05fc5c84984d37ac5efb3f6482bd"
+      "englishSha256": "4c4d4b38f688181238095ffc5ea72e16d51cb39a9d9ce8e9695d9ef6313085b8",
+      "russianSha256": "c9dbd7db89b1139a6582c8825059d8ef0db20584b155909932171bd68584ef7c"
     },
     {
       "english": "docs/api/cli.md",
       "russian": "docs/ru/api/cli.md",
-      "englishSha256": "f05ed19efd37aa50727d985d02333ac77bfbe5dcd33a1d0629cf514474cd305b",
-      "russianSha256": "3ef1b4d225fa003549c9fc7926b84f61725169253d1334af7182904d86548106"
+      "englishSha256": "7c3bf1de0f31fd53a1ad1907537b46cb96cb2bb2fb505c5a00a258d5bb5b43a4",
+      "russianSha256": "266d78d50fcbbae3ed8fed585ecade658decb5a510124fdc5dc3f926c855f6a9"
     },
     {
       "english": "docs/api/compat.md",
@@ -46,8 +46,8 @@
     {
       "english": "docs/api/safe-shape.md",
       "russian": "docs/ru/api/safe-shape.md",
-      "englishSha256": "1f2de28f62069c13fc75a3749e258e64eaf3c8e10ced390d091cb25f326eb633",
-      "russianSha256": "bc2b841b988e6a33c24770a2a80636f52916ce2636c4b1969c3d85da644b1e7f"
+      "englishSha256": "bd6fb3f2d661b6c96ce3a3fc964052283f505e070fc433ba9127669ba5a6d846",
+      "russianSha256": "7457a893d32e7451606537b326bb7dde005f33c637dda4fd4dd4297155ae0b97"
     },
     {
       "english": "docs/api/typescript.md",
@@ -154,8 +154,8 @@
     {
       "english": "docs/integration.md",
       "russian": "docs/ru/integration.md",
-      "englishSha256": "1aedd157ed1f7eb425db9c33846930f0cad9b160fc89d49549f4401fe93ad93c",
-      "russianSha256": "b19f897eb6cf1a643a6959bc2e433ca6e4a678edcd8711595df63873631f3b1d"
+      "englishSha256": "8bc816e72cf6f5e42367495732e4abbe5d8e5ac246a4a05b0dddf815ee732717",
+      "russianSha256": "e638493f6889f432f08035bc69894772ed8607e7aef5150ef5faafedcdcb4a1b"
     },
     {
       "english": "docs/migration-1-to-2.md",
@@ -190,8 +190,8 @@
     {
       "english": "docs/package-architecture.md",
       "russian": "docs/ru/package-architecture.md",
-      "englishSha256": "2cc9bf6525fa780cbe4f4b3a15a803b95a86e8e818ebcb5f6bda4171318dddd9",
-      "russianSha256": "27f05368d3e8d5ac2278b90f4b25a1b5bc68689002fc5a763b4102e1b5f35c3e"
+      "englishSha256": "5b7b295091197d71f3174814d7f2abd14e797f7213d2d5c7f1040877f019317d",
+      "russianSha256": "f78bc30b7e5f301217c64e9f5d9dc2138dfaef2da09fe0dc170d438ec5359ead"
     },
     {
       "english": "docs/parser.md",
@@ -250,8 +250,8 @@
     {
       "english": "docs/release.md",
       "russian": "docs/ru/release.md",
-      "englishSha256": "fcdc6a0735f8209e610fbfd3e460b3b389df9b9ece9c06f7e9823c73a4de5abd",
-      "russianSha256": "eee72a56aa3a908d016f14af6993099d95864b47d5bde3d3be3c3fa110e0de8c"
+      "englishSha256": "f37130e868b43052460290376b5a292ee0cf9c762c4a3e0c6e5f433d70918e64",
+      "russianSha256": "206a4f6d179a076a9d1f7d5b8446379ba0db3141723fd04ea77f29072d4299b8"
     },
     {
       "english": "docs/roadmap.md",
@@ -286,8 +286,8 @@
     {
       "english": "packages/cli/README.md",
       "russian": "packages/cli/README.ru.md",
-      "englishSha256": "74fd3c31b572c8ae293342361d05433e54efdb53527d150fa8de84015a5921b9",
-      "russianSha256": "0ce31af79e3634c6cab7f06b33489b31b74391c7108add9096e78e01b1d97cf7"
+      "englishSha256": "54add6a55b4da54ae587ddf8a6a30c55ed5d891af13cfa0581e97dc9a3434eec",
+      "russianSha256": "1e1e976f765d5f8472d6a4d47add78168f236974550b09e58239d87eb791a94a"
     },
     {
       "english": "packages/compat/README.md",
@@ -316,8 +316,8 @@
     {
       "english": "packages/safe-shape/README.md",
       "russian": "packages/safe-shape/README.ru.md",
-      "englishSha256": "6c1928f74d77957a67fbdfe35175fc8ee9f67546307f4d2ffd6f31b9133b2468",
-      "russianSha256": "a1c47fbe046b6a4c4836b9c3e1a77683f667eef6ce8498f91cf6e849649ec11c"
+      "englishSha256": "c13139d49f7aa81748d348fad214e5e822ede767c37c1541837a5908ff63bc2a",
+      "russianSha256": "4a2ee9962426fd3dd366f8dd438f7752e71b647c505298562b1a7ef5b7fee486"
     },
     {
       "english": "packages/typescript/README.md",
@@ -336,6 +336,30 @@
       "russian": "docs/ru/release-3.3.0.md",
       "englishSha256": "dca45058a258bc88838519a42ca56956e9b2c14473cfa613e47497ef6129f970",
       "russianSha256": "0199bcdbe5c6da695e155abeb50eb16749f41f1226f1bf5732bfe23e74947263"
+    },
+    {
+      "english": "docs/api/api.md",
+      "russian": "docs/ru/api/api.md",
+      "englishSha256": "db6e089ebe90edbb059246f507a0628b42914ed2490008a8b6f7423919e48685",
+      "russianSha256": "63592939321508977a5c19854c58789b7ed2e8a9c774496440f1caf2c872b59d"
+    },
+    {
+      "english": "packages/api/README.md",
+      "russian": "packages/api/README.ru.md",
+      "englishSha256": "afaa5a1ca66d9382f9bb1dfaba938646be7b4cd9420d03a81195a4e553e56e81",
+      "russianSha256": "e86d4efc1b674bab17815b0208b308f80effe5aaecfcb03c78471dce91d276f8"
+    },
+    {
+      "english": "docs/release-3.4.0.md",
+      "russian": "docs/ru/release-3.4.0.md",
+      "englishSha256": "558a101dbb76fe4f19a38b76258492d59e36a1b123128127f3eb02f4244ac6fe",
+      "russianSha256": "7c06d90c55a82252d6c1e58e0f698dd826068420c87c325044a16b7cab4ec930"
+    },
+    {
+      "english": "docs/release-evidence-3.4.md",
+      "russian": "docs/ru/release-evidence-3.4.md",
+      "englishSha256": "926ebc3d681adf3d9c85bab087ff90c341b8ca2386b21115be725a6530836ea2",
+      "russianSha256": "73476d20e2f883caf4cb2d6eb0f03956ec3fd154bfa3ec9e7a133c4b51b48d8f"
     }
   ],
   "englishOnly": [

@@ -35,3 +35,6 @@ checkContractConnection и рекурсивные TypeScript-объявлени�
 checkSchemaConnection; см. [проверяемые выходы](../checked-output.md).
 Для browser runtime без инструментов Node выбирайте отдельный core-пакет;
 см. [архитектуру](../package-architecture.md).
+
+
+Umbrella также реэкспортирует [API workflow] версии 3.4(api.md).

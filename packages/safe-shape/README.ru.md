@@ -35,3 +35,7 @@ checkContractConnection и рекурсивные TypeScript-объявлени�
 checkSchemaConnection; см. [проверяемые выходы](../../docs/ru/checked-output.md).
 Для browser runtime без инструментов Node выбирайте отдельный core-пакет;
 см. [архитектуру](../../docs/ru/package-architecture.md).
+
+## API workflow (3.4.0)
+
+Umbrella экспортирует `httpEndpoint`, `apiContract`, `createApiClient`, экспорт OpenAPI 3.1 и проверки совместимости API snapshots. Для браузера используйте `@safe-shape/api/client`. См. [API workflow](../../docs/ru/api/api.md).

@@ -114,3 +114,13 @@ JSON-envelope сохраняет ok и command. Operational error содержи
 compatibility failure — compatible false, status, findings и migration.
 CLI не требует auth. Схемы — доверенный код и могут сами выводить данные.
 См. [CI](../../docs/ru/ci.md) для сохранения артефактов и политики baseline.
+
+## API workflow (3.4.0)
+
+```sh
+safe-shape api export --module ./api.mjs --title "My API" --version 1.0.0 --out ./openapi.json
+safe-shape api snapshot --module ./api.mjs --out ./api.contract.json
+safe-shape --json api check --module ./api.mjs --against ./api.contract.json
+```
+
+Экспорт OpenAPI 3.1, сохранение immutable API snapshots и проверка обновлений сервера относительно существующих клиентов. Exit codes: 0 для совместимых изменений, 2 для миграции или ручного review, 1 для operational errors. См. [API workflow](../../docs/ru/api/api.md).

@@ -1,6 +1,6 @@
 {
   "name": "safe-shape-workspace",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "description": "Runtime contracts for TypeScript.",
   "private": true,
   "type": "module",
@@ -15,7 +15,8 @@
     "packages/json-schema",
     "packages/typescript",
     "packages/validation",
-    "packages/cli"
+    "packages/cli",
+    "packages/api"
   ],
   "scripts": {
     "benchmarks:check": "node --test benchmarks/runner.test.mjs && node benchmarks/run.mjs",

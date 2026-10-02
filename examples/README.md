@@ -130,3 +130,9 @@ It runs in both the workspace and installed consumers.
 ## Production request boundary
 
 [`production-boundary.mjs`](production-boundary.mjs) handles invalid requests, response drift and service failures with structured logging and controlled HTTP results. Throwing/rejecting loggers cannot fail the operation. [Guide](../docs/production-boundaries.md).
+
+## API workflow
+
+After building, run `node examples/api-workflow.mjs` for a catalog, validated
+client, OpenAPI export and API compatibility check without network access.
+See the [API reference](../docs/api/api.md).

@@ -9,6 +9,8 @@ The 3.3.0 also re-exports `describeOutputBound`, `SchemaOutputBound`,
 `checkSchemaConnection`, `SchemaConnectionOptions` and `SchemaConnectionReport`.
 See [checked output bounds](../checked-output.md).
 
+The umbrella also re-exports the 3.4 [API workflow](api.md).
+
 ## Install
 
 ```sh

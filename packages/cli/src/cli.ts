@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 import { renderContractReview } from "./review.js";
+import { runApiCommand } from "./api.js";
+import { OpenApiExportError, type OpenApiExportIssue } from "@safe-shape/api";
 import { checkConnectionsManifest, renderConnections } from "./connections.js";
 import { readFileSync, realpathSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
@@ -41,7 +43,7 @@ interface CliErrorPayload {
   readonly error: {
     readonly code: string;
     readonly message: string;
-    readonly issues?: readonly JsonSchemaExportIssue[];
+    readonly issues?: readonly (JsonSchemaExportIssue | OpenApiExportIssue)[];
   };
 }
 
@@ -72,6 +74,8 @@ const VALUE_FLAGS = new Set([
   "out",
   "schema",
   "side",
+  "title",
+  "version",
 ]);
 
 export async function main(argv: readonly string[] = process.argv.slice(2)): Promise<number> {
@@ -129,6 +133,17 @@ export async function main(argv: readonly string[] = process.argv.slice(2)): Pro
       return await runContractCheck(parsed, json);
     }
 
+    if (parsed.command.length === 2 && parsed.command[0] === "api" && ["export", "snapshot", "check"].includes(parsed.command[1]!)) {
+      let result;
+      try { result = await runApiCommand(parsed.command[1]!, parsed.flags); }
+      catch (error) {
+        if (error instanceof OpenApiExportError) throw error;
+        throw new CliError("api_command_failed", error instanceof Error ? error.message : "API command failed.");
+      }
+      if (json) writeJson(result.payload);
+      else writeText(result.text);
+      return result.exitCode;
+    }
     throw new CliError("unknown_command", `Unknown command: ${parsed.command.join(" ")}`);
   } catch (error) {
     writeError(error, parsed.command.join(" ") || "help", json);
@@ -812,6 +827,7 @@ function writeError(error: unknown, command: string, json: boolean): void {
 }
 
 function normalizeError(error: unknown): CliError {
+  if (error instanceof OpenApiExportError) return new CliError("openapi_export_failed", error.message, error.issues);
   if (error instanceof CliError) {
     return error;
   }
@@ -842,6 +858,9 @@ Usage:
 
 Commands:
   doctor         Check CLI runtime and package availability.
+  api export    Export an endpoint catalog to OpenAPI 3.1 (--title, --version).
+  api snapshot  Create an API baseline from an endpoint catalog.
+  api check     Check a server update against an API baseline (--against).
   schema export Export a SafeShape schema module to JSON Schema.
   schema validate Validate a JSON file through a SafeShape schema module.
   schema types  Generate a TypeScript type from a SafeShape schema module.
@@ -874,7 +893,7 @@ class CliError extends Error {
   constructor(
     readonly code: string,
     message: string,
-    readonly issues?: readonly JsonSchemaExportIssue[],
+    readonly issues?: readonly (JsonSchemaExportIssue | OpenApiExportIssue)[],
   ) {
     super(message);
   }

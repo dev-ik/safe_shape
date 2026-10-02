@@ -144,3 +144,13 @@ synthetic root witnesses; see [supported domain](../../docs/counterexamples.md).
 Default JSON, exit codes, and baseline files remain unchanged.
 Add `--markdown` to generate a [review artifact](../../docs/contract-review.md)
 on stdout. It is incompatible with `--json` and `--out`.
+
+## API workflow (3.4.0)
+
+```sh
+safe-shape api export --module ./api.mjs --title "My API" --version 1.0.0 --out ./openapi.json
+safe-shape api snapshot --module ./api.mjs --out ./api.contract.json
+safe-shape --json api check --module ./api.mjs --against ./api.contract.json
+```
+
+Export OpenAPI 3.1, save immutable API snapshots, and check server updates against existing clients. Check exits with 0 for compatible changes, 2 for migration or manual review, and 1 for operational errors. See the [API workflow reference](../../docs/api/api.md).

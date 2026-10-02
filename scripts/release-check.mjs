@@ -11,9 +11,11 @@ const expectedPackages = [
   "packages/typescript",
   "packages/validation",
   "packages/cli",
+  "packages/api",
 ];
 const packageDocs = new Map([
   ["safe-shape", "docs/api/safe-shape.md"],
+  ["@safe-shape/api", "docs/api/api.md"],
   ["@safe-shape/core", "docs/api/core.md"],
   ["@safe-shape/compat", "docs/api/compat.md"],
   ["@safe-shape/http", "docs/api/http.md"],
@@ -26,6 +28,7 @@ const expectedDeps = new Map([
   [
     "safe-shape",
     [
+      "@safe-shape/api",
       "@safe-shape/cli",
       "@safe-shape/compat",
       "@safe-shape/core",
@@ -35,6 +38,7 @@ const expectedDeps = new Map([
       "@safe-shape/validation",
     ],
   ],
+  ["@safe-shape/api", ["@safe-shape/core", "@safe-shape/http", "@safe-shape/json-schema", "@safe-shape/compat"]],
   ["@safe-shape/core", []],
   ["@safe-shape/compat", ["@safe-shape/core"]],
   ["@safe-shape/http", ["@safe-shape/core"]],
@@ -44,6 +48,7 @@ const expectedDeps = new Map([
   [
     "@safe-shape/cli",
     [
+      "@safe-shape/api",
       "@safe-shape/compat",
       "@safe-shape/core",
       "@safe-shape/json-schema",

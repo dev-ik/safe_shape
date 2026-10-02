@@ -183,6 +183,7 @@ Reporting, storage, retry и UI-политика остаются в коде п
 | `@safe-shape/core` | Схемы, parsing, диагностика и вывод типов |
 | `@safe-shape/compat` | Детерминированные snapshots и анализ совместимости |
 | `@safe-shape/http` | Framework-neutral helpers для HTTP-границ |
+| `@safe-shape/api` | Каталоги endpoints, fetch-клиент, OpenAPI и проверка изменений API |
 | `@safe-shape/json-schema` | Экспорт JSON Schema |
 | `@safe-shape/typescript` | Генерация TypeScript declarations |
 | `@safe-shape/validation` | JSON-friendly validation reports |
@@ -236,9 +237,9 @@ npm run examples:check
 
 ## Статус проекта
 
-SafeShape находится на стабильной версии `3.3.0`.
-См. [описание релиза 3.3.0](docs/ru/release-3.3.0.md): проверяемые выходные контракты, улучшения runtime и инструкции обновления.
-См. [результаты проверок 3.3 (EN)](docs/release-evidence-3.3.md).
+SafeShape готовит релиз `3.4.0`; все девять пакетов имеют одну версию.
+См. [описание релиза 3.4.0](docs/ru/release-3.4.0.md): каталоги endpoints, fetch-клиент, OpenAPI и проверка изменений API.
+См. [свидетельства проверок 3.4](docs/ru/release-evidence-3.4.md).
 Release gate проверяет
 метаданные, сборку, типы, тесты, примеры, benchmarks, установку tarball в
 тестовый consumer-проект, npm audit и package dry-run.

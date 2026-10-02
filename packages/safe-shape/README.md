@@ -75,9 +75,14 @@ The package re-exports:
 - `@safe-shape/json-schema`
 - `@safe-shape/typescript`
 - `@safe-shape/validation`
+- `@safe-shape/api`
 
 Installing this package also installs `@safe-shape/cli`, which provides the
 `safe-shape` CLI binary.
 
 Use the scoped packages directly when a project wants the narrowest dependency
 surface.
+
+## API workflow (3.4.0)
+
+The umbrella exports `httpEndpoint`, `apiContract`, `createApiClient`, OpenAPI 3.1 export, and API snapshot compatibility checks. Use `@safe-shape/api/client` for the browser entry. See the [API workflow reference](../../docs/api/api.md).

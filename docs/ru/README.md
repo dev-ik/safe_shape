@@ -10,12 +10,14 @@
 
 - [Быстрый старт](quick-start.md) и [интеграция](integration.md).
 - [Композиция контрактов](composable-contracts.md), [связи producer/consumer](contract-connections.md).
-- [Описание релиза 3.3.0](release-3.3.0.md): изменения, обновление и статус подготовки.
+- [Описание релиза 3.4.0](release-3.4.0.md): изменения, обновление и статус подготовки.
 - [Проверяемые выходные границы](checked-output.md): API версии 3.3.0.
 - [Переход с Zod](migration-from-zod.md).
 - [Production-границы](production-boundaries.md) и [восстановление ответа](production-response-recovery.md).
 - Миграция [1.x → 2.0](migration-1-to-2.md), [2.x → 3.0](migration-2-to-3.md), [3.0 → 3.1](migration-3.0-to-3.1.md).
 - [Главный README](../../README.ru.md).
+
+- [Каталоги endpoints, клиент, OpenAPI и API checks](api/api.md): workflow версии 3.4.
 
 ## Справочник API
 

@@ -15,6 +15,7 @@ const version = rootPackage.version;
 
 assert.match(version, /^\d+\.\d+\.\d+$/);
 const packages = [
+  { name: "@safe-shape/api", tarball: `safe-shape-api-${version}.tgz` },
   { name: "safe-shape", tarball: `safe-shape-${version}.tgz` },
   { name: "@safe-shape/core", tarball: `safe-shape-core-${version}.tgz` },
   { name: "@safe-shape/compat", tarball: `safe-shape-compat-${version}.tgz` },
@@ -68,6 +69,9 @@ await writeFile(resolve(appDir, "consumer.mjs"), consumerSource(), "utf8");
 await run(process.execPath, [resolve(appDir, "consumer.mjs")], appDir);
 await writeFile(resolve(appDir, "checked-output.mjs"), await readFile(resolve(rootDir, "examples/checked-output.mjs")));
 await run(process.execPath, [resolve(appDir, "checked-output.mjs")], appDir);
+
+await writeFile(resolve(appDir, "api-workflow.mjs"), await readFile(resolve(rootDir, "examples/api-workflow.mjs")));
+await run(process.execPath, [resolve(appDir, "api-workflow.mjs")], appDir);
 
 const cliPath = resolve(appDir, "node_modules", ".bin", "safe-shape");
 const doctor = await run(cliPath, ["--json", "doctor"], appDir);

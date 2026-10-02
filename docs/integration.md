@@ -301,3 +301,9 @@ Install only the packages needed by the target project:
 
 Do not rely on private implementation fields. Use public schemas,
 `describeSchema()`, exporter packages, and CLI commands.
+
+## API workflow (3.4.0)
+
+Install `@safe-shape/api` for endpoint catalogs, validated fetch clients, OpenAPI
+and whole-API checks. The umbrella includes the same exports. Browser clients
+use `@safe-shape/api/client` to avoid Node tooling. See the [API reference](api/api.md).

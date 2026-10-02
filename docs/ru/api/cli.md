@@ -114,3 +114,6 @@ JSON-envelope сохраняет ok и command. Operational error содержи
 compatibility failure — compatible false, status, findings и migration.
 CLI не требует auth. Схемы — доверенный код и могут сами выводить данные.
 См. [CI](../ci.md) для сохранения артефактов и политики baseline.
+
+
+См. [API workflow](api.md): `api export`, `api snapshot`, `api check`.

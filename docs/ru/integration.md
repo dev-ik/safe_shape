@@ -79,3 +79,9 @@ Snapshot v1 остаётся default, v2 нужен для рекурсии и �
 introspection и exporters. В этом репозитории release:check включает полный
 набор build/typecheck/tests/examples/benchmarks/consumer/audit/pack проверок.
 Для обновления с 1.x сначала прочитайте [миграцию](migration-1-to-2.md).
+
+## API workflow (3.4.0)
+
+Установите `@safe-shape/api` для каталогов endpoints, fetch-клиента, OpenAPI
+и проверки API. Umbrella содержит те же экспорты. Для браузера используйте
+`@safe-shape/api/client` без Node tooling. См. [API reference](api/api.md).

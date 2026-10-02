@@ -9,6 +9,7 @@ export function checkTranslations(root) {
   const read = (path) => readFileSync(join(root, path), "utf8");
   const digest = (text) => createHash("sha256").update(text).digest("hex");
   const target = (from, to) => relative(dirname(from), to).split(sep).join("/");
+  const version = JSON.parse(read("package.json")).version;
   for (const pair of inventory.pairs) {
     if (covered.has(pair.english)) failures.push(`Duplicate translation source: ${pair.english}`);
     covered.add(pair.english);
@@ -19,7 +20,8 @@ export function checkTranslations(root) {
       }
       const text = read(path);
       if (digest(text) !== hash) failures.push(`Translation review required for ${pair.english} ↔ ${pair.russian}: ${path} changed`);
-      if (!text.includes(`](${target(path, other)})`)) failures.push(`${path} must link to ${other}`);
+      const packageLink = path.startsWith("packages/") && text.includes(`](https://github.com/dev-ik/safe_shape/blob/v${version}/${other})`);
+      if (!text.includes(`](${target(path, other)})`) && !packageLink) failures.push(`${path} must link to ${other}`);
     }
   }
   for (const entry of inventory.englishOnly) {

@@ -1,6 +1,6 @@
 {
   "name": "@safe-shape/typescript",
-  "version": "3.4.0",
+  "version": "3.4.1",
   "description": "TypeScript declaration generation for SafeShape runtime contracts.",
   "type": "module",
   "publishConfig": {
@@ -21,7 +21,7 @@
     "README.ru.md"
   ],
   "dependencies": {
-    "@safe-shape/core": "3.4.0"
+    "@safe-shape/core": "3.4.1"
   },
   "scripts": {
     "build": "npm run build --workspace @safe-shape/core && tsc -p tsconfig.build.json",
@@ -36,5 +36,10 @@
   "homepage": "https://github.com/dev-ik/safe_shape#readme",
   "bugs": {
     "url": "https://github.com/dev-ik/safe_shape/issues"
-  }
+  },
+  "keywords": [
+    "typescript",
+    "codegen",
+    "schema"
+  ]
 }

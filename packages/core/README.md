@@ -1,11 +1,11 @@
 # @safe-shape/core
 
-**English** | [Русский](README.ru.md)
+**English** | [Русский](https://github.com/dev-ik/safe_shape/blob/v3.4.1/packages/core/README.ru.md)
 
 Runtime schemas, parsing, diagnostics, and type inference for SafeShape.
 
 For the 3.3.0 `describeOutputBound()` API, see
-[checked output bounds](../../docs/checked-output.md).
+[checked output bounds](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/checked-output.md).
 
 ## Composition and checked pipelines
 
@@ -27,8 +27,8 @@ const Page = string({ pattern: "^[0-9]+$" })
 
 `pipe(next)` checks each stage's output and preserves the original input type.
 Use async parsing when either stage contains async rules. See the
-[composition guide](../../docs/composable-contracts.md) for inference and tooling
-limits, and [production boundaries](../../docs/production-boundaries.md) for
+[composition guide](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/composable-contracts.md) for inference and tooling
+limits, and [production boundaries](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/production-boundaries.md) for
 logging and controlled failure handling.
 
 ## Usage
@@ -179,4 +179,4 @@ const userIdSchema = string().annotate({
 });
 ```
 
-See the [Core API reference](../../docs/api/core.md) for the public API.
+See the [Core API reference](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/api/core.md) for the public API.

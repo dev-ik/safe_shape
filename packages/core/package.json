@@ -1,6 +1,6 @@
 {
   "name": "@safe-shape/core",
-  "version": "3.4.0",
+  "version": "3.4.1",
   "description": "Runtime contracts for TypeScript.",
   "type": "module",
   "publishConfig": {
@@ -33,5 +33,12 @@
   "homepage": "https://github.com/dev-ik/safe_shape#readme",
   "bugs": {
     "url": "https://github.com/dev-ik/safe_shape/issues"
-  }
+  },
+  "keywords": [
+    "typescript",
+    "schema",
+    "validation",
+    "type-inference",
+    "standard-schema"
+  ]
 }

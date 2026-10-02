@@ -8,6 +8,7 @@
 
 ## Начало работы
 
+- [Patch 3.4.1](release-3.4.1.md): npm-документация и metadata.
 - [Быстрый старт](quick-start.md) и [интеграция](integration.md).
 - [Композиция контрактов](composable-contracts.md), [связи producer/consumer](contract-connections.md).
 - [Описание релиза 3.4.0](release-3.4.0.md): изменения, обновление и статус подготовки.

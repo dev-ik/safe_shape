@@ -1,6 +1,6 @@
 # Core API
 
-[English](README.md) | **Русский**
+[English](https://github.com/dev-ik/safe_shape/blob/v3.4.1/packages/core/README.md) | **Русский**
 
 SafeShape проверяет данные на внешних границах приложения. Все схемы неизменяемы;
 операции возвращают новые экземпляры. Неявного приведения типов нет.
@@ -61,7 +61,7 @@ Intersection проверяет исходный вход обеими схем�
 С версии 3.2 доступны замороженный `shape`, `pick(keys)`, `omit(keys)`, неглубокий
 `partial()`, `required()` и добавляющий поля `extend(fields)`. Коллизия `extend`
 запрещена даже при совпадении типов. Компонуйте объект до объектных refinements;
-правила отдельных полей сохраняются. См. [композицию](../../docs/ru/composable-contracts.md).
+правила отдельных полей сохраняются. См. [композицию](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/ru/composable-contracts.md).
 
 ## Parsing и результаты
 
@@ -219,4 +219,4 @@ id отклоняются; legacy `describeSchema` показывает ссыл
 В версии 3.3.0 `describeOutputBound(schema)` возвращает отдельный
 `SchemaOutputBound` с `format: "safe-shape.output-bound/v1"` и `graph`.
 Это верхняя граница успешных выходов, не точный snapshot; см.
-[проверяемые выходы](../../docs/ru/checked-output.md). В опубликованной 3.2.x API отсутствует.
+[проверяемые выходы](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/ru/checked-output.md). В опубликованной 3.2.x API отсутствует.

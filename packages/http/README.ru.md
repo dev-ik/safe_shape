@@ -1,6 +1,6 @@
 # HTTP API
 
-[English](README.md) | **Русский**
+[English](https://github.com/dev-ik/safe_shape/blob/v3.4.1/packages/http/README.md) | **Русский**
 
 `@safe-shape/http` проверяет HTTP-границы схемами core и не зависит от фреймворка.
 `httpContract(config)` принимает секции params, query, body, headers, cookies,
@@ -58,7 +58,7 @@ networkError; unavailable — networkError и fallbackError. Warnings выбра
 валидного результата сохраняются. Невалидный payload не становится типизированными
 данными. Исключения fallback — ошибки приложения и распространяются наружу:
 обрабатывайте сбой хранилища внутри callback. Телеметрия, retries и UI-политика
-остаются в приложении. См. [восстановление](../../docs/ru/production-response-recovery.md).
+остаются в приложении. См. [восстановление](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/ru/production-response-recovery.md).
 
 ## Представление совместимости
 

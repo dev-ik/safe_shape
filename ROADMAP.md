@@ -9,6 +9,11 @@ Current English and Russian guides and all nine package READMEs are aligned.
 Runtime first, immutable schemas, explicit conversion and API stability remain
 mandatory. Historical roadmap entries below retain their original scope.
 
+## 3.4.1 candidate
+
+Npm README examples, absolute documentation links and package keywords.
+See [release notes](docs/release-3.4.1.md).
+
 ## 3.4.0 published
 
 Endpoint catalogs, validated fetch clients, OpenAPI 3.1 and API evolution checks.

@@ -1,6 +1,6 @@
 # @safe-shape/http
 
-**English** | [Русский](README.ru.md)
+**English** | [Русский](https://github.com/dev-ik/safe_shape/blob/v3.4.1/packages/http/README.ru.md)
 
 Framework-neutral HTTP boundary helpers for SafeShape runtime contracts.
 
@@ -45,7 +45,7 @@ For production response drift, `recoverHttpResponse()` (or
 validated through the same response contract and status; invalid network and
 fallback payloads are never returned as inferred data. Telemetry, storage, and
 UI policy remain application-owned. See [Production response
-recovery](../../docs/production-response-recovery.md) for the typed flow and
+recovery](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/production-response-recovery.md) for the typed flow and
 telemetry guidance.
 
-See the [HTTP API reference](../../docs/api/http.md) for the public API.
+See the [HTTP API reference](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/api/http.md) for the public API.

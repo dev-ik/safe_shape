@@ -126,9 +126,21 @@ function checkPackage(packagePath) {
     assert(manifest.publishConfig?.access === "public", `${packageName} publishConfig.access must be public`);
   }
   assert(manifest.engines?.node === ">=20.10", `${packageName} must declare Node >=20.10`);
+  assert(Array.isArray(manifest.keywords) && manifest.keywords.length > 0 &&
+    manifest.keywords.every((keyword) => typeof keyword === "string" && keyword.trim().length > 0),
+  `${packageName} must declare non-empty keywords`);
   assertArrayEqual(manifest.files, ["dist", "README.md", "README.ru.md"], `${packageName} files`);
   assertExists(join(packagePath, "README.md"), `${packageName} README.md`);
   assertExists(join(packagePath, "README.ru.md"), `${packageName} README.ru.md`);
+  for (const name of ["README.md", "README.ru.md"]) {
+    const path = join(packagePath, name);
+    const content = readFileSync(join(root, path), "utf8");
+    for (const [, target] of content.matchAll(/!?\[[^\]]*\]\(([^)]+)\)/g)) {
+      assert(/^(https?:\/\/|#)/.test(target), `${path} must use npm-safe links: ${target}`);
+      const prefix = `https://github.com/dev-ik/safe_shape/blob/v${releaseVersion}/`;
+      if (target.startsWith(prefix)) assertExists(target.slice(prefix.length).split("#")[0], `${path} link target`);
+    }
+  }
   assertExists(packageDocs.get(packageName), `${packageName} API documentation`);
 
   if (packageName === "@safe-shape/cli") {

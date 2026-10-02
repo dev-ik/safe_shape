@@ -1,6 +1,6 @@
 {
   "name": "@safe-shape/api",
-  "version": "3.4.0",
+  "version": "3.4.1",
   "description": "Endpoint catalogs, validated fetch clients, OpenAPI and API compatibility for SafeShape.",
   "type": "module",
   "publishConfig": {
@@ -25,10 +25,10 @@
     "README.ru.md"
   ],
   "dependencies": {
-    "@safe-shape/core": "3.4.0",
-    "@safe-shape/http": "3.4.0",
-    "@safe-shape/json-schema": "3.4.0",
-    "@safe-shape/compat": "3.4.0"
+    "@safe-shape/core": "3.4.1",
+    "@safe-shape/http": "3.4.1",
+    "@safe-shape/json-schema": "3.4.1",
+    "@safe-shape/compat": "3.4.1"
   },
   "scripts": {
     "build": "npm run build --workspace @safe-shape/http && npm run build --workspace @safe-shape/json-schema && npm run build --workspace @safe-shape/compat && tsc -p tsconfig.build.json",
@@ -43,5 +43,12 @@
   "homepage": "https://github.com/dev-ik/safe_shape#readme",
   "bugs": {
     "url": "https://github.com/dev-ik/safe_shape/issues"
-  }
+  },
+  "keywords": [
+    "openapi",
+    "api-client",
+    "fetch",
+    "contracts",
+    "typescript"
+  ]
 }

@@ -1,6 +1,6 @@
 # @safe-shape/typescript
 
-**English** | [Русский](README.ru.md)
+**English** | [Русский](https://github.com/dev-ik/safe_shape/blob/v3.4.1/packages/typescript/README.ru.md)
 
 TypeScript declaration generation for SafeShape runtime contracts.
 
@@ -50,4 +50,4 @@ Since 3.2.0, the generator supports recursive `lazy()` graphs,
 reused definitions, mutual recursion and `side: "input" | "output"` (output
 by default). Opaque outputs remain `unknown`; unproductive alias cycles fail
 explicitly. Versions before 3.2.0 reject references. See the
-[API reference](../../docs/api/typescript.md) for side selection and limits.
+[API reference](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/api/typescript.md) for side selection and limits.

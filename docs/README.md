@@ -6,6 +6,7 @@ SafeShape documentation is organized by the task you need to complete.
 
 ## Start Here
 
+- [3.4.1 patch](release-3.4.1.md): npm documentation and metadata.
 - [3.4.0 release notes](release-3.4.0.md): changes, upgrade and qualification status.
 - [Checked output bounds](checked-output.md): 3.3.0 export and connection proofs.
 - [3.3 implementation plan](implementation-plan-3.3.md): runtime efficiency, checked outputs and complete current EN/RU guides.

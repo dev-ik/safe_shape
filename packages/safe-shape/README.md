@@ -1,11 +1,13 @@
 # safe-shape
 
-**English** | [Русский](README.ru.md)
+**English** | [Русский](https://github.com/dev-ik/safe_shape/blob/v3.4.1/packages/safe-shape/README.ru.md)
 
-Umbrella package for SafeShape runtime contracts and tooling.
+Runtime contracts for TypeScript: validate unknown data, infer types, export schemas, and check API compatibility through one dependency.
 
-The 3.3.0 re-exports `describeOutputBound()` and `checkSchemaConnection()`;
-see [checked output bounds](../../docs/checked-output.md).
+Version 3.4.1 improves npm documentation and package metadata. Runtime behavior is unchanged from 3.4.0. Node >=20.10 and ESM are required.
+
+Since 3.3.0, the package also re-exports `describeOutputBound()` and `checkSchemaConnection()`;
+see [checked output bounds](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/checked-output.md).
 
 Install this package when a project wants the full SafeShape surface available
 through one dependency:
@@ -25,6 +27,63 @@ const userSchema = object({
 
 const report = validateSchema(userSchema, { id: "user_1" });
 ```
+
+## API workflow
+
+Define an immutable endpoint catalog, validate requests before fetch and responses after decoding, export OpenAPI 3.1, and compare API snapshots. Added in 3.4.0 and available in 3.4.1.
+
+```js
+import {
+  object, string, httpEndpoint, apiContract,
+} from "safe-shape";
+
+export const api = apiContract({
+  getUser: httpEndpoint({
+    method: "get",
+    path: "/users/{id}",
+    request: { params: object({ id: string({ minLength: 1 }) }) },
+    responses: {
+      200: object({ id: string() }),
+      404: object({ message: string() }),
+    },
+  }),
+});
+
+```
+
+Keep the catalog in `api.mjs`. Call it from a separate module so CLI imports do not send HTTP requests:
+
+```js
+import { createApiClient, toOpenApi, createApiSnapshot, compareApiSnapshots } from "safe-shape";
+import { api } from "./api.mjs";
+
+const client = createApiClient(api, { baseUrl: "https://api.example.com/v1" });
+const result = await client.getUser({ params: { id: "user_1" } });
+if (result.success && result.status === 200) console.log(result.data.id);
+
+const openapi = toOpenApi(api, { title: "Users", version: "1.0.0" });
+const baseline = createApiSnapshot(api);
+const comparison = compareApiSnapshots(baseline, createApiSnapshot(api));
+console.log(openapi.openapi, comparison.decision); // 3.1.0, compatible
+```
+
+The client calls your existing server; SafeShape does not install a router. Path parameters and status-specific response data are inferred from the catalog. Invalid requests stop before transport. Declared 404 responses are typed results; validation, network and decoding failures have `success: false`. Warnings are retained, and each call accepts `{ signal }` as its second argument.
+
+For browsers, import `apiContract`, `httpEndpoint` and `createApiClient` from `@safe-shape/api/client`, with schemas from `@safe-shape/core`. OpenAPI and snapshot tooling use the Node entry.
+
+The transport supports JSON, string path parameters, scalar query fields and non-empty repeated-key arrays. Transforms, stripping objects, cookies, multipart, automatic retries and server routing are outside this workflow. See the [full API reference](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/api/api.md) and [runnable example](https://github.com/dev-ik/safe_shape/blob/v3.4.1/examples/api-workflow.mjs).
+
+### CLI
+
+Save a module exporting the catalog as `api.mjs`, then run:
+
+```sh
+npx safe-shape api export --module ./api.mjs --export api --title Users --version 1.0.0 --out ./openapi.json
+npx safe-shape api snapshot --module ./api.mjs --export api --out ./api.contract.json
+npx safe-shape --json api check --module ./api.mjs --export api --against ./api.contract.json
+```
+
+Check exit codes: 0 for compatible changes, 2 for migration or manual review, 1 for operational errors. Check reads the baseline without replacing it. See the [CLI reference](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/api/cli.md).
 
 The umbrella export includes structured composition helpers such as
 `discriminatedUnion()` and `intersection()` together with their snapshot and
@@ -51,9 +110,9 @@ Since 3.2.0, use immutable object `pick`, `omit`, `partial`, `required`, `extend
 and `shape`, plus checked `pipe(next)` stages. `toTypeScriptType()` generates
 recursive declarations with input/output side selection, and
 `checkContractConnection()` checks producer-output to consumer-input v2 snapshots.
-See [composition](../../docs/composable-contracts.md),
-[connections](../../docs/contract-connections.md) and
-[migration from Zod](../../docs/migration-from-zod.md).
+See [composition](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/composable-contracts.md),
+[connections](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/contract-connections.md) and
+[migration from Zod](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/migration-from-zod.md).
 
 ## Production Response Recovery
 
@@ -64,7 +123,7 @@ without treating either failed payload as trusted application data. Reporting,
 storage, retry, and UI policy remain application-owned.
 
 See the [Production Response Recovery
-guide](../../docs/production-response-recovery.md) for the typed flow,
+guide](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/production-response-recovery.md) for the typed flow,
 telemetry guidance, and runnable example.
 
 The package re-exports:
@@ -82,7 +141,3 @@ Installing this package also installs `@safe-shape/cli`, which provides the
 
 Use the scoped packages directly when a project wants the narrowest dependency
 surface.
-
-## API workflow (3.4.0)
-
-The umbrella exports `httpEndpoint`, `apiContract`, `createApiClient`, OpenAPI 3.1 export, and API snapshot compatibility checks. Use `@safe-shape/api/client` for the browser entry. See the [API workflow reference](../../docs/api/api.md).

@@ -313,7 +313,7 @@ TypeScript declarations and explicit producer/consumer connection checks. See th
 
 ## Project Status
 
-SafeShape is on the `3.4.0` stable release line. All nine packages are published.
+SafeShape is preparing the `3.4.1` release; all nine packages share this version.
 See the [3.4.0 release notes](docs/release-3.4.0.md) for endpoint catalogs, validated fetch clients, OpenAPI and API evolution checks.
 See the [3.4 qualification evidence](docs/release-evidence-3.4.md).
 The release gate covers

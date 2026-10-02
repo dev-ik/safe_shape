@@ -237,9 +237,9 @@ npm run examples:check
 
 ## Статус проекта
 
-SafeShape готовит релиз `3.4.1`; все девять пакетов имеют одну версию.
+SafeShape находится на стабильной версии `3.4.1`. Все девять пакетов опубликованы.
 См. [описание релиза 3.4.0](docs/ru/release-3.4.0.md): каталоги endpoints, fetch-клиент, OpenAPI и проверка изменений API.
-См. [свидетельства проверок 3.4](docs/ru/release-evidence-3.4.md).
+См. [описание patch 3.4.1](docs/ru/release-3.4.1.md) и [проверенную публикацию](docs/ru/release-evidence-3.4.1.md): npm README и metadata.
 Release gate проверяет
 метаданные, сборку, типы, тесты, примеры, benchmarks, установку tarball в
 тестовый consumer-проект, npm audit и package dry-run.

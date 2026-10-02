@@ -2,7 +2,7 @@
 
 [English](../release-3.4.1.md) | **Русский**
 
-Статус: candidate; владелец разрешил публикацию.
+Статус: опубликован 2026-10-02. Latest tag всех девяти npm-пакетов — 3.4.1. [GitHub release](https://github.com/dev-ik/safe_shape/releases/tag/v3.4.1).
 
 Patch улучшает npm-документацию и поиск пакетов. Runtime-код, публичный API и snapshot formats совпадают с 3.4.0.
 

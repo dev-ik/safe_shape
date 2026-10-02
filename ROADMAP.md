@@ -1,15 +1,15 @@
 # Roadmap
 
-Current published release: **3.4.0**, verified in the
-[release evidence](docs/release-evidence-3.4.md). See the
-[release notes](docs/release-3.4.0.md) for endpoint catalogs, validated fetch
-clients, OpenAPI 3.1 and API evolution checks.
+Current published release: **3.4.1**, verified in the
+[release evidence](docs/release-evidence-3.4.1.md). See the
+[patch notes](docs/release-3.4.1.md) for npm README and metadata improvements.
+The [3.4.0 release](docs/release-3.4.0.md) introduced the API workflow.
 
 Current English and Russian guides and all nine package READMEs are aligned.
 Runtime first, immutable schemas, explicit conversion and API stability remain
 mandatory. Historical roadmap entries below retain their original scope.
 
-## 3.4.1 candidate
+## 3.4.1 published
 
 Npm README examples, absolute documentation links and package keywords.
 See [release notes](docs/release-3.4.1.md).

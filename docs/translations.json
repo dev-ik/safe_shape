@@ -4,8 +4,8 @@
     {
       "english": "README.md",
       "russian": "README.ru.md",
-      "englishSha256": "78b7b98440ae44b0149133cb0e97ecfc8ad0a1596a9675bc1e708990375bcef0",
-      "russianSha256": "fb3a15f402356dd5b86320b6650cc21220d26b652f4435ce1a0b5bc111b3396b"
+      "englishSha256": "7ea62972a7dd60a96a55eb49d24ed59a62c1376a232bd30843ccb10224b9f8ab",
+      "russianSha256": "340d2551ce4984817993ab0f2b88d746e178556945a67c20c4ab0ba294308a28"
     },
     {
       "english": "docs/README.md",
@@ -364,14 +364,14 @@
     {
       "english": "docs/release-3.4.1.md",
       "russian": "docs/ru/release-3.4.1.md",
-      "englishSha256": "70d08ab9e2e89d29afd9c8ffc8b47e0feb1bed47617f688d4b3e5e033183700b",
-      "russianSha256": "19acf7b154db0e6e160522babebb607ea3d08392d31a02c28644a8f2c7bc88b0"
+      "englishSha256": "f0c80d204e5c9c74c049b70d711ca0b395f6409c7cb65b055a1c0e06be680834",
+      "russianSha256": "7c0abe9b43d6d46597405dce24a5359a3c8af6f983f5fa7ad690b93f99f2a87b"
     },
     {
       "english": "docs/release-evidence-3.4.1.md",
       "russian": "docs/ru/release-evidence-3.4.1.md",
-      "englishSha256": "708925d326a72f36aa86a9a1e8c20d9f160d324670bb0cb58291189cdfee0db2",
-      "russianSha256": "bc516ff394a2d453e5d4e20569aa92f684411de8d0e50d4a4141ae8fbafed304"
+      "englishSha256": "cec4b8b3af54b0cbefb5d871adc279714cf36f46e3deee5de7607678d3e27823",
+      "russianSha256": "4a04bb306e630559c128f3061184b92a0f10cec3e787fb8ae92c24a7eea5c578"
     }
   ],
   "englishOnly": [

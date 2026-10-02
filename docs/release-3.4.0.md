@@ -2,8 +2,8 @@
 
 **English** | [Русский](ru/release-3.4.0.md)
 
-Status: release candidate. Publication is authorized by the owner and pending
-final qualification. See [release evidence](release-evidence-3.4.md).
+Status: published on 2026-10-02. All nine npm packages use 3.4.0. See
+[release evidence](release-evidence-3.4.md) and the [GitHub release](https://github.com/dev-ik/safe_shape/releases/tag/v3.4.0).
 
 ## Changes
 
@@ -28,7 +28,7 @@ final qualification. See [release evidence](release-evidence-3.4.md).
 
 No breaking existing API, snapshot format or default behavior is intended.
 Update safe-shape or all scoped packages you use to 3.4.0 together. Existing
-core, HTTP and tooling calls require no migration. After publication:
+core, HTTP and tooling calls require no migration. Install:
 
 ```sh
 npm install safe-shape@3.4.0

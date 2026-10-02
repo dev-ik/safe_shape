@@ -1,19 +1,19 @@
 # Roadmap
 
-Current published release: **3.3.0**, verified in the
-[release evidence](docs/release-evidence-3.3.md). See the
-[release notes](docs/release-3.3.0.md) for checked output bounds, live-schema
-connection proofs, explicit JSON Schema output-bound export and runtime improvements.
+Current published release: **3.4.0**, verified in the
+[release evidence](docs/release-evidence-3.4.md). See the
+[release notes](docs/release-3.4.0.md) for endpoint catalogs, validated fetch
+clients, OpenAPI 3.1 and API evolution checks.
 
 Current English and Russian guides and all nine package READMEs are aligned.
 Runtime first, immutable schemas, explicit conversion and API stability remain
 mandatory. Historical roadmap entries below retain their original scope.
 
-## 3.4.0 candidate
+## 3.4.0 published
 
 Endpoint catalogs, validated fetch clients, OpenAPI 3.1 and API evolution checks.
 See [release notes](docs/release-3.4.0.md) and [qualification evidence](docs/release-evidence-3.4.md).
-Publication is pending final candidate checks.
+All nine packages are published; registry installation and CLI checks passed.
 
 ## v1.0.0 Stable API
 

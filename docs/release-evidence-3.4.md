@@ -2,7 +2,7 @@
 
 **English** | [Русский](ru/release-evidence-3.4.md)
 
-Status: qualified, npm publication blocked by authentication. Owner explicitly authorized checking and publishing 3.4.0. Local qualification and release-source CI passed; registry publication and installation verification remain pending.
+Status: published and registry-verified on 2026-10-02. All nine packages have version and latest tag 3.4.0. Local qualification, release-source CI, publication workflow and registry consumer checks passed.
 Independent developer walkthrough is not performed and is not recorded as passed.
 Automated tests and consumer journeys are separate evidence.
 
@@ -16,15 +16,19 @@ before generating the new release artifacts.
 
 ## Local qualification
 
-`npm run prepare:release` passed on Node 20.10.0 on 2026-10-02: build, workspace release checks, documentation, typecheck, unit tests, examples, benchmarks, installed consumers, quality comparison, migration tests, both dependency audits and package dry runs. Workspace unit tests: 307 passed, zero failures. The API suite passed 18 tests without failures or skips. Both audits reported zero vulnerabilities. Nine release archives were generated. Registry verification remains pending until publication.
+`npm run prepare:release` passed on Node 20.10.0 on 2026-10-02: build, workspace release checks, documentation, typecheck, unit tests, examples, benchmarks, installed consumers, quality comparison, migration tests, both dependency audits and package dry runs. Workspace unit tests: 307 passed, zero failures. The API suite passed 18 tests without failures or skips. Both audits reported zero vulnerabilities. Nine release archives were generated. Registry verification passed.
 
 ## Release-source CI
 
 Commit `248934eac9a4aaac43b3ddcd7fd197fe2a547599` passed the complete release gate on Node 20.10.0 and 24: [CI run](https://github.com/dev-ik/safe_shape/actions/runs/36980783407). The release tag points to this tested commit.
 
-## Publication blocker
+## Publication and registry verification
 
-The new @safe-shape/api package is absent from npm and requires an authenticated first publication before trusted publishing can be configured. `npm whoami --cache .npm-cache` returned 401 on 2026-10-02. No 3.4.0 packages were published by this qualification run. Registry installation tests cannot run before publication.
+[Publish workflow](https://github.com/dev-ik/safe_shape/actions/runs/36986657948) passed and created the [GitHub release](https://github.com/dev-ik/safe_shape/releases/tag/v3.4.0) with nine archives. Eight established packages were published through trusted GitHub Actions with npm provenance. @safe-shape/api was bootstrapped through authenticated local publication with browser 2FA; that first version has no provenance attestation. Its archive matches the tested release artifact.
+
+All nine registry versions and latest tags are 3.4.0. Downloaded tarballs passed SHA-1 verification against registry metadata and SHA-256 comparison against the qualified archives and GitHub assets. A clean npm install of safe-shape@3.4.0 installed all nine packages and audited with zero vulnerabilities. The installed consumer passed the API workflow, browser client entry, CLI doctor, OpenAPI export, API snapshot and compatibility check. The installed browser entry bundled with esbuild platform=browser.
+
+Future trusted publishing for the new API package has not been configured: automatic approval review rejected the permanent publisher grant because authorization for this release did not explicitly include future security/access configuration. A separate owner approval was requested; the current publication is complete. Independent developer walkthrough remains unperformed.
 
 ## Archive SHA-256
 

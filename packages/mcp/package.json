@@ -28,7 +28,7 @@
     "@modelcontextprotocol/sdk": "1.32.1"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json && node -e \"require('node:fs').chmodSync('dist/cli.js', 0o755)\"",
     "typecheck": "tsc --noEmit",
     "test": "npm run build && tsc -p tsconfig.test.json && node --test .tmp/test/tests/*.test.js"
   },

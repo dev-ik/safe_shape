@@ -1,0 +1,53 @@
+{
+  "name": "@safe-shape/mcp",
+  "version": "3.4.1",
+  "description": "SafeShape contracts and validated tools for MCP agents.",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20.10"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "README.ru.md"
+  ],
+  "dependencies": {
+    "@safe-shape/core": "3.4.1",
+    "@safe-shape/validation": "3.4.1",
+    "@safe-shape/json-schema": "3.4.1",
+    "@safe-shape/compat": "3.4.1",
+    "@modelcontextprotocol/sdk": "1.32.1"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && tsc -p tsconfig.test.json && node --test .tmp/test/tests/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dev-ik/safe_shape.git",
+    "directory": "packages/mcp"
+  },
+  "homepage": "https://github.com/dev-ik/safe_shape#readme",
+  "bugs": {
+    "url": "https://github.com/dev-ik/safe_shape/issues"
+  },
+  "keywords": [
+    "mcp",
+    "ai",
+    "contracts",
+    "validation"
+  ],
+  "bin": {
+    "safe-shape-mcp": "./dist/cli.js"
+  }
+}

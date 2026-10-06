@@ -16,7 +16,8 @@
     "packages/typescript",
     "packages/validation",
     "packages/cli",
-    "packages/api"
+    "packages/api",
+    "packages/mcp"
   ],
   "scripts": {
     "benchmarks:check": "node --test benchmarks/runner.test.mjs && node benchmarks/run.mjs",

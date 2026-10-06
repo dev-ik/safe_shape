@@ -23,7 +23,7 @@ function objectRoot(schema: JsonSchema): boolean {
   }
   return false;
 }
-export function safeToMcpToolDefinition(tool: McpTool<any, any, any, any>): McpToolExportResult {
+function exportDefinition(tool: McpTool<any, any, any, any>): McpToolExportResult {
   const input = safeToJsonSchema(tool.input, { side: 'input', target: 'draft-2020-12', mode: 'exact' });
   const output = safeToJsonSchema(tool.output, { side: 'output', target: 'draft-2020-12', mode: 'exact' });
   const issues: (JsonSchemaExportIssue | McpProfileIssue)[] = [];
@@ -33,5 +33,10 @@ export function safeToMcpToolDefinition(tool: McpTool<any, any, any, any>): McpT
   }
   if (issues.length) return copyJson({ success: false, issues });
   if (!input.success || !output.success) throw new Error('Unreachable export result.');
-  return copyJson({ success: true, definition: { name: tool.name, description: tool.description, inputSchema: input.schema, outputSchema: output.schema }, warnings: [...input.warnings, ...output.warnings] });
+  return copyJson({ success: true, definition: { name: tool.name, description: tool.description, inputSchema: { ...input.schema, type: 'object' }, outputSchema: { ...output.schema, type: 'object' } }, warnings: [...input.warnings, ...output.warnings] });
+}
+
+export function safeToMcpToolDefinition(tool: McpTool<any, any, any, any>): McpToolExportResult {
+  try { return exportDefinition(tool); }
+  catch { return copyJson({ success: false, issues: [{ code: 'mcp.profile.serialization_failed', message: 'Tool definition cannot be materialized as bounded lossless JSON.', path: [], side: 'input' }] }); }
 }

@@ -8,12 +8,24 @@
 
 ```sh
 npm install @safe-shape/mcp @safe-shape/core
-safe-shape-mcp --workspace . --manifest examples/mcp.manifest.json
+npx --no-install safe-shape-mcp --workspace . --manifest examples/mcp.manifest.json
 ```
 
 Сервер использует stdio. Настройте coding-агента на эту команду с абсолютным
 путём workspace. Аргументы инструментов содержат ID контрактов и JSON;
 агент не выбирает модули JavaScript и файлы для записи.
+
+Для Codex конфигурация содержит явный путь executable:
+
+```toml
+[mcp_servers.safe_shape]
+command = "node"
+args = ["/absolute/project/node_modules/@safe-shape/mcp/dist/cli.js", "--workspace", "/absolute/project", "--manifest", "examples/mcp.manifest.json"]
+```
+
+Замените абсолютный путь проекта. Настройки можно передать и для отдельного
+запуска CLI; acceptance walkthrough использует временные overrides без
+изменения глобальных настроек.
 
 ## Реестр контрактов
 

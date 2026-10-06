@@ -7,7 +7,7 @@ Install this package explicitly; SafeShape core and umbrella remain SDK-independ
 
 ```sh
 npm install @safe-shape/mcp @safe-shape/core
-safe-shape-mcp --workspace . --manifest examples/mcp.manifest.json
+npx --no-install safe-shape-mcp --workspace . --manifest examples/mcp.manifest.json
 ```
 
 Export SafeShape input/output contracts, validate tool boundaries and inspect

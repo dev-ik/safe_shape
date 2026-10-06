@@ -8,12 +8,24 @@ Node >=20.10 and ESM are required. The umbrella and core do not depend on MCP.
 
 ```sh
 npm install @safe-shape/mcp @safe-shape/core
-safe-shape-mcp --workspace . --manifest examples/mcp.manifest.json
+npx --no-install safe-shape-mcp --workspace . --manifest examples/mcp.manifest.json
 ```
 
 The executable uses stdio. Configure your coding agent to launch that command
 with an absolute workspace path. Tool arguments contain contract IDs and JSON;
 they never select JavaScript modules or output files.
+
+For Codex, the configuration uses an explicit executable path:
+
+```toml
+[mcp_servers.safe_shape]
+command = "node"
+args = ["/absolute/project/node_modules/@safe-shape/mcp/dist/cli.js", "--workspace", "/absolute/project", "--manifest", "examples/mcp.manifest.json"]
+```
+
+Replace the absolute project path. This configuration can also be supplied per
+CLI invocation; the acceptance walkthrough uses temporary overrides without
+changing global settings.
 
 ## Register contracts
 

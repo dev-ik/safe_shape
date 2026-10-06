@@ -14,6 +14,18 @@ test('deadline keeps capacity charged until callback settles', async () => {
   assert.equal(await gate.run(async () => 2), 2);
 });
 
+test('elapsed deadline blocks handler after synchronous validation even before timer fires', async () => {
+  let calls = 0;
+  const input = object({ text: string() }).refine(() => {
+    const end = performance.now() + 30;
+    while (performance.now() < end) { /* synchronous trusted work cannot be interrupted */ }
+    return true;
+  }, { id: 'blocking' });
+  const tool = defineMcpTool({ name: 'deadline', description: 'Elapsed deadline', input, output: object({}) });
+  const result = await createValidatedMcpHandler(tool, () => { calls++; return {}; }, { deadlineMs: 5 })({ text: 'x' });
+  assert.equal(result.isError, true); assert.equal(calls, 0);
+});
+
 test('cancellation after input validation blocks business handler', async () => {
   const controller = new AbortController(); let calls = 0;
   const input = object({ text: string() }).refineAsync(async () => { controller.abort(); return true; }, { id: 'abort' });

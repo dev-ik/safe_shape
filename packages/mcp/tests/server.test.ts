@@ -45,6 +45,20 @@ test('SDK client discovers six tools and performs export/invalid/corrected/compa
   } finally { await client.close(); await server.close(); }
 });
 
+test('inspection honors increased depth and returns a validation envelope', async () => {
+  const { unknown: unknownSchema } = await import('@safe-shape/core');
+  let value: any = {};
+  for (let i = 0; i < 135; i++) value = { value };
+  const server = api.createSafeShapeMcpServer({ registry: api.createMcpContractRegistry([{ id: 'deep', description: 'Deep', schema: unknownSchema() }]), limits: { depth: 200 } });
+  const client = new Client({ name: 'depth', version: '1' });
+  const [a, b] = InMemoryTransport.createLinkedPair();
+  await server.connect(a); await client.connect(b);
+  try {
+    const result = await client.callTool({ name: 'validate_data', arguments: { contractId: 'deep', value } });
+    assert.equal((result.structuredContent as any).result.valid, true);
+  } finally { await client.close(); await server.close(); }
+});
+
 test('server holds sixteen operation slots while async validations are pending', async () => {
   let release!: () => void;
   let entered = 0;

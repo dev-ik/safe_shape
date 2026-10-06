@@ -8,7 +8,10 @@ export function resolveLimits(input: Partial<McpLimits> = {}): McpLimits {
   if (result.deadlineMs > 2147483647) throw new TypeError('Deadline exceeds timer range.');
   return Object.freeze(result);
 }
+const deadlines = new WeakMap<AbortSignal, { end: number; abort: () => void }>();
 export function checkSignal(signal: AbortSignal): void {
+  const deadline = deadlines.get(signal);
+  if (deadline && performance.now() >= deadline.end) { deadline.abort(); throw new McpOperationError('deadline_exceeded', 'Operation deadline exceeded.'); }
   if (signal.aborted) throw new McpOperationError('cancelled', 'Operation cancelled or timed out.');
 }
 /** A response deadline never releases a slot occupied by an unfinished callback. */
@@ -19,15 +22,16 @@ export class ExecutionGate {
     if (this.active >= this.limits.concurrency) throw new McpOperationError('capacity_exceeded', 'Operation capacity exceeded.');
     this.active++;
     const controller = new AbortController();
+    deadlines.set(controller.signal, { end: performance.now() + this.limits.deadlineMs, abort: () => controller.abort() });
     let rejectAbort!: (error: Error) => void;
     const abort = new Promise<never>((_, reject) => { rejectAbort = reject; });
     const cancel = () => { controller.abort(); rejectAbort(new McpOperationError('cancelled', 'Operation cancelled.')); };
     external?.addEventListener('abort', cancel, { once: true });
     const timer = setTimeout(() => { controller.abort(); rejectAbort(new McpOperationError('deadline_exceeded', 'Operation deadline exceeded.')); }, this.limits.deadlineMs);
     if (external?.aborted) cancel();
-    const running = Promise.resolve().then(() => { checkSignal(controller.signal); return work(controller.signal); });
+    const running = Promise.resolve().then(() => { checkSignal(controller.signal); return work(controller.signal); }).then(value => { checkSignal(controller.signal); return value; });
     // Attach both settlement handlers even when the caller stops waiting.
-    void running.then(() => { this.active--; }, () => { this.active--; });
+    void running.then(() => { this.active--; deadlines.delete(controller.signal); }, () => { this.active--; deadlines.delete(controller.signal); });
     try { return await Promise.race([running, abort]); }
     finally { clearTimeout(timer); external?.removeEventListener('abort', cancel); }
   }

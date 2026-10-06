@@ -7,7 +7,7 @@
 
 ```sh
 npm install @safe-shape/mcp @safe-shape/core
-safe-shape-mcp --workspace . --manifest examples/mcp.manifest.json
+npx --no-install safe-shape-mcp --workspace . --manifest examples/mcp.manifest.json
 ```
 
 Экспортируйте схемы входа/выхода, проверяйте границы инструментов и контракты

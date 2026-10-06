@@ -25,16 +25,22 @@ export function createSafeShapeMcpServer(options: { readonly registry: McpContra
         const parsed = await validateSchemaAsync(inspectionSchemas[operation], args); checkSignal(signal);
         if (!parsed.valid) throw new McpError(ErrorCode.InvalidParams, 'Invalid inspection arguments.');
         const result = await execute(operation, parsed.data); checkSignal(signal);
-        return copyJson({ ok: true, operation, result }, gate.limits.depth);
+        copyJson(result, gate.limits.depth + 6, false);
+        return Object.freeze({ ok: true, operation, result });
       }, extra.signal);
     } catch (error) {
       if (error instanceof McpError) throw error;
       isError = true;
-      try { payload = copyJson({ ok: false, operation, error: publicError(error) }); }
+      try { payload = copyJson({ ok: false, operation, error: publicError(error) }, gate.limits.depth + 6); }
       catch { payload = { ok: false, operation, error: { code: 'serialization_failed', message: 'Diagnostics are not lossless JSON.' } }; }
     }
-    const materialize = (value: any, failed: boolean): CallToolResult => copyJson({ content: [{ type: 'text', text: JSON.stringify(value) }], structuredContent: value, ...(failed ? { isError: true } : {}) });
-    let result = materialize(payload, isError);
+    const materialize = (value: any, failed: boolean): CallToolResult => {
+      copyJson(value, gate.limits.depth + 6, false);
+      return Object.freeze({ content: Object.freeze([Object.freeze({ type: 'text' as const, text: JSON.stringify(value) })]) as unknown as CallToolResult['content'], structuredContent: value, ...(failed ? { isError: true } : {}) });
+    };
+    let result: CallToolResult;
+    try { result = materialize(payload, isError); }
+    catch { result = materialize({ ok: false, operation, error: { code: 'serialization_failed', message: 'Result cannot be materialized.' } }, true); }
     if (jsonBytes(result) > gate.limits.responseBytes) result = materialize({ ok: false, operation, error: { code: 'response_too_large', message: 'Result size limit exceeded.' } }, true);
     if (jsonBytes(result) > gate.limits.responseBytes) { await server.close(); throw new McpError(ErrorCode.InternalError, 'Response limit too small.'); }
     return result;

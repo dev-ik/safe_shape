@@ -30,6 +30,27 @@ test('stdio loads explicit manifest and shuts down without non-protocol stdout',
   } finally { await rm(directory, { recursive: true, force: true }); }
 });
 
+test('stdio negotiates the explicit 2025-06-18 interoperability baseline', async () => {
+  const root = resolve('../..');
+  const transport = new StdioClientTransport({ command: process.execPath, args: [join(root, 'packages/mcp/dist/cli.js'), '--workspace', root, '--manifest', 'examples/mcp.manifest.json'], stderr: 'pipe' });
+  const replies = new Map<number, (value: any) => void>();
+  transport.onmessage = message => { if ('id' in message && typeof message.id === 'number') replies.get(message.id)?.(message); };
+  const request = async (id: number, method: string, params?: Record<string, unknown>) => {
+    const response = new Promise<any>(resolve => { replies.set(id, resolve); });
+    await transport.send({ jsonrpc: '2.0', id, method, ...(params === undefined ? {} : { params }) });
+    return response;
+  };
+  await transport.start();
+  try {
+    const initialized = await request(1, 'initialize', { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 'baseline', version: '1' } });
+    assert.equal(initialized.result.protocolVersion, '2025-06-18');
+    await transport.send({ jsonrpc: '2.0', method: 'notifications/initialized' });
+    assert.equal((await request(2, 'tools/list')).result.tools.length, 6);
+    const validated = await request(3, 'tools/call', { name: 'validate_data', arguments: { contractId: 'user-v1', value: { name: 'Ada' } } });
+    assert.equal(validated.result.structuredContent.result.valid, true);
+  } finally { await transport.close(); }
+});
+
 test('manifest rejects escapes, symlinks, invalid references and duplicate IDs before any import', async () => {
   const root = resolve('../..');
   const directory = await mkdtemp(join(root, '.tmp/mcp-path-'));

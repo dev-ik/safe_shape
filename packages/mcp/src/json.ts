@@ -3,7 +3,7 @@ export class McpOperationError extends Error {
 }
 
 /** Copy JSON data without invoking getters, toJSON or lossy serialization. */
-export function copyJson(value: unknown, maxDepth = 128): any {
+export function copyJson(value: unknown, maxDepth = 128, freeze = true): any {
   const active = new Set<object>();
   function visit(item: unknown, depth: number): any {
     if (depth > maxDepth) throw new McpOperationError('depth_exceeded', 'JSON nesting limit exceeded.');
@@ -26,7 +26,7 @@ export function copyJson(value: unknown, maxDepth = 128): any {
       if (array && keys.length - 1 !== (item as unknown[]).length) throw new McpOperationError('serialization_failed', 'Sparse arrays are not JSON.');
       // Ordinary objects preserve native diagnostic/report shapes, including __proto__ data keys.
       if (!array) Object.setPrototypeOf(result, Object.prototype);
-      return Object.freeze(result);
+      return freeze ? Object.freeze(result) : result;
     } finally { active.delete(item); }
   }
   return visit(value, 0);

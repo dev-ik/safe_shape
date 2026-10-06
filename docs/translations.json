@@ -251,7 +251,7 @@
       "english": "docs/release.md",
       "russian": "docs/ru/release.md",
       "englishSha256": "5cf9cff900b8e641dc63277dd4fca31abc78f015846c268762d1ec07e5baa7d4",
-      "russianSha256": "206a4f6d179a076a9d1f7d5b8446379ba0db3141723fd04ea77f29072d4299b8"
+      "russianSha256": "24c77c6c33d40fdfd80ec16a990eb69fe8bef81e748bc87a6f56adf8ee92f6bd"
     },
     {
       "english": "docs/roadmap.md",
@@ -376,8 +376,8 @@
     {
       "english": "docs/mcp.md",
       "russian": "docs/ru/mcp.md",
-      "englishSha256": "e5927eb829ba7455bbeb84063e09040f8d3d0de484060b7ece582bb3d0e889c2",
-      "russianSha256": "57d4fbaa3c3d06022ec3a2e4907a5b38f02d0cb2a828599e636f86787f3d3ee6"
+      "englishSha256": "fc672cbde4c84fdc0fd074d81b126abde82b9faa62c066df3aafb80c2d163acc",
+      "russianSha256": "92db7df9ca253dd25b13c07eba8d74e74813a43e545c5833647d097780ccfec7"
     },
     {
       "english": "docs/api/mcp.md",
@@ -388,8 +388,8 @@
     {
       "english": "packages/mcp/README.md",
       "russian": "packages/mcp/README.ru.md",
-      "englishSha256": "bcd2798a08009f20696ee021c7492f40209913a2889dee8546a3df9719170db6",
-      "russianSha256": "4ff57f6e259533416e601022cca992f3b62535ab81b0ad7f648e6c880bf8b950"
+      "englishSha256": "c52c2905d7bb615c99b158ccbaf080c3b946e86298c36aca81eed1e036ba1ac3",
+      "russianSha256": "56ac243964b76a92aa23d9ec6d39866e8f1ff22794c78bebe6cbe603a794b4fb"
     }
   ],
   "englishOnly": [

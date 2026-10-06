@@ -23,7 +23,7 @@ API — тестов и актуальной документации на об�
 ## Публикация
 
 Перед публикацией проверьте [готовность](publish-readiness.md). Порядок зависимостей:
-core → compat → http → json-schema → typescript → validation → api → cli → safe-shape.
+core → compat → http → json-schema → typescript → validation → mcp → api → cli → safe-shape.
 
 Workflow `Publish npm packages` запускается вручную на точном теге v<version>.
 Он проверяет релиз, создаёт детерминированные архивы, публикует по зависимостям

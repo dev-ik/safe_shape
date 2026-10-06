@@ -2,7 +2,9 @@
 
 **English** | [Русский](ru/release-3.5.0.md)
 
-Status: local candidate; not published. See [qualification evidence](release-evidence-3.5.md).
+Status: published on npm on 2026-10-06; all ten packages have `latest=3.5.0`.
+See the [GitHub release](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.0)
+and [verified publication evidence](release-evidence-3.5.md).
 
 ## Included
 
@@ -32,7 +34,9 @@ Opaque rules are not silently weakened during export. Application payloads keep
 core mutability semantics; report wrappers and diagnostics remain immutable.
 
 Remote HTTP hosting and provider-specific AI profiles are outside this release.
-Publication/provenance configuration and remote CI remain separate from local
-qualification. No release tag, remote push or npm publication is part of this work.
+CI passed on Node 20.10 and 24, and all ten packages are published on npm.
+Nine packages were published through OIDC with provenance. The first MCP
+publication used the maintainer's CLI without provenance; its trusted publisher
+is configured for future releases. See the linked publication evidence.
 
 See [MCP guide](mcp.md), [API reference](api/mcp.md), RFC 0051 and ADR 0039.

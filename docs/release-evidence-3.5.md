@@ -2,9 +2,11 @@
 
 **English** | [Русский](ru/release-evidence-3.5.md)
 
-Status: final local 3.5.0 candidate qualified; not published.
+Status: published on npm on 2026-10-06; all ten packages have `latest=3.5.0`.
+See [published-release verification](#published-release--2026-10-06) for CI,
+provenance, archive checksums and installation from npm.
 
-## Recorded checks
+## Recorded pre-publication checks
 
 On 2026-10-06, the initial full `npm run release:check` passed on Node 20.10.0,
 including build/typecheck, metadata/docs, workspace tests, examples, benchmarks,
@@ -49,10 +51,10 @@ updates do not change packaged runtime files. Raw gate logs live in
 Existing archives were preserved in `.tmp/release-3.5/previous-artifacts/` before
 packing.
 
-No remote CI, npm publisher configuration, release tag, push or publication has
-been performed. Configure the new package's npm trusted publisher and run the
-remote versioned gate before authorized publication. Local review/tests do not
-assert compatibility with untested clients.
+At this pre-publication checkpoint, remote CI, npm publisher configuration,
+release tag, push and publication had not been performed. Those steps were
+completed in the published-release verification below. Local review/tests do
+not assert compatibility with untested clients.
 
 ## Documentation follow-up
 

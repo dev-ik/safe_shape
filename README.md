@@ -314,15 +314,21 @@ TypeScript declarations and explicit producer/consumer connection checks. See th
 
 ## Project Status
 
-SafeShape is preparing the `3.5.0` release; all ten packages have passed local qualification. Publication is pending.
-See the [3.5.0 release notes](docs/release-3.5.0.md) and [local qualification evidence](docs/release-evidence-3.5.md) for AI contracts and MCP.
+SafeShape is on the `3.5.0` stable release line.
+All ten packages are published on npm with `latest=3.5.0`.
+The release gate passed on Node 20.10 and 24, and installation from npm was verified.
+See the [GitHub release](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.0),
+[3.5.0 release notes](docs/release-3.5.0.md), and [verified publication](docs/release-evidence-3.5.md).
 See the [3.4.0 release notes](docs/release-3.4.0.md) for endpoint catalogs, validated fetch clients, OpenAPI and API evolution checks.
 See the [3.4.1 patch notes](docs/release-3.4.1.md) and [verified publication](docs/release-evidence-3.4.1.md) for npm README and metadata improvements.
 The release gate covers
 metadata checks, build, typecheck, tests, examples, benchmarks, consumer tarball
 installation, npm audit, and package dry-run.
 
-- [AI contracts and MCP](docs/mcp.md)
+## New in 3.5.0
+
+[AI contracts and MCP](docs/mcp.md) add validated tool boundaries and a local
+stdio server with six contract inspection tools.
 
 MCP is included by `npm install safe-shape`; use `safe-shape/mcp` to load its APIs.
 The main import does not load the SDK, but the umbrella installation includes it.

@@ -238,9 +238,12 @@ npm run examples:check
 
 ## Статус проекта
 
-SafeShape готовит релиз `3.5.0`; все десять пакетов прошли локальную проверку. Публикация ожидается.
+SafeShape находится на стабильной версии `3.5.0`.
+Все десять пакетов опубликованы в npm с `latest=3.5.0`.
+Release gate прошёл на Node 20.10 и 24, установка из npm проверена.
+См. [GitHub Release](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.0),
+[релиз 3.5.0](docs/ru/release-3.5.0.md) и [проверенную публикацию](docs/ru/release-evidence-3.5.md).
 См. [описание релиза 3.4.0](docs/ru/release-3.4.0.md): каталоги endpoints, fetch-клиент, OpenAPI и проверка изменений API.
-См. [релиз 3.5.0](docs/ru/release-3.5.0.md) и [локальную проверку](docs/ru/release-evidence-3.5.md): AI-контракты и MCP.
 См. [описание patch 3.4.1](docs/ru/release-3.4.1.md) и [проверенную публикацию](docs/ru/release-evidence-3.4.1.md): npm README и metadata.
 Release gate проверяет
 метаданные, сборку, типы, тесты, примеры, benchmarks, установку tarball в
@@ -254,7 +257,10 @@ Release gate проверяет
 [руководство](docs/ru/composable-contracts.md) и
 [переход с Zod](docs/ru/migration-from-zod.md).
 
-- [AI-контракты и MCP](docs/ru/mcp.md)
+## Новое в 3.5.0
+
+[AI-контракты и MCP](docs/ru/mcp.md) добавляют валидацию границ инструментов и
+локальный stdio-сервер с шестью инструментами проверки контрактов.
 
 MCP входит в `npm install safe-shape`; его API загружаются через `safe-shape/mcp`.
 Основной импорт не загружает SDK, но установка umbrella включает его.

@@ -2,10 +2,10 @@ import assert from 'node:assert/strict';
 import { resolve } from 'node:path';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
-// Accept an installed executable override for tarball consumer checks.
+// Accept an installed executable, or Node plus a built CLI module for source checks.
 const command = process.argv[2] ?? resolve('node_modules/.bin/safe-shape-mcp');
 const client = new Client({ name: 'safe-shape-example', version: '1.0.0' });
-const transport = new StdioClientTransport({ command, args: ['--workspace', process.cwd(), '--manifest', 'examples/mcp.manifest.json'], stderr: 'pipe' });
+const transport = new StdioClientTransport({ command, args: [...(process.argv[3] ? [process.argv[3]] : []), '--workspace', process.cwd(), '--manifest', 'examples/mcp.manifest.json'], stderr: 'pipe' });
 let stderr = ''; transport.stderr?.on('data', chunk => { stderr += chunk; });
 await client.connect(transport);
 try {

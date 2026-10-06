@@ -6,3 +6,4 @@ export { createValidatedMcpHandler } from './handler.js';
 export type { McpHandlerContext } from './handler.js';
 export { DEFAULT_MCP_LIMITS } from './limits.js';
 export type { McpLimits } from './limits.js';
+export { createSafeShapeMcpServer } from './server.js';

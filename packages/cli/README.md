@@ -1,6 +1,6 @@
 # @safe-shape/cli
 
-**English** | [Русский](https://github.com/dev-ik/safe_shape/blob/v3.5.0/packages/cli/README.ru.md)
+**English** | [Русский](https://github.com/dev-ik/safe_shape/blob/v3.5.1/packages/cli/README.ru.md)
 
 Command-line tooling for SafeShape runtime contracts.
 
@@ -83,7 +83,7 @@ Since 3.2.0, `schema types` supports recursive declarations and
 consumer-input v2 snapshots. It reads snapshots without loading schema modules
 or replacing baselines. Exit codes are 0 for all compatible, 2 for migration or
 manual review, and 1 for operational errors. See the
-[connection manifest and reports](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/contract-connections.md).
+[connection manifest and reports](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/contract-connections.md).
 
 `contract snapshot` writes v1 by default. Pass `--format v2` for recursive
 input/output graph snapshots. `contract check` detects either stored format and
@@ -146,14 +146,14 @@ Check a reviewed list of contracts in one invocation:
 npx --no-install safe-shape --json contract check-many --manifest ./contracts.json
 ```
 
-See the [manifest and aggregate report reference](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/api/cli.md#check-multiple-contracts).
+See the [manifest and aggregate report reference](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/api/cli.md#check-multiple-contracts).
 
 ## Optional counterexamples
 
 Add `--counterexamples` to `contract check` or `contract check-many` for bounded
-synthetic root witnesses; see [supported domain](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/counterexamples.md).
+synthetic root witnesses; see [supported domain](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/counterexamples.md).
 Default JSON, exit codes, and baseline files remain unchanged.
-Add `--markdown` to generate a [review artifact](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/contract-review.md)
+Add `--markdown` to generate a [review artifact](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/contract-review.md)
 on stdout. It is incompatible with `--json` and `--out`.
 
 ## API workflow (3.4.0)
@@ -164,4 +164,4 @@ npx --no-install safe-shape api snapshot --module ./api.mjs --out ./api.contract
 npx --no-install safe-shape --json api check --module ./api.mjs --against ./api.contract.json
 ```
 
-Export OpenAPI 3.1, save immutable API snapshots, and check server updates against existing clients. Check exits with 0 for compatible changes, 2 for migration or manual review, and 1 for operational errors. See the [API workflow reference](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/api/api.md).
+Export OpenAPI 3.1, save immutable API snapshots, and check server updates against existing clients. Check exits with 0 for compatible changes, 2 for migration or manual review, and 1 for operational errors. See the [API workflow reference](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/api/api.md).

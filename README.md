@@ -178,13 +178,13 @@ example.
 
 ## Release Metrics
 
-Verified [3.5.0 release gate and publication](docs/release-evidence-3.5.md):
+Verified [3.5.1 release qualification](docs/release-evidence-3.5.1.md):
 
 | Signal | Status |
 | --- | --- |
-| Packages | 10 published packages |
+| Packages | 10 qualified packages |
 | Package tests | 329 passing tests |
-| Consumer install | Tarball and published npm installation checks pass |
+| Consumer install | Tarball installation checks pass; registry verification is tracked in release evidence |
 | Examples | Runnable examples pass |
 | Security audit | 0 known vulnerabilities |
 | Benchmarks | Runtime, diagnostics, composition, connection and compatibility checks passed |
@@ -307,17 +307,21 @@ npm run examples:check
 
 ## Project Status
 
-SafeShape is on the `3.5.0` stable release line.
-All ten packages are published on npm with `latest=3.5.0`.
-The release gate passed on Node 20.10 and 24, and installation from npm was verified.
-See the [GitHub release](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.0),
-[3.5.0 release notes](docs/release-3.5.0.md), and [verified publication](docs/release-evidence-3.5.md).
+This README documents SafeShape `3.5.1`.
+Publication status and downloadable archives are recorded in the
+[GitHub release](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.1).
+See the [3.5.1 patch notes](docs/release-3.5.1.md) and [release evidence](docs/release-evidence-3.5.1.md).
 Earlier additions and fixes are listed in the [release history](docs/releases.md).
 The release gate covers
 metadata checks, build, typecheck, tests, examples, benchmarks, consumer tarball
 installation, npm audit, and package dry-run.
 
-## New in 3.5.0
+## Documentation Patch 3.5.1
+
+This patch corrects current-version navigation, EN/RU links, local CLI commands
+and MCP setup examples. It does not change schema or tool behavior.
+
+## AI Contracts and MCP
 
 [AI contracts and MCP](docs/mcp.md) add validated tool boundaries and a local
 stdio server with six contract inspection tools.

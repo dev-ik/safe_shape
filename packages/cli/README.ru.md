@@ -1,6 +1,6 @@
 # CLI
 
-[English](https://github.com/dev-ik/safe_shape/blob/v3.5.0/packages/cli/README.md) | **Русский**
+[English](https://github.com/dev-ik/safe_shape/blob/v3.5.1/packages/cli/README.md) | **Русский**
 
 Пакет `@safe-shape/cli` предоставляет бинарник `safe-shape`; общий пакет устанавливает
 его тоже. Авторизация не нужна. Пути относительны текущему каталогу, кроме явно
@@ -110,12 +110,12 @@ invalid_contract_manifest в stderr без частичного stdout. Для �
 
 `--counterexamples` добавляет ограниченные синтетические корневые примеры к check
 и check-many, не меняя default/exit. `--markdown` создаёт артефакт review и не
-совместим с json/out. См. [контрпримеры](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/counterexamples.md) и [review](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/contract-review.md).
+совместим с json/out. См. [контрпримеры](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/ru/counterexamples.md) и [review](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/ru/contract-review.md).
 
 ## Связи и JSON
 
 Check-connections читает только v2 snapshots из явного manifest, не исполняя
-модули. Принимает manifest/json; формат и результаты описаны в [связях](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/contract-connections.md).
+модули. Принимает manifest/json; формат и результаты описаны в [связях](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/ru/contract-connections.md).
 Текст показывает стороны, пути, причины, действия и подтверждённый выходной
 контрпример либо причину отсутствия. Приоритет кодов тот же.
 
@@ -123,7 +123,7 @@ JSON-envelope сохраняет ok и command. Operational error содержи
 `error: { code, message }`; validation failure — valid false и issues;
 compatibility failure — compatible false, status, findings и migration.
 CLI не требует auth. Схемы — доверенный код и могут сами выводить данные.
-См. [CI](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/ci.md) для сохранения артефактов и политики baseline.
+См. [CI](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/ru/ci.md) для сохранения артефактов и политики baseline.
 
 ## API workflow (3.4.0)
 
@@ -133,4 +133,4 @@ npx --no-install safe-shape api snapshot --module ./api.mjs --out ./api.contract
 npx --no-install safe-shape --json api check --module ./api.mjs --against ./api.contract.json
 ```
 
-Экспорт OpenAPI 3.1, сохранение immutable API snapshots и проверка обновлений сервера относительно существующих клиентов. Exit codes: 0 для совместимых изменений, 2 для миграции или ручного review, 1 для operational errors. См. [API workflow](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/api/api.md).
+Экспорт OpenAPI 3.1, сохранение immutable API snapshots и проверка обновлений сервера относительно существующих клиентов. Exit codes: 0 для совместимых изменений, 2 для миграции или ручного review, 1 для operational errors. См. [API workflow](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/ru/api/api.md).

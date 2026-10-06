@@ -1,13 +1,13 @@
 # safe-shape
 
-**English** | [Русский](https://github.com/dev-ik/safe_shape/blob/v3.5.0/packages/safe-shape/README.ru.md)
+**English** | [Русский](https://github.com/dev-ik/safe_shape/blob/v3.5.1/packages/safe-shape/README.ru.md)
 
 Runtime contracts for TypeScript: validate unknown data, infer types, export schemas, and check API compatibility through one dependency.
 
 Version 3.5.0 adds AI contracts and MCP through the `safe-shape/mcp` entry, installed automatically with the umbrella. The umbrella runtime remains compatible. Node >=20.10 and ESM are required.
 
 Since 3.3.0, the package also re-exports `describeOutputBound()` and `checkSchemaConnection()`;
-see [checked output bounds](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/checked-output.md).
+see [checked output bounds](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/checked-output.md).
 
 Install this package when a project wants the runtime and tooling surface available
 through one dependency:
@@ -71,7 +71,7 @@ The client calls your existing server; SafeShape does not install a router. Path
 
 For browsers, import `apiContract`, `httpEndpoint` and `createApiClient` from `@safe-shape/api/client`, with schemas from `@safe-shape/core`. OpenAPI and snapshot tooling use the Node entry.
 
-The transport supports JSON, string path parameters, scalar query fields and non-empty repeated-key arrays. Transforms, stripping objects, cookies, multipart, automatic retries and server routing are outside this workflow. See the [full API reference](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/api/api.md) and [runnable example](https://github.com/dev-ik/safe_shape/blob/v3.5.0/examples/api-workflow.mjs).
+The transport supports JSON, string path parameters, scalar query fields and non-empty repeated-key arrays. Transforms, stripping objects, cookies, multipart, automatic retries and server routing are outside this workflow. See the [full API reference](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/api/api.md) and [runnable example](https://github.com/dev-ik/safe_shape/blob/v3.5.1/examples/api-workflow.mjs).
 
 ### CLI
 
@@ -83,7 +83,7 @@ npx safe-shape api snapshot --module ./api.mjs --export api --out ./api.contract
 npx safe-shape --json api check --module ./api.mjs --export api --against ./api.contract.json
 ```
 
-Check exit codes: 0 for compatible changes, 2 for migration or manual review, 1 for operational errors. Check reads the baseline without replacing it. See the [CLI reference](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/api/cli.md).
+Check exit codes: 0 for compatible changes, 2 for migration or manual review, 1 for operational errors. Check reads the baseline without replacing it. See the [CLI reference](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/api/cli.md).
 
 The umbrella export includes structured composition helpers such as
 `discriminatedUnion()` and `intersection()` together with their snapshot and
@@ -110,9 +110,9 @@ Since 3.2.0, use immutable object `pick`, `omit`, `partial`, `required`, `extend
 and `shape`, plus checked `pipe(next)` stages. `toTypeScriptType()` generates
 recursive declarations with input/output side selection, and
 `checkContractConnection()` checks producer-output to consumer-input v2 snapshots.
-See [composition](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/composable-contracts.md),
-[connections](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/contract-connections.md) and
-[migration from Zod](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/migration-from-zod.md).
+See [composition](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/composable-contracts.md),
+[connections](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/contract-connections.md) and
+[migration from Zod](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/migration-from-zod.md).
 
 ## Production Response Recovery
 
@@ -123,7 +123,7 @@ without treating either failed payload as trusted application data. Reporting,
 storage, retry, and UI policy remain application-owned.
 
 See the [Production Response Recovery
-guide](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/production-response-recovery.md) for the typed flow,
+guide](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/production-response-recovery.md) for the typed flow,
 telemetry guidance, and runnable example.
 
 The package re-exports:
@@ -148,4 +148,4 @@ The same `npm install safe-shape` installs the local stdio server and validated
 AI-tool adapter. Import MCP APIs from `safe-shape/mcp`; the main import does not
 load MCP/SDK. The dedicated `@safe-shape/mcp` package remains available independently.
 Umbrella installation includes the SDK even when this entry is unused.
-See the [MCP guide](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/mcp.md).
+See the [MCP guide](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/mcp.md).

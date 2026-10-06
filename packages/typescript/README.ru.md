@@ -1,6 +1,6 @@
 # Генерация TypeScript
 
-[English](https://github.com/dev-ik/safe_shape/blob/v3.5.0/packages/typescript/README.md) | **Русский**
+[English](https://github.com/dev-ik/safe_shape/blob/v3.5.1/packages/typescript/README.md) | **Русский**
 
 `@safe-shape/typescript` создаёт объявления типов из runtime-схем.
 

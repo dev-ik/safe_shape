@@ -1,6 +1,6 @@
 # @safe-shape/validation
 
-**English** | [Русский](https://github.com/dev-ik/safe_shape/blob/v3.5.0/packages/validation/README.ru.md)
+**English** | [Русский](https://github.com/dev-ik/safe_shape/blob/v3.5.1/packages/validation/README.ru.md)
 
 JSON-friendly validation reports for SafeShape runtime contracts.
 

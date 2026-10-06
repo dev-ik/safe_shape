@@ -1,10 +1,10 @@
 # @safe-shape/api
 
-**English** | [Русский](https://github.com/dev-ik/safe_shape/blob/v3.5.0/packages/api/README.ru.md)
+**English** | [Русский](https://github.com/dev-ik/safe_shape/blob/v3.5.1/packages/api/README.ru.md)
 
 Endpoint catalogs, validated fetch clients, OpenAPI 3.1 and API compatibility.
 
-See the [API reference](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/api/api.md). Browser consumers use
+See the [API reference](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/api/api.md). Browser consumers use
 `@safe-shape/api/client`; Node tooling uses the root entry.
 
 Introduced in SafeShape 3.4.0. Existing runtime APIs and snapshot defaults remain compatible.
@@ -51,4 +51,4 @@ const comparison = compareApiSnapshots(baseline, createApiSnapshot(api));
 console.log(openapi.openapi, comparison.decision); // 3.1.0, compatible
 ```
 
-The client calls an existing HTTP server. Requests and responses are validated, and response data is inferred by status. For browsers use `@safe-shape/api/client`; OpenAPI and snapshot tools use the Node root entry. JSON transport only: no router, cookies, multipart or retries. See the [full reference](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/api/api.md) for supported wire schemas, warnings, cancellation and compatibility rules.
+The client calls an existing HTTP server. Requests and responses are validated, and response data is inferred by status. For browsers use `@safe-shape/api/client`; OpenAPI and snapshot tools use the Node root entry. JSON transport only: no router, cookies, multipart or retries. See the [full reference](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/api/api.md) for supported wire schemas, warnings, cancellation and compatibility rules.

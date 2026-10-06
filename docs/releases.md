@@ -2,12 +2,14 @@
 
 **English** | [Русский](ru/releases.md)
 
-Current stable release: **3.5.0**. Install it with `npm install safe-shape`.
+Documentation version: **3.5.1**. See the [publication status](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.1).
+Install SafeShape with `npm install safe-shape`.
 Older version numbers below identify when features shipped; they are not
 installation recommendations for new projects.
 
 | Version | Shipped changes | Release record |
 | --- | --- | --- |
+| 3.5.1 | Current documentation, local CLI/MCP setup and version-pinned npm README corrections | [Notes](release-3.5.1.md), [release evidence](release-evidence-3.5.1.md) |
 | 3.5.0 | AI-tool validation and six MCP inspection tools; one umbrella installation, `safe-shape/mcp` entry | [Notes](release-3.5.0.md), [publication evidence](release-evidence-3.5.md) |
 | 3.4.1 | Packaged README links and npm metadata | [Notes](release-3.4.1.md), [publication evidence](release-evidence-3.4.1.md) |
 | 3.4.0 | Endpoint catalogs, validated fetch clients, OpenAPI and API evolution checks | [Notes](release-3.4.0.md), [publication evidence](release-evidence-3.4.md) |

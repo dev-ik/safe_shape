@@ -1,6 +1,6 @@
 # Общий пакет SafeShape
 
-[English](https://github.com/dev-ik/safe_shape/blob/v3.5.0/packages/safe-shape/README.md) | **Русский**
+[English](https://github.com/dev-ik/safe_shape/blob/v3.5.1/packages/safe-shape/README.md) | **Русский**
 
 Runtime-контракты для TypeScript: проверка неизвестных данных, вывод типов, экспорт схем и проверка совместимости API через одну зависимость.
 
@@ -65,7 +65,7 @@ console.log(openapi.openapi, comparison.decision); // 3.1.0, compatible
 
 Для браузера импортируйте `apiContract`, `httpEndpoint`, `createApiClient` из `@safe-shape/api/client`, а схемы — из `@safe-shape/core`. OpenAPI и snapshot tooling используют Node entry.
 
-Transport поддерживает JSON, строковые path parameters, scalar query fields и непустые массивы с повторяющимися query keys. Transforms, stripping objects, cookies, multipart, автоматические retries и server routing не предоставляются. См. [полный API reference](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/api/api.md) и [запускаемый пример](https://github.com/dev-ik/safe_shape/blob/v3.5.0/examples/api-workflow.mjs).
+Transport поддерживает JSON, строковые path parameters, scalar query fields и непустые массивы с повторяющимися query keys. Transforms, stripping objects, cookies, multipart, автоматические retries и server routing не предоставляются. См. [полный API reference](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/ru/api/api.md) и [запускаемый пример](https://github.com/dev-ik/safe_shape/blob/v3.5.1/examples/api-workflow.mjs).
 
 ### CLI
 
@@ -77,7 +77,7 @@ npx safe-shape api snapshot --module ./api.mjs --export api --out ./api.contract
 npx safe-shape --json api check --module ./api.mjs --export api --against ./api.contract.json
 ```
 
-Exit codes проверки: 0 для совместимых изменений, 2 для миграции или ручного review, 1 для operational errors. Проверка читает baseline без его замены. См. [CLI reference](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/api/cli.md).
+Exit codes проверки: 0 для совместимых изменений, 2 для миграции или ручного review, 1 для operational errors. Проверка читает baseline без его замены. См. [CLI reference](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/ru/api/cli.md).
 
 Переэкспортируются публичные API core, compat, http, json-schema, typescript,
 validation и api. Установка также приносит cli с бинарником safe-shape. Дополнительной
@@ -91,9 +91,9 @@ checkContractConnection и рекурсивные TypeScript-объявлени�
 Зарезервированные имена импортируйте с alias, например `enum as enumSchema`.
 
 В версии 3.3.0 также переэкспортируются describeOutputBound и
-checkSchemaConnection; см. [проверяемые выходы](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/checked-output.md).
+checkSchemaConnection; см. [проверяемые выходы](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/ru/checked-output.md).
 Для browser runtime без инструментов Node выбирайте отдельный core-пакет;
-см. [архитектуру](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/package-architecture.md).
+см. [архитектуру](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/ru/package-architecture.md).
 
 ## AI-контракты и MCP
 
@@ -101,4 +101,4 @@ checkSchemaConnection; см. [проверяемые выходы](https://githu
 адаптер AI-инструментов. Импортируйте MCP API из `safe-shape/mcp`; основной импорт
 не загружает MCP/SDK. Отдельный `@safe-shape/mcp` по-прежнему доступен.
 Установка umbrella включает SDK даже без использования этого entry.
-См. [MCP](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/mcp.md).
+См. [MCP](https://github.com/dev-ik/safe_shape/blob/v3.5.1/docs/ru/mcp.md).

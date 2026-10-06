@@ -2,7 +2,8 @@
 
 **English** | [Русский](ru/roadmap.md)
 
-Current stable release: [3.5.0](release-3.5.0.md), published on npm.
+Current documentation patch: [3.5.1](release-3.5.1.md).
+Publication status is recorded in its [GitHub release](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.1).
 The MCP inspection server and validated application-tool adapter have shipped;
 see [publication evidence](release-evidence-3.5.md) and [release history](releases.md).
 

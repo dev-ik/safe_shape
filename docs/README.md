@@ -3,11 +3,11 @@
 **English** | [Русский](ru/README.md)
 
 SafeShape documentation is organized by the task you need to complete.
-Current stable release: **3.5.0**, published on npm.
+Documentation version: **3.5.1**. See its [publication status](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.1).
 
 ## Start Here
 
-- [3.5.0 release notes](release-3.5.0.md) and [verified publication](release-evidence-3.5.md): AI contracts and MCP.
+- [3.5.1 patch notes](release-3.5.1.md) and [release evidence](release-evidence-3.5.1.md): documentation corrections.
 - [SafeShape and MCP](mcp.md): local coding-agent integration and application-tool validation.
 
 - [Checked output bounds](checked-output.md): exact export and connection proofs.

@@ -1,6 +1,6 @@
 {
   "name": "@safe-shape/json-schema",
-  "version": "3.5.0",
+  "version": "3.5.1",
   "description": "JSON Schema export for SafeShape runtime contracts.",
   "type": "module",
   "publishConfig": {
@@ -21,7 +21,7 @@
     "README.ru.md"
   ],
   "dependencies": {
-    "@safe-shape/core": "3.5.0"
+    "@safe-shape/core": "3.5.1"
   },
   "scripts": {
     "build": "npm run build --workspace @safe-shape/core && tsc -p tsconfig.build.json",

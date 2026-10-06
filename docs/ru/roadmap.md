@@ -2,7 +2,8 @@
 
 [English](../roadmap.md) | **Русский**
 
-Текущий стабильный релиз: [3.5.0](release-3.5.0.md), опубликован в npm.
+Текущий patch документации: [3.5.1](release-3.5.1.md).
+Статус публикации указан в [GitHub Release](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.1).
 MCP-сервер проверки контрактов и адаптер инструментов приложения уже выпущены;
 см. [проверку публикации](release-evidence-3.5.md) и [историю релизов](releases.md).
 

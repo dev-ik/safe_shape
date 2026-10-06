@@ -188,6 +188,7 @@ Reporting, storage, retry и UI-политика остаются в коде п
 | `@safe-shape/typescript` | Генерация TypeScript declarations |
 | `@safe-shape/validation` | JSON-friendly validation reports |
 | `@safe-shape/cli` | Инструменты командной строки |
+| `@safe-shape/mcp` | Отдельный MCP-сервер и проверка границ AI-инструментов |
 
 ## Принципы
 
@@ -237,8 +238,9 @@ npm run examples:check
 
 ## Статус проекта
 
-SafeShape готовит релиз `3.5.0`; все десять пакетов проходят локальную проверку. Публикация ожидается.
+SafeShape готовит релиз `3.5.0`; все десять пакетов прошли локальную проверку. Публикация ожидается.
 См. [описание релиза 3.4.0](docs/ru/release-3.4.0.md): каталоги endpoints, fetch-клиент, OpenAPI и проверка изменений API.
+См. [релиз 3.5.0](docs/ru/release-3.5.0.md) и [локальную проверку](docs/ru/release-evidence-3.5.md): AI-контракты и MCP.
 См. [описание patch 3.4.1](docs/ru/release-3.4.1.md) и [проверенную публикацию](docs/ru/release-evidence-3.4.1.md): npm README и metadata.
 Release gate проверяет
 метаданные, сборку, типы, тесты, примеры, benchmarks, установку tarball в

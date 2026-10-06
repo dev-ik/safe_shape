@@ -4,12 +4,12 @@
 
 Runtime contracts for TypeScript: validate unknown data, infer types, export schemas, and check API compatibility through one dependency.
 
-Version 3.4.1 improves npm documentation and package metadata. Runtime behavior is unchanged from 3.4.0. Node >=20.10 and ESM are required.
+Version 3.5.0 adds AI contracts and MCP through the separately installed `@safe-shape/mcp` package. The umbrella runtime remains compatible. Node >=20.10 and ESM are required.
 
 Since 3.3.0, the package also re-exports `describeOutputBound()` and `checkSchemaConnection()`;
 see [checked output bounds](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/checked-output.md).
 
-Install this package when a project wants the full SafeShape surface available
+Install this package when a project wants the runtime and tooling surface available
 through one dependency:
 
 ```sh
@@ -30,7 +30,7 @@ const report = validateSchema(userSchema, { id: "user_1" });
 
 ## API workflow
 
-Define an immutable endpoint catalog, validate requests before fetch and responses after decoding, export OpenAPI 3.1, and compare API snapshots. Added in 3.4.0 and available in 3.4.1.
+Define an immutable endpoint catalog, validate requests before fetch and responses after decoding, export OpenAPI 3.1, and compare API snapshots. Added in 3.4.0 and retained in 3.5.0.
 
 ```js
 import {
@@ -141,3 +141,9 @@ Installing this package also installs `@safe-shape/cli`, which provides the
 
 Use the scoped packages directly when a project wants the narrowest dependency
 surface.
+
+## AI contracts and MCP
+
+Install `@safe-shape/mcp` separately for the local stdio server and validated
+AI-tool boundaries. The umbrella does not depend on or re-export MCP.
+See the [MCP guide](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/mcp.md).

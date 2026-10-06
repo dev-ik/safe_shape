@@ -53,3 +53,19 @@ No remote CI, npm publisher configuration, release tag, push or publication has
 been performed. Configure the new package's npm trusted publisher and run the
 remote versioned gate before authorized publication. Local review/tests do not
 assert compatibility with untested clients.
+
+## Documentation follow-up
+
+A documentation audit found missing MCP entries in package/navigation/integration
+guides and stale 3.4.1 wording in the umbrella npm README. These were corrected
+in English and Russian, including explicit separate MCP installation, API
+exports, package boundaries and trusted-publisher readiness. Translation source
+hashes were reviewed and refreshed. `docs:check` passes for the current 258
+Markdown files; the earlier 259 count included the temporary execution ledger.
+
+All ten archives and SHA256SUMS were rebuilt. `consumer:check` passed with the
+installed MCP executable and adapter. Every archive's runtime files and package
+manifest were compared byte-for-byte with the qualified candidate and remained
+identical; only documentation changed. Full runtime tests were not repeated for
+this documentation-only update. Prior candidate archives are preserved under
+`.tmp/release-3.5/docs-refresh-previous-artifacts/`.

@@ -12,9 +12,13 @@ Packages:
 - `@safe-shape/typescript`: TypeScript declaration generation built on core schema descriptions.
 - `@safe-shape/validation`: JSON-friendly validation reports built on core schemas.
 - `@safe-shape/api`: endpoint catalogs and fetch clients, OpenAPI and API compatibility; depends on core/http/json-schema/compat. Its browser `./client` entry excludes Node tooling.
+- `@safe-shape/mcp`: separately installed stdio server and validated application tools, built on core/validation/json-schema/compat and the official MCP SDK.
 - `@safe-shape/cli`: command-line tooling built on api, compat, core, json-schema, typescript, and validation.
 
 Dependency direction:
+
+- `mcp -> core/validation/json-schema/compat` and official MCP SDK
+- Neither `core` nor the umbrella depends on MCP; install it explicitly.
 
 - `safe-shape -> api`
 - `api -> core/http/json-schema/compat`

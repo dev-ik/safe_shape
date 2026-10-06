@@ -8,6 +8,9 @@
 
 ## Начало работы
 
+- [Релиз 3.5.0](release-3.5.0.md) и [результаты проверки](release-evidence-3.5.md): AI-контракты и MCP.
+- [SafeShape и MCP](mcp.md): подключение coding-агента и проверка инструментов приложения.
+
 - [Patch 3.4.1](release-3.4.1.md): npm-документация и metadata.
 - [Быстрый старт](quick-start.md) и [интеграция](integration.md).
 - [Композиция контрактов](composable-contracts.md), [связи producer/consumer](contract-connections.md).
@@ -30,6 +33,7 @@
 - [JSON Schema](api/json-schema.md).
 - [Генерация TypeScript](api/typescript.md).
 - [Отчёты валидации](api/validation.md).
+- [MCP-сервер и AI-инструменты](api/mcp.md).
 
 ## Устройство платформы
 
@@ -55,5 +59,3 @@
 [patch 3.2.1](../release-3.2.1.md), [свидетельства 3.3](../release-evidence-3.3.md).
 Полный список исторических исключений есть в [реестре переводов](../translations.json).
 [ADR](../../adr/) и [RFC](../../rfc/) — единые нормативные источники на английском.
-
-- [SafeShape и MCP](mcp.md)

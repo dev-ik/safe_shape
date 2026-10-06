@@ -250,6 +250,7 @@ Use narrower packages when you want strict dependency boundaries:
 | `@safe-shape/typescript` | TypeScript declaration generation |
 | `@safe-shape/validation` | JSON-friendly validation reports |
 | `@safe-shape/cli` | Command-line tooling |
+| `@safe-shape/mcp` | Separate MCP server and validated AI-tool boundaries |
 
 ## Design Principles
 
@@ -313,7 +314,8 @@ TypeScript declarations and explicit producer/consumer connection checks. See th
 
 ## Project Status
 
-SafeShape is preparing the `3.5.0` release; all ten packages are being qualified locally. Publication is pending.
+SafeShape is preparing the `3.5.0` release; all ten packages have passed local qualification. Publication is pending.
+See the [3.5.0 release notes](docs/release-3.5.0.md) and [local qualification evidence](docs/release-evidence-3.5.md) for AI contracts and MCP.
 See the [3.4.0 release notes](docs/release-3.4.0.md) for endpoint catalogs, validated fetch clients, OpenAPI and API evolution checks.
 See the [3.4.1 patch notes](docs/release-3.4.1.md) and [verified publication](docs/release-evidence-3.4.1.md) for npm README and metadata improvements.
 The release gate covers

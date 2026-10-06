@@ -307,3 +307,13 @@ Do not rely on private implementation fields. Use public schemas,
 Install `@safe-shape/api` for endpoint catalogs, validated fetch clients, OpenAPI
 and whole-API checks. The umbrella includes the same exports. Browser clients
 use `@safe-shape/api/client` to avoid Node tooling. See the [API reference](api/api.md).
+
+## AI contracts and MCP (3.5.0)
+
+Install `@safe-shape/mcp` separately from the umbrella. It provides the
+`safe-shape-mcp` stdio executable and five public constructors/adapters for
+contract discovery/export/validation/comparison and application-tool boundaries.
+Core and umbrella do not acquire an MCP SDK dependency. Configure a fixed
+trusted-module manifest; agents call tools by ID and inline JSON. See the
+[MCP guide](mcp.md) for installation, Codex configuration, six inspection tools,
+limits and cancellation, and the [API reference](api/mcp.md).

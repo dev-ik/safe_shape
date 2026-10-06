@@ -4,7 +4,7 @@
 
 Runtime-контракты для TypeScript: проверка неизвестных данных, вывод типов, экспорт схем и проверка совместимости API через одну зависимость.
 
-Версия 3.4.1 улучшает npm-документацию и metadata пакетов. Runtime-поведение совпадает с 3.4.0. Требуются Node >=20.10 и ESM.
+Версия 3.5.0 добавляет AI-контракты и MCP через отдельный пакет `@safe-shape/mcp`. Runtime umbrella сохраняет совместимость. Требуются Node >=20.10 и ESM.
 
 ```sh
 npm install safe-shape
@@ -24,7 +24,7 @@ type Output = InferOutput<typeof user>;
 
 ## API workflow
 
-Неизменяемый каталог endpoints, проверка запросов до fetch и ответов после decoding, экспорт OpenAPI 3.1 и сравнение API snapshots. Добавлено в 3.4.0 и доступно в 3.4.1.
+Неизменяемый каталог endpoints, проверка запросов до fetch и ответов после decoding, экспорт OpenAPI 3.1 и сравнение API snapshots. Добавлено в 3.4.0 и сохранено в 3.5.0.
 
 ```js
 import {
@@ -94,3 +94,9 @@ checkContractConnection и рекурсивные TypeScript-объявлени�
 checkSchemaConnection; см. [проверяемые выходы](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/checked-output.md).
 Для browser runtime без инструментов Node выбирайте отдельный core-пакет;
 см. [архитектуру](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/package-architecture.md).
+
+## AI-контракты и MCP
+
+Установите `@safe-shape/mcp` отдельно для локального stdio-сервера и проверки
+границ AI-инструментов. Umbrella не зависит от MCP и не переэкспортирует его.
+См. [MCP](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/mcp.md).

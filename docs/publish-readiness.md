@@ -54,3 +54,11 @@ The `compat-only` phase is reserved for recovery of an older partially
 published tag and is not part of a normal release.
 
 Do not publish unrelated packages.
+
+## MCP package (3.5.0)
+
+Include `@safe-shape/mcp` in the ten-package release and configure its npm trusted
+publisher for the same repository/workflow/environment. Consumer checks exercise
+the installed MCP executable and validated tool adapter as well as the CLI.
+`prepare:release` generates ten archives and SHA256SUMS. Record the actual
+coding-agent walkthrough separately from SDK-only tests; see [MCP](mcp.md).

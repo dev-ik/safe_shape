@@ -27,3 +27,11 @@ Consumer-check упаковывает пакеты и устанавливает
 аннотированный тег v<version>, запуск publish workflow на теге в фазе release.
 Compat-only предназначен только для восстановления старой частичной публикации.
 Не публикуйте посторонние пакеты.
+
+## MCP-пакет (3.5.0)
+
+Включите `@safe-shape/mcp` в релиз десяти пакетов и настройте npm trusted publisher
+для того же repository/workflow/environment. Consumer-check проверяет установленный
+MCP executable и адаптер инструментов вместе с CLI. `prepare:release` создаёт
+десять архивов и SHA256SUMS. Walkthrough реального coding-агента фиксируется
+отдельно от SDK-тестов; см. [MCP](mcp.md).

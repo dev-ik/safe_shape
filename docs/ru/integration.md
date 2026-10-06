@@ -85,3 +85,13 @@ introspection и exporters. В этом репозитории release:check в�
 Установите `@safe-shape/api` для каталогов endpoints, fetch-клиента, OpenAPI
 и проверки API. Umbrella содержит те же экспорты. Для браузера используйте
 `@safe-shape/api/client` без Node tooling. См. [API reference](api/api.md).
+
+## AI-контракты и MCP (3.5.0)
+
+Установите `@safe-shape/mcp` отдельно от umbrella. Пакет предоставляет stdio
+executable `safe-shape-mcp` и пять публичных конструкторов/адаптеров для
+discovery/экспорта/валидации/сравнения контрактов и границ инструментов приложения.
+Core и umbrella не получают зависимость от MCP SDK. Задайте фиксированный
+manifest доверенных модулей; агент вызывает инструменты по ID с inline JSON.
+См. [MCP](mcp.md): установка, конфигурация Codex, шесть инструментов, лимиты и
+отмена; [API](api/mcp.md).

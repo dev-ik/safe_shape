@@ -38,3 +38,6 @@ checkSchemaConnection; см. [проверяемые выходы](../checked-ou
 
 
 Umbrella также реэкспортирует [API workflow] версии 3.4(api.md).
+
+MCP устанавливается отдельно через `@safe-shape/mcp` и не переэкспортируется
+umbrella; см. [MCP API](mcp.md). Общий пакет также переэкспортирует `@safe-shape/api`.

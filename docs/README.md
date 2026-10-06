@@ -6,6 +6,9 @@ SafeShape documentation is organized by the task you need to complete.
 
 ## Start Here
 
+- [3.5.0 release notes](release-3.5.0.md) and [qualification evidence](release-evidence-3.5.md): AI contracts and MCP.
+- [SafeShape and MCP](mcp.md): local coding-agent integration and application-tool validation.
+
 - [3.4.1 patch](release-3.4.1.md): npm documentation and metadata.
 - [3.4.0 release notes](release-3.4.0.md): changes, upgrade and qualification status.
 - [Checked output bounds](checked-output.md): 3.3.0 export and connection proofs.
@@ -37,6 +40,7 @@ SafeShape documentation is organized by the task you need to complete.
 - [JSON Schema](api/json-schema.md)
 - [TypeScript generation](api/typescript.md)
 - [Validation reports](api/validation.md)
+- [MCP server and AI tools](api/mcp.md)
 
 ## Concepts
 
@@ -74,5 +78,3 @@ Architecture decisions live in [`adr/`](../adr/), and accepted public API
 proposals live in [`rfc/`](../rfc/).
 
 Return to the [project README](../README.md).
-
-- [SafeShape and MCP](mcp.md)

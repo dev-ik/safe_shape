@@ -69,3 +69,28 @@ manifest were compared byte-for-byte with the qualified candidate and remained
 identical; only documentation changed. Full runtime tests were not repeated for
 this documentation-only update. Prior candidate archives are preserved under
 `.tmp/release-3.5/docs-refresh-previous-artifacts/`.
+
+## One-install umbrella MCP revision
+
+The user approved `safe-shape/mcp` before publication. RFC 0052/ADR 0040 replace
+the initial separate-install requirement: umbrella installs MCP/SDK transitively,
+but its main import does not load them. The dedicated package remains available.
+
+An isolated consumer installed only the umbrella archive using localhost scoped
+metadata for unpublished dependencies. Its only direct dependency is safe-shape;
+MCP APIs, the executable, validated adapter and SDK-client workflow passed.
+A loader test forbids MCP/SDK resolution during root import. Subpath type fixtures
+preserve transformed input/output inference.
+
+The subsequent full `prepare:release` passed: 329 workspace tests, EN/RU docs,
+examples, benchmarks, installed consumers, quality/migration, both audits with
+zero vulnerabilities and ten rebuilt archives. SHA256SUMS and the packaged
+subpath/dependency/declaration files were verified. Current docs checks cover
+260 Markdown files. Log: `.tmp/release-3.5/umbrella-prepare-release.log`.
+
+Review found a Zod collision in the generated quality consumer after adding the
+SDK. EEXIST was reproduced; setup now replaces only that temporary directory
+with the benchmark's pinned Zod 4.6.1. The full quality gate and actual pinned
+version passed verification. Production dependency versions were not changed.
+Prior archives are in `.tmp/release-3.5/umbrella-previous-artifacts/`.
+This install workflow was verified with npm; other package managers are untested.

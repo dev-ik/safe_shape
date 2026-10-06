@@ -63,3 +63,28 @@ MCP executable и адаптером. Runtime-файлы и package manifest к�
 сравнены побайтово с проверенным кандидатом и не изменились; изменена только
 документация. Полные runtime-тесты для этой правки документации не повторялись.
 Предыдущие архивы сохранены в `.tmp/release-3.5/docs-refresh-previous-artifacts/`.
+
+## MCP через одну установку umbrella
+
+Пользователь согласовал `safe-shape/mcp` до публикации. RFC 0052/ADR 0040 заменяют
+требование отдельной установки: umbrella устанавливает MCP/SDK транзитивно,
+но основной импорт их не загружает. Самостоятельный пакет остаётся доступен.
+
+Изолированный consumer установил только архив umbrella с localhost metadata
+для неопубликованных зависимостей. Единственная прямая зависимость — safe-shape;
+MCP API, executable, адаптер и SDK-client workflow прошли проверку. Loader-тест
+запрещает загрузку MCP/SDK из основного импорта. Type fixtures подтверждают
+вывод преобразованных типов входа/выхода через subpath.
+
+Повторный полный `prepare:release` прошёл: 329 workspace-тестов, EN/RU-документы,
+примеры, benchmarks, installed consumers, quality/migration, оба audit без
+уязвимостей и десять новых архивов. Проверены SHA256SUMS и файлы subpath,
+зависимость и declarations в архиве. Docs-check проверяет 260 Markdown-файлов.
+Лог: `.tmp/release-3.5/umbrella-prepare-release.log`.
+
+Review обнаружил конфликт Zod во временном quality consumer после добавления
+SDK. EEXIST воспроизведён; setup заменяет только этот временный каталог на
+fixture Zod 4.6.1. Полный quality gate прошёл, версия проверена. Production
+dependencies не изменялись этой правкой. Старые архивы сохранены в
+`.tmp/release-3.5/umbrella-previous-artifacts/`. Проверена установка npm;
+другие package managers не тестировались.

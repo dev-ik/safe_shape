@@ -199,6 +199,10 @@ if (production.error) throw production.error;
 assert.equal(production.status, 0, production.stdout + production.stderr);
 const apiWorkflow = spawnSync(process.execPath, [resolve(rootDir, "examples/api-workflow.mjs")], { cwd: rootDir, encoding: "utf8" });
 assert.equal(apiWorkflow.status, 0, apiWorkflow.stderr || apiWorkflow.stdout);
+for (const file of ["mcp-tool-boundary.mjs", "mcp-workflow.mjs"]) {
+  const result = spawnSync(process.execPath, [resolve(rootDir, "examples", file)], { cwd: rootDir, encoding: "utf8" });
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+}
 console.log("examples-check: ok (including production rejection, recovery and logger failures)");
 
 function runCli(args) {

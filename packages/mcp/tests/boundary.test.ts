@@ -15,6 +15,7 @@ test("application boundaries block invalid arguments/results and exceptions", as
   assert.equal(calls, 1);
   const broken = await createValidatedMcpHandler(tool, () => ({ length: "bad" }))({ text: "x" });
   assert.equal(broken.isError, true); assert.equal(broken.structuredContent, undefined);
+  assert.equal(Object.isFrozen(broken.content), true);
   const thrown = await createValidatedMcpHandler(tool, () => { throw new Error("secret-token"); })({ text: "x" });
   assert.equal(thrown.isError, true); assert.ok(!JSON.stringify(thrown).includes("secret-token"));
   assert.equal(safeToMcpToolDefinition(tool).success, true);

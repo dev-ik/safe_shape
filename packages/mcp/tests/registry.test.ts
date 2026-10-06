@@ -20,4 +20,5 @@ test("registry validates, copies and freezes entries without executing rules", (
   for (const id of ["", " ", "x".repeat(129)]) assert.throws(() => create([{ ...entry, id }]), TypeError);
   assert.throws(() => create([entry, entry]), TypeError);
   assert.throws(() => create([entry], [{ id: "t", name: "t", description: "tool", inputId: "missing", outputId: "__proto__" }]), TypeError);
+  assert.throws(() => create([entry], [{ id: "t", name: "invalid tool name", description: "tool", inputId: "__proto__", outputId: "__proto__" }]), TypeError);
 });

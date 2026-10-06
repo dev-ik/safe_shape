@@ -44,3 +44,27 @@ test('SDK client discovers six tools and performs export/invalid/corrected/compa
     assert.equal((await call('list_contracts', { cursor: 'stale' })).result.isError, true);
   } finally { await client.close(); await server.close(); }
 });
+
+test('server holds sixteen operation slots while async validations are pending', async () => {
+  let release!: () => void;
+  let entered = 0;
+  let ready!: () => void;
+  const allEntered = new Promise<void>(resolve => { ready = resolve; });
+  const blocked = new Promise<void>(resolve => { release = resolve; });
+  const schema = object({ name: string() }).refineAsync(async () => { if (++entered === 16) ready(); await blocked; return true; }, { id: 'pending' });
+  const server = api.createSafeShapeMcpServer({ registry: api.createMcpContractRegistry([{ id: 'pending', description: 'Pending', schema }]) });
+  const client = new Client({ name: 'capacity', version: '1' });
+  const [a, b] = InMemoryTransport.createLinkedPair();
+  await server.connect(a); await client.connect(b);
+  try {
+    await client.listTools();
+    const pending = Array.from({ length: 16 }, () => client.callTool({ name: 'validate_data', arguments: { contractId: 'pending', value: { name: 'Ada' } } }));
+    await allEntered;
+    const overflow = await client.callTool({ name: 'validate_data', arguments: { contractId: 'pending', value: { name: 'Ada' } } });
+    assert.equal(overflow.isError, true);
+    assert.equal((overflow.structuredContent as any).error.code, 'capacity_exceeded');
+    release();
+    assert.ok((await Promise.all(pending)).every(result => (result.structuredContent as any).result.valid));
+    assert.equal((await client.callTool({ name: 'list_contracts', arguments: {} })).isError, undefined);
+  } finally { release(); await client.close(); await server.close(); }
+});

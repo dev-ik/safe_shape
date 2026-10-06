@@ -14,6 +14,7 @@ const packageDirectories = [
   "packages/typescript",
   "packages/validation",
   "packages/api",
+  "packages/mcp",
   "packages/cli",
   "packages/safe-shape",
 ].map((packagePath) => join(projectDirectory, packagePath));

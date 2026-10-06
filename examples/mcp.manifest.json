@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "contracts": [
+    { "id": "user-v1", "description": "Previous user contract", "module": "examples/mcp-contracts.mjs", "export": "userV1" },
+    { "id": "user-v2", "description": "Current user contract", "module": "examples/mcp-contracts.mjs", "export": "userV2" }
+  ],
+  "tools": [
+    { "id": "user-tool", "name": "inspect_user", "description": "Inspect a user", "inputId": "user-v1", "outputId": "user-v2" }
+  ]
+}

@@ -74,3 +74,5 @@ Architecture decisions live in [`adr/`](../adr/), and accepted public API
 proposals live in [`rfc/`](../rfc/).
 
 Return to the [project README](../README.md).
+
+- [SafeShape and MCP](mcp.md)

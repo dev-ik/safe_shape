@@ -15,6 +15,7 @@ const version = rootPackage.version;
 
 assert.match(version, /^\d+\.\d+\.\d+$/);
 const packages = [
+  { name: "@safe-shape/mcp", tarball: `safe-shape-mcp-${version}.tgz` },
   { name: "@safe-shape/api", tarball: `safe-shape-api-${version}.tgz` },
   { name: "safe-shape", tarball: `safe-shape-${version}.tgz` },
   { name: "@safe-shape/core", tarball: `safe-shape-core-${version}.tgz` },
@@ -137,7 +138,13 @@ for (const file of ["production-boundary.mjs", "production-boundary.test.mjs", "
   await writeFile(resolve(appDir, file), source);
 }
 await run(process.execPath, ["--unhandled-rejections=strict", "--test", resolve(appDir, "production-boundary.test.mjs")], appDir);
-console.log("consumer-check: ok");
+await mkdir(resolve(appDir, "examples"), { recursive: true });
+for (const file of ["mcp-contracts.mjs", "mcp.manifest.json", "mcp-workflow.mjs", "mcp-tool-boundary.mjs"]) {
+  await writeFile(resolve(appDir, "examples", file), await readFile(resolve(rootDir, "examples", file)));
+}
+await run(process.execPath, [resolve(appDir, "examples/mcp-tool-boundary.mjs")], appDir);
+await run(process.execPath, [resolve(appDir, "examples/mcp-workflow.mjs"), resolve(appDir, "node_modules/.bin/safe-shape-mcp")], appDir);
+console.log("consumer-check: ok (including installed MCP executable and tool boundary)");
 
 async function run(command, args, cwd) {
   const result = await spawnProcess(command, args, cwd);

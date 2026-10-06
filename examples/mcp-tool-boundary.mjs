@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import { object, string, number } from '@safe-shape/core';
+import { defineMcpTool, safeToMcpToolDefinition, createValidatedMcpHandler } from '@safe-shape/mcp';
+const tool = defineMcpTool({ name: 'text_length', description: 'Measure text length', input: object({ text: string() }), output: object({ length: number() }) });
+const exported = safeToMcpToolDefinition(tool);
+assert.equal(exported.success, true);
+let calls = 0;
+const handler = createValidatedMcpHandler(tool, ({ text }) => { calls++; return { length: text.length }; });
+assert.equal((await handler({ text: 1 })).isError, true);
+assert.equal(calls, 0);
+assert.deepEqual((await handler({ text: 'hello' })).structuredContent, { length: 5 });
+assert.equal(calls, 1);
+const broken = createValidatedMcpHandler(tool, () => ({ length: 'wrong' }));
+const result = await broken({ text: 'hello' });
+assert.equal(result.isError, true);
+assert.equal(result.structuredContent, undefined);
+console.log('mcp-tool-boundary: ok');

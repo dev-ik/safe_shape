@@ -30,7 +30,7 @@ export function createValidatedMcpHandler<I, RawI, O, RawO>(
     } catch (error) {
       let safe: unknown;
       try { safe = copyJson(publicError(error)); } catch { safe = { code: 'serialization_failed', message: 'Diagnostics are not lossless JSON.' }; }
-      const result: CallToolResult = Object.freeze({ content: [Object.freeze({ type: 'text' as const, text: JSON.stringify(safe) })], isError: true });
+      const result: CallToolResult = copyJson({ content: [{ type: 'text', text: JSON.stringify(safe) }], isError: true });
       if (jsonBytes(result) > gate.limits.responseBytes) throw new McpOperationError('response_too_large', 'Error cannot fit response limit.');
       return result;
     }

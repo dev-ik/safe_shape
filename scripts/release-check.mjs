@@ -12,8 +12,10 @@ const expectedPackages = [
   "packages/validation",
   "packages/cli",
   "packages/api",
+  "packages/mcp",
 ];
 const packageDocs = new Map([
+  ["@safe-shape/mcp", "docs/api/mcp.md"],
   ["safe-shape", "docs/api/safe-shape.md"],
   ["@safe-shape/api", "docs/api/api.md"],
   ["@safe-shape/core", "docs/api/core.md"],
@@ -25,6 +27,7 @@ const packageDocs = new Map([
   ["@safe-shape/cli", "docs/api/cli.md"],
 ]);
 const expectedDeps = new Map([
+  ["@safe-shape/mcp", ["@safe-shape/core", "@safe-shape/validation", "@safe-shape/json-schema", "@safe-shape/compat", "@modelcontextprotocol/sdk"]],
   [
     "safe-shape",
     [
@@ -164,6 +167,12 @@ function checkPackage(packagePath) {
     assertExists(join(packagePath, "dist", "index.d.ts"), `${packageName} dist/index.d.ts`);
   }
 
+  if (packageName === "@safe-shape/mcp") {
+    assert(manifest.bin?.["safe-shape-mcp"] === "./dist/cli.js", "MCP executable path");
+    assertExists(join(packagePath, "dist", "cli.js"), "MCP executable");
+    if (process.platform !== "win32" && existsSync(join(root, packagePath, "dist", "cli.js"))) assert((statSync(join(root, packagePath, "dist", "cli.js")).mode & 0o777) === 0o755, "MCP executable mode");
+  }
+
   assertArrayEqual(
     Object.keys(manifest.dependencies ?? {}),
     expectedDeps.get(packageName) ?? [],
@@ -171,7 +180,7 @@ function checkPackage(packagePath) {
   );
   for (const [dependencyName, dependencyVersion] of Object.entries(manifest.dependencies ?? {})) {
     assert(
-      dependencyVersion === releaseVersion,
+      dependencyVersion === (dependencyName === "@modelcontextprotocol/sdk" ? "1.32.1" : releaseVersion),
       `${packageName} dependency ${dependencyName} must use release version ${releaseVersion}`,
     );
   }

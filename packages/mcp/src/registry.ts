@@ -26,6 +26,7 @@ export function createMcpContractRegistry(
   for (const entry of tools) {
     if (!entry || typeof entry !== "object") throw new TypeError("Invalid tool entry.");
     requireId(entry.id); requireId(entry.name); requireDescription(entry.description);
+    if (!/^[A-Za-z0-9_.-]+$/.test(entry.name)) throw new TypeError("Invalid MCP tool name.");
     requireId(entry.inputId); requireId(entry.outputId);
     if (catalog.has(entry.id) || names.has(entry.name)) throw new TypeError("Duplicate tool ID or name.");
     if (!contracts.has(entry.inputId) || !contracts.has(entry.outputId)) throw new TypeError("Unknown tool contract ID.");

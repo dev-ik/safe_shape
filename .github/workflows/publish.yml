@@ -119,6 +119,9 @@ jobs:
             "@safe-shape/validation" \
             "./release-artifacts/safe-shape-validation-${VERSION}.tgz"
           publish_if_missing \
+            "@safe-shape/mcp" \
+            "./release-artifacts/safe-shape-mcp-${VERSION}.tgz"
+          publish_if_missing \
             "@safe-shape/api" \
             "./release-artifacts/safe-shape-api-${VERSION}.tgz"
           publish_if_missing \

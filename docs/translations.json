@@ -400,8 +400,8 @@
     {
       "english": "docs/release-evidence-3.5.md",
       "russian": "docs/ru/release-evidence-3.5.md",
-      "englishSha256": "943eb189ac6843daabeb65401aa950e817333bb3e5e960ff51e9e615271757f4",
-      "russianSha256": "e213e8e13ede4fb4ba6426b5bd3677d8cc875ad1e94e9a022e71d73b6766f447"
+      "englishSha256": "f6d0712cf3f598aaac420c8025994de01b4ce539b19242d870022f7fbf25413a",
+      "russianSha256": "a4054274fe9ea29b7e2cae3b4845a74faf5f421cf829ecc952d8425e8405368d"
     }
   ],
   "englishOnly": [

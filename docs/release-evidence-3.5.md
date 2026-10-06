@@ -94,3 +94,32 @@ with the benchmark's pinned Zod 4.6.1. The full quality gate and actual pinned
 version passed verification. Production dependency versions were not changed.
 Prior archives are in `.tmp/release-3.5/umbrella-previous-artifacts/`.
 This install workflow was verified with npm; other package managers are untested.
+
+## Published release — 2026-10-06
+
+The earlier entries describe pre-publication checkpoints. Release tag `v3.5.0`
+now points to `0d909dec3131956127da79ea29caf5af79667d42`.
+[CI](https://github.com/dev-ik/safe_shape/actions/runs/37468515906) passed on
+Node 20.10 and 24. Clean-checkout validation exposed two test-harness assumptions:
+manifest fixtures needed to create their temporary parent directory, and source
+examples needed to invoke the built CLI through Node rather than an npm bin link.
+Both were fixed; public runtime behavior was unchanged.
+
+The [publish workflow](https://github.com/dev-ik/safe_shape/actions/runs/37475098341)
+passed the full tagged `prepare:release` gate and published the nine established
+packages through OIDC with provenance. The first `@safe-shape/mcp@3.5.0`
+publication used the maintainer's authenticated CLI to create the new package;
+that version has no provenance attestation. MCP and API now both have a verified
+trusted publisher for `dev-ik/safe_shape`, `publish.yml`, environment `npm`.
+
+All ten packages were verified in the public npm registry with `latest=3.5.0`.
+The [GitHub release](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.0)
+contains ten archives and SHA256SUMS; downloaded assets passed all ten checksums.
+Registry availability lagged publish completion; verification waited until the
+versions were available rather than repeating publication.
+
+A fresh consumer installed only `safe-shape@3.5.0` from npm, with zero audit
+vulnerabilities. `safe-shape/mcp`, validated input/output handlers, the transitive
+MCP executable and the six-tool stdio SDK-client workflow passed. Its only direct
+dependency is `safe-shape`. Local consumer and downloaded assets are under
+`.tmp/release-3.5/published-consumer/` and `published-artifacts/` respectively.

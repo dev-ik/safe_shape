@@ -88,3 +88,32 @@ fixture Zod 4.6.1. Полный quality gate прошёл, версия пров
 dependencies не изменялись этой правкой. Старые архивы сохранены в
 `.tmp/release-3.5/umbrella-previous-artifacts/`. Проверена установка npm;
 другие package managers не тестировались.
+
+## Опубликованный релиз — 2026-10-06
+
+Предыдущие записи описывают этапы до публикации. Тег `v3.5.0` теперь указывает
+на `0d909dec3131956127da79ea29caf5af79667d42`.
+[CI](https://github.com/dev-ik/safe_shape/actions/runs/37468515906) прошёл на
+Node 20.10 и 24. Проверка чистого checkout обнаружила два предположения тестовой
+подготовки: manifest fixtures должны создавать родительский временный каталог,
+а примеры из исходников — запускать собранный CLI через Node вместо npm bin link.
+Оба исправлены; публичное runtime-поведение не менялось.
+
+[Publish workflow](https://github.com/dev-ik/safe_shape/actions/runs/37475098341)
+прошёл полный `prepare:release` на теге и опубликовал девять существующих пакетов
+через OIDC с provenance. Первая публикация `@safe-shape/mcp@3.5.0` выполнена
+через авторизованный CLI владельца для создания нового пакета; у этой версии
+нет provenance attestation. Для MCP и API проверен Trusted Publisher:
+`dev-ik/safe_shape`, `publish.yml`, environment `npm`.
+
+Все десять пакетов проверены в публичном npm с `latest=3.5.0`.
+[GitHub Release](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.0)
+содержит десять архивов и SHA256SUMS; все checksum скачанных архивов совпали.
+Версии стали доступны в реестре с задержкой после публикации; проверка дождалась
+их появления без повторной публикации.
+
+Новый consumer установил только `safe-shape@3.5.0` из npm, audit — без уязвимостей.
+Проверены `safe-shape/mcp`, валидация входа и выхода handler, транзитивный MCP
+executable и stdio workflow SDK-клиента с шестью tools. Единственная прямая
+зависимость — `safe-shape`. Consumer и скачанные архивы находятся соответственно
+в `.tmp/release-3.5/published-consumer/` и `published-artifacts/`.

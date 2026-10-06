@@ -2,7 +2,7 @@
 
 [English](../releases.md) | **Русский**
 
-Версия документации: **3.5.1**. См. [статус публикации](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.1).
+Текущий стабильный релиз: **3.5.1**, опубликован в npm. См. [GitHub Release](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.1).
 Установка SafeShape: `npm install safe-shape`.
 Версии ниже указывают, когда появились возможности; новым проектам не нужно
 устанавливать старую версию для их использования.

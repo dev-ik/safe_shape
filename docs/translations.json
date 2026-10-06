@@ -4,14 +4,14 @@
     {
       "english": "README.md",
       "russian": "README.ru.md",
-      "englishSha256": "0a142b3968715929df7a7ea48c99f551f1da43703235ed226ff51a3de5be9684",
-      "russianSha256": "4d17375fa012f0e7a19a6dab4ffe03d8b08fcdec13c8a63ab699ce35f2ec1edb"
+      "englishSha256": "2cbb249d5da61da085a2e8011bfc9c8368360d976caf55f09384d088b976236c",
+      "russianSha256": "2efd05be20d76fc14f56683693a1588ba1b46b6ef77775b2808173bda1cc4df5"
     },
     {
       "english": "docs/README.md",
       "russian": "docs/ru/README.md",
-      "englishSha256": "826f3db9e0914e47e4a07e2d384b149f2656fc58cf0b0b177d2abc94aca2119b",
-      "russianSha256": "eff95483e382560bf574232e04d46493ab662a4cbe962469a5d8fcd358b3ffcf"
+      "englishSha256": "012fbbc6f3e842378f99d5c27ccf0bf538b0722a920c498ea49412864f4a43e0",
+      "russianSha256": "6b4fdc5b2ba839609e1dac4b3bd38000c6ae557fc3e50b6d2dbd0f09a34338f8"
     },
     {
       "english": "docs/api/cli.md",
@@ -256,8 +256,8 @@
     {
       "english": "docs/roadmap.md",
       "russian": "docs/ru/roadmap.md",
-      "englishSha256": "f6ac7529496535f2ae74ce8d8d5b9b7bb10a652bbcd33ee77f0ac379491eb4c2",
-      "russianSha256": "205ee8b7ec97fb1797c48373faefe088f9e9e200f419d690496174414117486f"
+      "englishSha256": "84c20536a7c0de64afed8007dba87be2b944f0508000d3897c98971ec2ceb428",
+      "russianSha256": "e058ca3634495a8a28da57bff5499a0d10f74bad63100d7d7cc4e972531121ed"
     },
     {
       "english": "docs/testing.md",
@@ -406,20 +406,20 @@
     {
       "english": "docs/releases.md",
       "russian": "docs/ru/releases.md",
-      "englishSha256": "0930fdcf1f98b2b96ca8d04cc842ee361ca5e7882e44a60cdc1c385688f3dcc7",
-      "russianSha256": "cd1a19c7b2a17e00a9ef2c924876355d821f341f38e2e31239c8fce3b6f93bba"
+      "englishSha256": "6015872787dbda61896dee622a9651a6a0ffa3417ca18cb174c07f5f2a67e321",
+      "russianSha256": "1663691248200a453bceec403e6517b2b061d5f5b04f4979ada88fa7409d752a"
     },
     {
       "english": "docs/release-3.5.1.md",
       "russian": "docs/ru/release-3.5.1.md",
-      "englishSha256": "8cc58ee9af1701995b36aa3a85bac5d1821c8f916e43ec45aa424f583784abf4",
-      "russianSha256": "b66129f4bb32a8efe2de8a5eead9835f79b08578aaf261716ff38d96b2824c68"
+      "englishSha256": "cb934d0057bf0a902c113fe93aaf5214187adb9c598d24c5f190912dffa8b536",
+      "russianSha256": "9e8d990e6395ae9297788a1973142cb8e8df8bef525618d270bde48c5c76dac3"
     },
     {
       "english": "docs/release-evidence-3.5.1.md",
       "russian": "docs/ru/release-evidence-3.5.1.md",
-      "englishSha256": "599722bb987e7c9d23bdf09f69a973c6831ddeacc128b507dae9852502b0b5f8",
-      "russianSha256": "f751882c99cbbece040f5f23f6422d4e829fd3b50c9bb69bc83430d35dfff2ff"
+      "englishSha256": "5129f93fa93d817a4cd43cba9a5327dc0d75f4447b03fc8ee2246d10795356ab",
+      "russianSha256": "91ba99021f49ac18575c5113820c30c39bb0b4d0e0dbb3c542d5a4f94c17f2ea"
     }
   ],
   "englishOnly": [

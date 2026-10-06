@@ -178,13 +178,13 @@ example.
 
 ## Release Metrics
 
-Verified [3.5.1 release qualification](docs/release-evidence-3.5.1.md):
+Verified [3.5.1 release gate and publication](docs/release-evidence-3.5.1.md):
 
 | Signal | Status |
 | --- | --- |
-| Packages | 10 qualified packages |
+| Packages | 10 published packages |
 | Package tests | 329 passing tests |
-| Consumer install | Tarball installation checks pass; registry verification is tracked in release evidence |
+| Consumer install | Tarball and published npm installation checks pass |
 | Examples | Runnable examples pass |
 | Security audit | 0 known vulnerabilities |
 | Benchmarks | Runtime, diagnostics, composition, connection and compatibility checks passed |
@@ -307,7 +307,8 @@ npm run examples:check
 
 ## Project Status
 
-This README documents SafeShape `3.5.1`.
+SafeShape is on the `3.5.1` stable release line.
+All ten packages are published on npm with `latest=3.5.1` and provenance.
 Publication status and downloadable archives are recorded in the
 [GitHub release](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.1).
 See the [3.5.1 patch notes](docs/release-3.5.1.md) and [release evidence](docs/release-evidence-3.5.1.md).

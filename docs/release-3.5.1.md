@@ -3,6 +3,7 @@
 **English** | [Русский](ru/release-3.5.1.md)
 
 This patch delivers corrected documentation through all ten npm packages.
+Published on 2026-10-06; all ten packages have `latest=3.5.1` and provenance.
 Publication status is recorded in the [GitHub release](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.1)
 and [release evidence](release-evidence-3.5.1.md).
 

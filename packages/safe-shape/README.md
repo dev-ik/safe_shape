@@ -4,7 +4,7 @@
 
 Runtime contracts for TypeScript: validate unknown data, infer types, export schemas, and check API compatibility through one dependency.
 
-Version 3.5.0 adds AI contracts and MCP through the separately installed `@safe-shape/mcp` package. The umbrella runtime remains compatible. Node >=20.10 and ESM are required.
+Version 3.5.0 adds AI contracts and MCP through the `safe-shape/mcp` entry, installed automatically with the umbrella. The umbrella runtime remains compatible. Node >=20.10 and ESM are required.
 
 Since 3.3.0, the package also re-exports `describeOutputBound()` and `checkSchemaConnection()`;
 see [checked output bounds](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/checked-output.md).
@@ -144,6 +144,8 @@ surface.
 
 ## AI contracts and MCP
 
-Install `@safe-shape/mcp` separately for the local stdio server and validated
-AI-tool boundaries. The umbrella does not depend on or re-export MCP.
+The same `npm install safe-shape` installs the local stdio server and validated
+AI-tool adapter. Import MCP APIs from `safe-shape/mcp`; the main import does not
+load MCP/SDK. The dedicated `@safe-shape/mcp` package remains available independently.
+Umbrella installation includes the SDK even when this entry is unused.
 See the [MCP guide](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/mcp.md).

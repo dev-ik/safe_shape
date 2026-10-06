@@ -37,6 +37,7 @@ const expectedDeps = new Map([
       "@safe-shape/core",
       "@safe-shape/http",
       "@safe-shape/json-schema",
+      "@safe-shape/mcp",
       "@safe-shape/typescript",
       "@safe-shape/validation",
     ],
@@ -158,6 +159,10 @@ function checkPackage(packagePath) {
   } else if (packageName === "safe-shape") {
     assert(manifest.exports?.["."]?.import === "./dist/index.js", "safe-shape export import");
     assert(manifest.exports?.["."]?.types === "./dist/index.d.ts", "safe-shape export types");
+    assert(manifest.exports?.["./mcp"]?.import === "./dist/mcp.js", "safe-shape MCP import entry");
+    assert(manifest.exports?.["./mcp"]?.types === "./dist/mcp.d.ts", "safe-shape MCP declaration entry");
+    assertExists(join(packagePath, "dist", "mcp.js"), "safe-shape MCP entry file");
+    assertExists(join(packagePath, "dist", "mcp.d.ts"), "safe-shape MCP declaration file");
     assertExists(join(packagePath, "dist", "index.js"), "safe-shape dist/index.js");
     assertExists(join(packagePath, "dist", "index.d.ts"), "safe-shape dist/index.d.ts");
   } else {

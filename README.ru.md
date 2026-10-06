@@ -188,7 +188,7 @@ Reporting, storage, retry и UI-политика остаются в коде п
 | `@safe-shape/typescript` | Генерация TypeScript declarations |
 | `@safe-shape/validation` | JSON-friendly validation reports |
 | `@safe-shape/cli` | Инструменты командной строки |
-| `@safe-shape/mcp` | Отдельный MCP-сервер и проверка границ AI-инструментов |
+| `@safe-shape/mcp` | MCP-сервер и AI-инструменты; также доступны через `safe-shape/mcp` |
 
 ## Принципы
 
@@ -255,3 +255,6 @@ Release gate проверяет
 [переход с Zod](docs/ru/migration-from-zod.md).
 
 - [AI-контракты и MCP](docs/ru/mcp.md)
+
+MCP входит в `npm install safe-shape`; его API загружаются через `safe-shape/mcp`.
+Основной импорт не загружает SDK, но установка umbrella включает его.

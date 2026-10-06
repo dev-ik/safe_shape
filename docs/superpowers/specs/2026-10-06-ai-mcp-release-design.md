@@ -30,9 +30,9 @@ Add one package, `@safe-shape/mcp`, with a Node ESM server executable
 `safe-shape-mcp` and a programmatic public entry. Retain Node >=20.10 support.
 
 Dependency direction is `mcp -> core/validation/json-schema/compat` plus the
-official MCP TypeScript SDK for protocol transport. Existing packages do not
-depend on MCP. In particular, the umbrella does not acquire an SDK dependency;
-MCP is installed explicitly alongside SafeShape. No alternative schema library
+official MCP TypeScript SDK for protocol transport. Core and existing tooling packages do not
+depend on MCP; umbrella declares an exact-version MCP dependency. In particular, the umbrella installs MCP and its SDK transitively; only its `./mcp` subpath
+re-exports MCP, leaving its main import graph unchanged. No alternative schema library
 is introduced as SafeShape's public contract interface. Any SDK-required
 dependencies remain implementation details.
 
@@ -225,7 +225,7 @@ Implementation planning must preserve this sequence:
 3. Six inspection tool handlers using existing validation/export/compat APIs.
 4. Stdio executable, manifest parsing, limits and protocol integration tests.
 5. Workspace/package lock, build/release metadata, consumer installation checks,
-   package boundaries and publication ordering for the explicit MCP package.
+   package boundaries and publication ordering including the umbrella MCP subpath.
 6. English/Russian guides and packaged READMEs, examples and local skill updates.
 7. Full candidate qualification, version synchronization to 3.5.0 and rebuilt
    archives. Version changes do not precede feature qualification.
@@ -263,3 +263,6 @@ implementation plan, after written-spec approval.
 - [SafeShape release workflow](../../release.md)
 - [MCP tools, baseline revision 2025-06-18](https://modelcontextprotocol.io/specification/2025-06-18/server/tools)
 - [MCP transports, baseline revision 2025-06-18](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports)
+
+Packaging revision: the user approved one-install MCP via `safe-shape/mcp` before
+publication. RFC 0052 and ADR 0040 supersede the initial separate-install policy.

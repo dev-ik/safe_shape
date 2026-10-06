@@ -250,7 +250,7 @@ Use narrower packages when you want strict dependency boundaries:
 | `@safe-shape/typescript` | TypeScript declaration generation |
 | `@safe-shape/validation` | JSON-friendly validation reports |
 | `@safe-shape/cli` | Command-line tooling |
-| `@safe-shape/mcp` | Separate MCP server and validated AI-tool boundaries |
+| `@safe-shape/mcp` | MCP server and AI-tool boundaries; also exposed through `safe-shape/mcp` |
 
 ## Design Principles
 
@@ -323,3 +323,6 @@ metadata checks, build, typecheck, tests, examples, benchmarks, consumer tarball
 installation, npm audit, and package dry-run.
 
 - [AI contracts and MCP](docs/mcp.md)
+
+MCP is included by `npm install safe-shape`; use `safe-shape/mcp` to load its APIs.
+The main import does not load the SDK, but the umbrella installation includes it.

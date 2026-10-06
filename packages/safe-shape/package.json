@@ -10,6 +10,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./mcp": {
+      "types": "./dist/mcp.d.ts",
+      "import": "./dist/mcp.js"
     }
   },
   "files": [
@@ -24,12 +28,13 @@
     "@safe-shape/core": "3.5.0",
     "@safe-shape/http": "3.5.0",
     "@safe-shape/json-schema": "3.5.0",
+    "@safe-shape/mcp": "3.5.0",
     "@safe-shape/typescript": "3.5.0",
     "@safe-shape/validation": "3.5.0"
   },
   "scripts": {
-    "build": "npm run build --workspace @safe-shape/core && npm run build --workspace @safe-shape/compat && npm run build --workspace @safe-shape/http && npm run build --workspace @safe-shape/json-schema && npm run build --workspace @safe-shape/typescript && npm run build --workspace @safe-shape/validation && npm run build --workspace @safe-shape/cli && npm run build --workspace @safe-shape/api && tsc -p tsconfig.build.json",
-    "typecheck": "npm run build --workspace @safe-shape/core && npm run build --workspace @safe-shape/compat && npm run build --workspace @safe-shape/http && npm run build --workspace @safe-shape/json-schema && npm run build --workspace @safe-shape/typescript && npm run build --workspace @safe-shape/validation && npm run build --workspace @safe-shape/cli && npm run build --workspace @safe-shape/api && tsc --noEmit",
+    "build": "npm run build --workspace @safe-shape/core && npm run build --workspace @safe-shape/compat && npm run build --workspace @safe-shape/http && npm run build --workspace @safe-shape/json-schema && npm run build --workspace @safe-shape/typescript && npm run build --workspace @safe-shape/validation && npm run build --workspace @safe-shape/cli && npm run build --workspace @safe-shape/api && npm run build --workspace @safe-shape/mcp && tsc -p tsconfig.build.json",
+    "typecheck": "npm run build --workspace @safe-shape/core && npm run build --workspace @safe-shape/compat && npm run build --workspace @safe-shape/http && npm run build --workspace @safe-shape/json-schema && npm run build --workspace @safe-shape/typescript && npm run build --workspace @safe-shape/validation && npm run build --workspace @safe-shape/cli && npm run build --workspace @safe-shape/api && npm run build --workspace @safe-shape/mcp && tsc --noEmit",
     "test": "npm run build && tsc -p tsconfig.test.json && node --test .tmp/test/tests/*.test.js"
   },
   "repository": {

@@ -9,7 +9,7 @@ plan. Deliver both workflows together, without authorizing publication.
 
 ## Public capability
 
-Add explicitly installed `@safe-shape/mcp`: `createMcpContractRegistry`,
+Add `@safe-shape/mcp` (also exposed through `safe-shape/mcp` under RFC 0052): `createMcpContractRegistry`,
 `createSafeShapeMcpServer`, `defineMcpTool`, `safeToMcpToolDefinition` and
 `createValidatedMcpHandler`, their types, and the `safe-shape-mcp` executable.
 Six fixed inspection tools discover, describe, export, validate and compare

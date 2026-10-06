@@ -3,7 +3,9 @@
 [English](https://github.com/dev-ik/safe_shape/blob/v3.5.0/packages/mcp/README.md) | **Русский**
 
 Контракты для AI-инструментов и локальный MCP-сервер проверки. Node >=20.10, ESM.
-Пакет устанавливается отдельно; core и umbrella не зависят от SDK.
+Пакет можно установить отдельно либо получить через `safe-shape` и импортировать
+API из `safe-shape/mcp`. Core не зависит от SDK; umbrella устанавливает MCP/SDK
+транзитивно, но основной импорт их не загружает.
 
 ```sh
 npm install @safe-shape/mcp @safe-shape/core

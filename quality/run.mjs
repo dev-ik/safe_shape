@@ -52,7 +52,7 @@ try {
     baseline: await artifactHash(join(base, "packages/core/dist")),
   };
   const tarballs = join(output, "tarballs"); await mkdir(tarballs);
-  const packages = ["core", "compat", "http", "json-schema", "typescript", "validation", "api", "cli", "safe-shape"];
+  const packages = ["core", "compat", "http", "json-schema", "typescript", "validation", "api", "cli", "mcp", "safe-shape"];
   const paths = {};
   for (const pkg of packages) {
     const packed = JSON.parse(run("npm", ["--cache", join(root, ".npm-cache"), "pack", "--json", "--ignore-scripts", "--pack-destination", tarballs], join(root, "packages", pkg)));
@@ -117,6 +117,8 @@ assert.equal(recovered.kind, 'recovered'); assert.equal(recovered.data.name, 'ca
   report.integrations.production = "passed: installed request/response boundaries, next-request recovery, unexpected exceptions, sync/async/pending logger failures";
 
   console.log("quality: declaration consumers and compiler fixtures");
+  // SDK installs Zod transitively; benchmarks must still use the pinned fixture.
+  await rm(join(ci, "node_modules/zod"), { recursive: true, force: true });
   await symlink(join(here, "node_modules/zod"), join(ci, "node_modules/zod"));
   for (const file of ["types.ts", "tsconfig.json"]) await writeFile(join(ci, file), await readFile(join(here, file)));
   for (const compiler of ["typescript", "typescript-current"]) {

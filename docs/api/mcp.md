@@ -2,7 +2,10 @@
 
 **English** | [Русский](../ru/api/mcp.md)
 
-Node ESM package. Install explicitly; the umbrella does not re-export it.
+Node ESM APIs are available through `safe-shape/mcp` after `npm install safe-shape`.
+They can also be imported from the independently installed `@safe-shape/mcp`.
+The main `safe-shape` import does not load MCP/SDK; the installation includes
+them transitively.
 
 - `createMcpContractRegistry(entries, tools?)`: copy/freeze contract entries
   `{id, description, schema}` and catalog entries

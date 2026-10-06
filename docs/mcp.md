@@ -2,12 +2,15 @@
 
 **English** | [Русский](ru/mcp.md)
 
-Install the explicitly separate `@safe-shape/mcp` package alongside SafeShape.
+Install `safe-shape` for runtime/tooling and MCP in one dependency. Use
+`safe-shape/mcp` for MCP APIs; the dedicated `@safe-shape/mcp` package also remains
+available for narrower installations.
 The local inspection server and validated application-tool adapter ship together.
-Node >=20.10 and ESM are required. The umbrella and core do not depend on MCP.
+Node >=20.10 and ESM are required. Core has no MCP dependency. The umbrella
+installs MCP/SDK transitively but its main import does not load them.
 
 ```sh
-npm install @safe-shape/mcp @safe-shape/core
+npm install safe-shape
 npx --no-install safe-shape-mcp --workspace . --manifest examples/mcp.manifest.json
 ```
 
@@ -71,8 +74,8 @@ No inspection operation updates a baseline or runs application business handlers
 ## Application tools
 
 ```js
-import { object, string, number } from '@safe-shape/core';
-import { defineMcpTool, safeToMcpToolDefinition, createValidatedMcpHandler } from '@safe-shape/mcp';
+import { object, string, number } from 'safe-shape';
+import { defineMcpTool, safeToMcpToolDefinition, createValidatedMcpHandler } from 'safe-shape/mcp';
 
 const tool = defineMcpTool({
   name: 'text_length', description: 'Measure text length',

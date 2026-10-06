@@ -310,10 +310,12 @@ use `@safe-shape/api/client` to avoid Node tooling. See the [API reference](api/
 
 ## AI contracts and MCP (3.5.0)
 
-Install `@safe-shape/mcp` separately from the umbrella. It provides the
+Install `safe-shape` once and import MCP APIs from `safe-shape/mcp`. The dedicated
+`@safe-shape/mcp` package remains available for narrower installs. It provides the
 `safe-shape-mcp` stdio executable and five public constructors/adapters for
 contract discovery/export/validation/comparison and application-tool boundaries.
-Core and umbrella do not acquire an MCP SDK dependency. Configure a fixed
+Core has no SDK dependency; the main umbrella import does not load MCP/SDK.
+The umbrella installation now includes them transitively. Configure a fixed
 trusted-module manifest; agents call tools by ID and inline JSON. See the
 [MCP guide](mcp.md) for installation, Codex configuration, six inspection tools,
 limits and cancellation, and the [API reference](api/mcp.md).

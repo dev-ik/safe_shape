@@ -6,7 +6,7 @@ Status: local candidate; not published. See [qualification evidence](release-evi
 
 ## Included
 
-- Explicitly installed `@safe-shape/mcp` with six stdio inspection tools:
+- `safe-shape/mcp` included by one umbrella install, plus independently available `@safe-shape/mcp` with six stdio inspection tools:
   discovery, descriptions, exact JSON Schema export, validation, directional
   compatibility and MCP tool-definition export.
 - Typed application tools with argument validation before execution and result
@@ -22,7 +22,8 @@ Status: local candidate; not published. See [qualification evidence](release-evi
 
 This is a backward-compatible minor release. Existing schemas, CLI envelopes,
 snapshot formats, umbrella and browser import graphs remain compatible. Core
-and umbrella do not acquire an MCP SDK dependency. All ten packages use 3.5.0.
+remains SDK-independent. Umbrella installs MCP/SDK transitively but its main
+entry does not load them; use the explicit MCP subpath. All ten packages use 3.5.0.
 
 The SDK is pinned to 1.32.1; Node >=20.10 and ESM remain required. Imported modules
 and their callbacks are trusted JavaScript, not sandboxed. Cancellation cannot

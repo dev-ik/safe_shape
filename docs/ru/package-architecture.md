@@ -17,11 +17,12 @@
 
 Все scoped-пакеты имеют префикс @safe-shape/. Направление зависимостей:
 http/compat/json-schema/typescript/validation → core; cli → core, compat,
-json-schema, typescript, validation, api; api → core/http/json-schema/compat; safe-shape → core/compat/http/json-schema/typescript/validation/api/cli.
+json-schema, typescript, validation, api; api → core/http/json-schema/compat; safe-shape → core/compat/http/json-schema/typescript/validation/api/cli/mcp.
 Core не зависит от HTTP, compat или exporters. Не переносите Node tooling в
 browser runtime. Новые архитектурные решения требуют ADR.
 
 Browser entry `@safe-shape/api/client` не загружает Node tooling.
 
 MCP зависит от core/validation/json-schema/compat и официального MCP SDK.
-Core и umbrella не зависят от MCP; он устанавливается отдельно.
+Core не зависит от MCP/SDK. Umbrella зависит от MCP для установки; его API
+загружаются только через `safe-shape/mcp`, основной импорт сохраняет прежний граф.

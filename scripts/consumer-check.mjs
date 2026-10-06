@@ -3,6 +3,7 @@ import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
+import { checkUmbrellaInstall } from "./umbrella-consumer-check.mjs";
 
 const scriptsDir = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(scriptsDir, "..");
@@ -144,7 +145,8 @@ for (const file of ["mcp-contracts.mjs", "mcp.manifest.json", "mcp-workflow.mjs"
 }
 await run(process.execPath, [resolve(appDir, "examples/mcp-tool-boundary.mjs")], appDir);
 await run(process.execPath, [resolve(appDir, "examples/mcp-workflow.mjs"), resolve(appDir, "node_modules/.bin/safe-shape-mcp")], appDir);
-console.log("consumer-check: ok (including installed MCP executable and tool boundary)");
+await checkUmbrellaInstall({ rootDir, workspaceDir, tarballDir, version, packages, run });
+console.log("consumer-check: ok (including umbrella-only MCP install, executable and tool boundary)");
 
 async function run(command, args, cwd) {
   const result = await spawnProcess(command, args, cwd);

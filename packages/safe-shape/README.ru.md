@@ -4,7 +4,7 @@
 
 Runtime-контракты для TypeScript: проверка неизвестных данных, вывод типов, экспорт схем и проверка совместимости API через одну зависимость.
 
-Версия 3.5.0 добавляет AI-контракты и MCP через отдельный пакет `@safe-shape/mcp`. Runtime umbrella сохраняет совместимость. Требуются Node >=20.10 и ESM.
+Версия 3.5.0 добавляет AI-контракты и MCP через entry `safe-shape/mcp`, автоматически устанавливаемый с umbrella. Runtime umbrella сохраняет совместимость. Требуются Node >=20.10 и ESM.
 
 ```sh
 npm install safe-shape
@@ -97,6 +97,8 @@ checkSchemaConnection; см. [проверяемые выходы](https://githu
 
 ## AI-контракты и MCP
 
-Установите `@safe-shape/mcp` отдельно для локального stdio-сервера и проверки
-границ AI-инструментов. Umbrella не зависит от MCP и не переэкспортирует его.
+Одна команда `npm install safe-shape` устанавливает локальный stdio-сервер и
+адаптер AI-инструментов. Импортируйте MCP API из `safe-shape/mcp`; основной импорт
+не загружает MCP/SDK. Отдельный `@safe-shape/mcp` по-прежнему доступен.
+Установка umbrella включает SDK даже без использования этого entry.
 См. [MCP](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/mcp.md).

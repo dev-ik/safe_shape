@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { object, string, number } from '@safe-shape/core';
-import { defineMcpTool, safeToMcpToolDefinition, createValidatedMcpHandler } from '@safe-shape/mcp';
+import { defineMcpTool, safeToMcpToolDefinition, createValidatedMcpHandler } from 'safe-shape/mcp';
 const tool = defineMcpTool({ name: 'text_length', description: 'Measure text length', input: object({ text: string() }), output: object({ length: number() }) });
 const exported = safeToMcpToolDefinition(tool);
 assert.equal(exported.success, true);

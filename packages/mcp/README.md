@@ -3,7 +3,9 @@
 **English** | [Русский](https://github.com/dev-ik/safe_shape/blob/v3.5.0/packages/mcp/README.ru.md)
 
 Runtime contracts for AI tools and a local MCP inspection server. Node >=20.10, ESM.
-Install this package explicitly; SafeShape core and umbrella remain SDK-independent.
+Install this package independently for a narrower setup, or install `safe-shape`
+and import these APIs from `safe-shape/mcp`. Core remains SDK-independent; the
+umbrella installs MCP/SDK transitively without loading them through its main entry.
 
 ```sh
 npm install @safe-shape/mcp @safe-shape/core

@@ -2,12 +2,15 @@
 
 [English](../mcp.md) | **Русский**
 
-Установите отдельный пакет `@safe-shape/mcp` вместе с SafeShape. Локальный
+Установите `safe-shape`, чтобы получить runtime/tooling и MCP одной зависимостью.
+MCP API доступны через `safe-shape/mcp`; отдельный `@safe-shape/mcp` также
+остаётся доступен для минимального набора пакетов. Локальный
 сервер проверки контрактов и адаптер инструментов приложения выпускаются
-вместе. Требуются Node >=20.10 и ESM. Umbrella и core не зависят от MCP.
+вместе. Требуются Node >=20.10 и ESM. Core не зависит от MCP. Umbrella
+устанавливает MCP/SDK транзитивно, но основной импорт их не загружает.
 
 ```sh
-npm install @safe-shape/mcp @safe-shape/core
+npm install safe-shape
 npx --no-install safe-shape-mcp --workspace . --manifest examples/mcp.manifest.json
 ```
 
@@ -71,8 +74,8 @@ args = ["/absolute/project/node_modules/@safe-shape/mcp/dist/cli.js", "--workspa
 ## Инструменты приложения
 
 ```js
-import { object, string, number } from '@safe-shape/core';
-import { defineMcpTool, safeToMcpToolDefinition, createValidatedMcpHandler } from '@safe-shape/mcp';
+import { object, string, number } from 'safe-shape';
+import { defineMcpTool, safeToMcpToolDefinition, createValidatedMcpHandler } from 'safe-shape/mcp';
 
 const tool = defineMcpTool({
   name: 'text_length', description: 'Измерить длину текста',

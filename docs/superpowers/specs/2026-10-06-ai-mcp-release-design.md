@@ -1,7 +1,9 @@
 # SafeShape 3.5.0: AI contracts and MCP
 
 Date: 2026-10-06.
-Status: specification and parent-executed implementation plan accepted; implementation completed, final local 3.5.0 candidate qualified.
+Status: implemented and published as [3.5.0](../../release-3.5.0.md).
+Historical design record: the version holds and approval boundaries below
+describe the original planning checkpoint, not the current publication status.
 This document proposes a backward-compatible minor release. Package versions
 remain 3.4.1 until release qualification. No publication is authorized by design
 approval.

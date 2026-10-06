@@ -22,6 +22,11 @@ checklist before running the trusted-publishing workflow.
 - Confirm `docs/migration-1-to-2.md` covers the supported 1.x upgrade path.
 - Confirm `docs/migration-2-to-3.md` covers the supported 2.x upgrade path.
 - Run `npm run docs:check` and confirm local links and EN/RU navigation pass.
+- Review current README, documentation navigation and release notes for the
+  intended version and status. `docs:check` validates structure and reviewed
+  hashes; it does not prove that a release has actually been published.
+- Move earlier "New in" sections into the release history rather than presenting
+  old features as the latest release.
 - Confirm runnable examples pass.
 - Confirm benchmark smoke checks pass.
 - Confirm consumer tarball installation passes.
@@ -62,3 +67,19 @@ publisher for the same repository/workflow/environment. Consumer checks exercise
 the installed MCP executable and validated tool adapter as well as the CLI.
 `prepare:release` generates ten archives and SHA256SUMS. Record the actual
 coding-agent walkthrough separately from SDK-only tests; see [MCP](mcp.md).
+
+## Post-Publication Verification
+
+- Wait until every intended version and `latest` tag is visible in npm. Publish-time
+  scanning can delay installation after `npm publish` reports success.
+- Install only `safe-shape@<version>` in a new consumer and check root/MCP imports,
+  handlers and both CLI binaries.
+- Download GitHub Release assets and verify SHA256SUMS.
+- Update EN/RU project status, documentation index, roadmap, release notes,
+  release history and the current summary of release evidence together.
+- Keep dated pre-publication evidence as history, with explicit checkpoint labels.
+- Record which versions have provenance and any manual first-publication exception.
+
+Published npm name/version pairs cannot be replaced. Corrections to packaged
+READMEs, including their version-pinned links, require a new patch version;
+editing `main` does not update an installed archive or the previous release tag.

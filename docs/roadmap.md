@@ -2,13 +2,23 @@
 
 **English** | [Русский](ru/roadmap.md)
 
-Current development: [3.3 implementation and qualification](implementation-plan-3.3.md).
+Current stable release: [3.5.0](release-3.5.0.md), published on npm.
+The MCP inspection server and validated application-tool adapter have shipped;
+see [publication evidence](release-evidence-3.5.md) and [release history](releases.md).
 
-Status: historical roadmap through 3.1; superseded by [the current plan](implementation-plan-next.md).
-Published release: [3.2.1](release-3.2.1.md). The following prior planning
-sections are retained as history.
+No next release version or feature scope has been accepted in this document.
+Future capabilities require consumer evidence, an RFC for public API changes,
+an ADR for architecture changes, tests and EN/RU documentation.
 
-Last updated: 2026-09-10
+Current priorities remain runtime correctness, stable inference and APIs, rich
+diagnostics and measured performance. Existing planning documents record the
+decisions made for shipped releases; they are not the current release checklist.
+
+## Historical Planning Through 3.1
+
+The following record was last updated on 2026-09-10. Its next-release labels,
+version holds and open checklists describe that development checkpoint.
+Final publication results are linked from the release history above.
 
 Release was authorized on 2026-09-11. The 3.1 stable checklist remains open;
 the [versioned 3.1.0 candidate](release-candidate-3.1.0.md) combines the 3.1 and

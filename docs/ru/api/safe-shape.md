@@ -31,13 +31,13 @@ createStandardJsonSchema, safeToJsonSchema/JsonSchemaExportError, группир
 checkContractConnection и рекурсивные TypeScript-объявления.
 Зарезервированные имена импортируйте с alias, например `enum as enumSchema`.
 
-В версии 3.3.0 также переэкспортируются describeOutputBound и
+Также переэкспортируются describeOutputBound и
 checkSchemaConnection; см. [проверяемые выходы](../checked-output.md).
 Для browser runtime без инструментов Node выбирайте отдельный core-пакет;
 см. [архитектуру](../package-architecture.md).
 
 
-Umbrella также реэкспортирует [API workflow] версии 3.4(api.md).
+Umbrella также переэкспортирует [API workflow](api.md).
 
 MCP устанавливается транзитивно вместе с umbrella и доступен через
 `safe-shape/mcp`; основной импорт не загружает MCP/SDK. См. [MCP API](mcp.md). Общий пакет также переэкспортирует `@safe-shape/api`.

@@ -5,17 +5,20 @@
 Install `safe-shape` for runtime/tooling and MCP in one dependency. Use
 `safe-shape/mcp` for MCP APIs; the dedicated `@safe-shape/mcp` package also remains
 available for narrower installations.
+For a dedicated installation, use `npm install @safe-shape/mcp @safe-shape/core`
+and replace `safe-shape` schema imports below with `@safe-shape/core`, and
+`safe-shape/mcp` imports with `@safe-shape/mcp`.
 The local inspection server and validated application-tool adapter ship together.
 Node >=20.10 and ESM are required. Core has no MCP dependency. The umbrella
 installs MCP/SDK transitively but its main import does not load them.
 
 ```sh
 npm install safe-shape
-npx --no-install safe-shape-mcp --workspace . --manifest examples/mcp.manifest.json
 ```
 
-The executable uses stdio. Configure your coding agent to launch that command
-with an absolute workspace path. Tool arguments contain contract IDs and JSON;
+The executable uses stdio. After creating the manifest below, configure your
+coding agent to launch `safe-shape-mcp` with an absolute workspace path.
+Tool arguments contain contract IDs and JSON;
 they never select JavaScript modules or output files.
 
 For Codex, the configuration uses an explicit executable path:
@@ -23,7 +26,7 @@ For Codex, the configuration uses an explicit executable path:
 ```toml
 [mcp_servers.safe_shape]
 command = "node"
-args = ["/absolute/project/node_modules/@safe-shape/mcp/dist/cli.js", "--workspace", "/absolute/project", "--manifest", "examples/mcp.manifest.json"]
+args = ["/absolute/project/node_modules/@safe-shape/mcp/dist/cli.js", "--workspace", "/absolute/project", "--manifest", "safe-shape.mcp.json"]
 ```
 
 Replace the absolute project path. This configuration can also be supplied per
@@ -32,7 +35,15 @@ changing global settings.
 
 ## Register contracts
 
-Create a trusted ESM module exporting SafeShape schemas. Supply a JSON manifest:
+Save this trusted ESM module as `schema.mjs` in your project root:
+
+```js
+import { object, string } from 'safe-shape';
+
+export const userSchema = object({ name: string() });
+```
+
+Save the following manifest as `safe-shape.mcp.json` in the same directory:
 
 ```json
 {
@@ -45,6 +56,15 @@ Create a trusted ESM module exporting SafeShape schemas. Supply a JSON manifest:
   ]
 }
 ```
+
+Start the server from that project root:
+
+```sh
+npx --no-install safe-shape-mcp --workspace . --manifest safe-shape.mcp.json
+```
+
+The server waits for MCP messages on stdin; a coding agent normally launches it.
+The npm packages do not create the repository's `examples/` directory for you.
 
 `module` paths resolve from the workspace root, including when the manifest is
 in a subdirectory. `export` defaults to `default`. Real paths, including symlink
@@ -117,7 +137,14 @@ occupied until running callbacks settle. Handlers receive an AbortSignal.
 
 ## Verification
 
-Run `node examples/mcp-tool-boundary.mjs` and `node examples/mcp-workflow.mjs`.
+From a repository checkout after `npm ci` and `npm run build`, run:
+
+```sh
+node examples/mcp-tool-boundary.mjs
+node examples/mcp-workflow.mjs node ./packages/mcp/dist/cli.js
+```
+
+These files are [repository examples](../examples/README.md), not npm package files.
 The second is an official SDK-client stdio smoke test, not a real-agent test.
 The interoperability baseline is MCP 2025-06-18; SDK-supported revisions and
 actual tested clients are recorded separately in release evidence.

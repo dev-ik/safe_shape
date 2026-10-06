@@ -2,9 +2,8 @@
 
 Historical planning record. Publication of the combined scope is verified in
 [the 3.1.0 release record](release-candidate-3.1.0.md); remaining checklists below
-reflect their original development dates. Current work follows
-[the completed 3.2.0 plan](implementation-plan-next.md) and
-[its publication record](release-candidate-3.2.0.md).
+reflect their original development dates. Current status is documented in
+[the roadmap](roadmap.md) and [release history](releases.md).
 
 Release sequencing decision (2026-09-11): this unpublished working scope is
 included in the [3.1.0 candidate](release-candidate-3.1.0.md). The roadmap below

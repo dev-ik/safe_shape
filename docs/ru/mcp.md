@@ -4,18 +4,21 @@
 
 Установите `safe-shape`, чтобы получить runtime/tooling и MCP одной зависимостью.
 MCP API доступны через `safe-shape/mcp`; отдельный `@safe-shape/mcp` также
-остаётся доступен для минимального набора пакетов. Локальный
+остаётся доступен для минимального набора пакетов.
+Для отдельной установки используйте `npm install @safe-shape/mcp @safe-shape/core`.
+В этом случае замените импорты схем из `safe-shape` ниже на `@safe-shape/core`,
+а импорты из `safe-shape/mcp` — на `@safe-shape/mcp`. Локальный
 сервер проверки контрактов и адаптер инструментов приложения выпускаются
 вместе. Требуются Node >=20.10 и ESM. Core не зависит от MCP. Umbrella
 устанавливает MCP/SDK транзитивно, но основной импорт их не загружает.
 
 ```sh
 npm install safe-shape
-npx --no-install safe-shape-mcp --workspace . --manifest examples/mcp.manifest.json
 ```
 
-Сервер использует stdio. Настройте coding-агента на эту команду с абсолютным
-путём workspace. Аргументы инструментов содержат ID контрактов и JSON;
+Сервер использует stdio. После создания manifest ниже настройте coding-агента
+на запуск `safe-shape-mcp` с абсолютным путём workspace.
+Аргументы инструментов содержат ID контрактов и JSON;
 агент не выбирает модули JavaScript и файлы для записи.
 
 Для Codex конфигурация содержит явный путь executable:
@@ -23,7 +26,7 @@ npx --no-install safe-shape-mcp --workspace . --manifest examples/mcp.manifest.j
 ```toml
 [mcp_servers.safe_shape]
 command = "node"
-args = ["/absolute/project/node_modules/@safe-shape/mcp/dist/cli.js", "--workspace", "/absolute/project", "--manifest", "examples/mcp.manifest.json"]
+args = ["/absolute/project/node_modules/@safe-shape/mcp/dist/cli.js", "--workspace", "/absolute/project", "--manifest", "safe-shape.mcp.json"]
 ```
 
 Замените абсолютный путь проекта. Настройки можно передать и для отдельного
@@ -32,7 +35,15 @@ args = ["/absolute/project/node_modules/@safe-shape/mcp/dist/cli.js", "--workspa
 
 ## Реестр контрактов
 
-Создайте доверенный ESM-модуль со схемами SafeShape и JSON manifest:
+Сохраните доверенный ESM-модуль `schema.mjs` в корне своего проекта:
+
+```js
+import { object, string } from 'safe-shape';
+
+export const userSchema = object({ name: string() });
+```
+
+В том же каталоге сохраните manifest `safe-shape.mcp.json`:
 
 ```json
 {
@@ -45,6 +56,15 @@ args = ["/absolute/project/node_modules/@safe-shape/mcp/dist/cli.js", "--workspa
   ]
 }
 ```
+
+Запустите сервер из корня этого проекта:
+
+```sh
+npx --no-install safe-shape-mcp --workspace . --manifest safe-shape.mcp.json
+```
+
+Сервер ждёт MCP-сообщения на stdin; обычно его запускает coding-агент.
+Установка npm-пакетов не создаёт каталог `examples/` из репозитория.
 
 Пути `module` разрешаются относительно корня workspace, даже если manifest
 лежит в подкаталоге. `export` по умолчанию равен `default`. Канонические пути,
@@ -117,7 +137,14 @@ undefined, нечисловые/бесконечные числа, getters, кл
 
 ## Проверка
 
-Запустите `node examples/mcp-tool-boundary.mjs` и `node examples/mcp-workflow.mjs`.
+В checkout репозитория после `npm ci` и `npm run build` выполните:
+
+```sh
+node examples/mcp-tool-boundary.mjs
+node examples/mcp-workflow.mjs node ./packages/mcp/dist/cli.js
+```
+
+Это [примеры репозитория](../../examples/README.md), а не файлы npm-пакетов.
 Второй пример — stdio smoke test с официальным SDK-клиентом, а не реальным агентом.
 Базовая проверка совместимости — MCP 2025-06-18; версии SDK/протокола и реально
 проверенные клиенты фиксируются отдельно в release evidence.

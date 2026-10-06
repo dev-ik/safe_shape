@@ -9,8 +9,16 @@ umbrella installs MCP/SDK transitively without loading them through its main ent
 
 ```sh
 npm install @safe-shape/mcp @safe-shape/core
-npx --no-install safe-shape-mcp --workspace . --manifest examples/mcp.manifest.json
+npx --no-install safe-shape-mcp --help
 ```
+
+Create your schema module and `safe-shape.mcp.json` using the guide below, then run:
+
+```sh
+npx --no-install safe-shape-mcp --workspace . --manifest safe-shape.mcp.json
+```
+
+The manifest belongs to your project; npm installation does not create example files.
 
 Export SafeShape input/output contracts, validate tool boundaries and inspect
 registered contracts over stdio. Invalid arguments never reach the handler;

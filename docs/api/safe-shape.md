@@ -7,11 +7,11 @@ SafeShape runtime and tooling surface from one dependency. MCP is installed
 transitively and exposed only through `safe-shape/mcp`; the main import does not
 load MCP or its SDK. See the [MCP API](mcp.md).
 
-The 3.3.0 also re-exports `describeOutputBound`, `SchemaOutputBound`,
+The package also re-exports `describeOutputBound`, `SchemaOutputBound`,
 `checkSchemaConnection`, `SchemaConnectionOptions` and `SchemaConnectionReport`.
 See [checked output bounds](../checked-output.md).
 
-The umbrella also re-exports the 3.4 [API workflow](api.md).
+The umbrella also re-exports the [API workflow](api.md).
 
 ## Install
 

@@ -14,9 +14,12 @@ Then import only what they use:
 import { object, string, validateSchema } from "safe-shape";
 ```
 
-Build the packages first:
+The commands below run from a checkout of this repository. The published npm
+packages do not include these example files. Install repository dependencies
+and build the packages first:
 
 ```sh
+npm ci
 npm run build
 ```
 
@@ -121,7 +124,7 @@ batch outcomes.
 composition, checked query conversion, recursive declaration generation and a
 producer/consumer CI manifest. It also runs against installed release tarballs.
 
-## Checked output bounds (upcoming 3.3)
+## Checked output bounds
 
 `node examples/checked-output.mjs` exercises explicit query conversion, output-bound
 JSON Schema export, a proven connection and a non-contained bound requiring review.
@@ -136,3 +139,17 @@ It runs in both the workspace and installed consumers.
 After building, run `node examples/api-workflow.mjs` for a catalog, validated
 client, OpenAPI export and API compatibility check without network access.
 See the [API reference](../docs/api/api.md).
+
+## AI tools and MCP
+
+After building the repository, run:
+
+```sh
+node examples/mcp-tool-boundary.mjs
+node examples/mcp-workflow.mjs node ./packages/mcp/dist/cli.js
+```
+
+The first checks application-tool input/output validation. The second launches
+the stdio server with the repository manifest and exercises inspection tools
+through the official SDK. It is a client smoke test, not a real-agent walkthrough.
+For setup in your own npm project, use the [MCP guide](../docs/mcp.md).

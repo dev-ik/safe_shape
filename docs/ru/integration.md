@@ -63,12 +63,12 @@ HttpContract задаёт params/query/body/headers/cookies и response/response
 ```sh
 npm run build
 mkdir -p .safe-shape
-safe-shape --json doctor
-safe-shape schema export --module ./dist/contracts/user.js --export userSchema --out ./dist/contracts/user.schema.json
-safe-shape schema types --module ./dist/contracts/user.js --export userSchema --name User
-safe-shape --json schema validate --module ./dist/contracts/user.js --export userSchema --input ./fixtures/user.json
-safe-shape contract snapshot --module ./dist/contracts/user.js --export userSchema --id user --format v2 --out ./.safe-shape/user.json
-safe-shape --json contract check --module ./dist/contracts/user.js --export userSchema --against ./.safe-shape/user.json --side input --compatibility backward
+npx --no-install safe-shape --json doctor
+npx --no-install safe-shape schema export --module ./dist/contracts/user.js --export userSchema --out ./dist/contracts/user.schema.json
+npx --no-install safe-shape schema types --module ./dist/contracts/user.js --export userSchema --name User
+npx --no-install safe-shape --json schema validate --module ./dist/contracts/user.js --export userSchema --input ./fixtures/user.json
+npx --no-install safe-shape contract snapshot --module ./dist/contracts/user.js --export userSchema --id user --format v2 --out ./.safe-shape/user.json
+npx --no-install safe-shape --json contract check --module ./dist/contracts/user.js --export userSchema --against ./.safe-shape/user.json --side input --compatibility backward
 ```
 
 Snapshot v1 остаётся default, v2 нужен для рекурсии и независимых сторон.

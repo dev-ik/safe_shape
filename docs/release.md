@@ -29,8 +29,8 @@ This performs:
 The repository runs the same gate for pushes and pull requests through
 `.github/workflows/ci.yml`. Consumer projects can use the provider-neutral
 [contract CI guide](ci.md) without adopting SafeShape's release workflow.
-Release candidates for 3.0 must also satisfy the
-[2.x to 3.0 migration guide](migration-2-to-3.md).
+Major-version upgrades must also satisfy their migration guide; the
+[2.x to 3.0 migration guide](migration-2-to-3.md) remains available for older consumers.
 
 To run the same checks and create publishable archives in
 `release-artifacts/`, use:
@@ -109,12 +109,18 @@ Allowed action: npm publish
 No `NPM_TOKEN` secret is required. The workflow authenticates to npm through
 GitHub Actions OIDC.
 
+A new npm package must exist before its trusted publisher can be configured.
+Its first publication therefore needs an authorized maintainer CLI session;
+then configure the workflow above for subsequent versions. Record that manual
+version's provenance status in release evidence.
+
 Prepare and tag a release only after `npm run prepare:release` succeeds:
+
+First commit only the reviewed release changes, including new files explicitly.
+Keep unrelated work out of the release commit. Then push and tag that commit:
 
 ```sh
 RELEASE_VERSION="$(node -p 'require("./package.json").version')"
-git add -A
-git commit -m "release: v${RELEASE_VERSION}"
 git push origin main
 git tag -a "v${RELEASE_VERSION}" -m "Release v${RELEASE_VERSION}"
 git push origin "v${RELEASE_VERSION}"
@@ -130,6 +136,14 @@ default branch with `release_ref` set to the exact existing `v<version>` tag.
 The workflow checks out that tag, verifies its package version, publishes only
 missing core/compat artifacts through trusted publishing, and does not create a
 GitHub Release. Normal releases use only the tagged `release` phase.
+
+## After Publication
+
+Complete the [post-publication checklist](publish-readiness.md#post-publication-verification).
+Update current EN/RU documentation together, then verify installation from npm
+and downloaded release checksums. A successful publish command can precede registry
+availability because npm scans packages before serving the new version.
+See [npm's publish-time scanning announcement](https://github.blog/changelog/2026-07-28-npm-publish-time-malware-scanning-and-dual-use-metadata/).
 
 ## Local CLI
 

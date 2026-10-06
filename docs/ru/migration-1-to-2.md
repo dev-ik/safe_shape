@@ -202,6 +202,6 @@ npm run contracts:check
 - каждый результат с exit code `2` проверен;
 - v2 baselines прошли review и не создаются внутри CI.
 
-Дальше: [быстрый старт](quick-start.md), [интеграция в проект](../integration.md)
-(EN), [совместимость контрактов](../api/compat.md) (EN) и
-[проверки в CI](../ci.md) (EN).
+Дальше: [быстрый старт](quick-start.md), [интеграция в проект](integration.md)
+(EN), [совместимость контрактов](api/compat.md) и
+[проверки в CI](ci.md).

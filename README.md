@@ -111,11 +111,12 @@ rules before parsing. See [Migrating from 2.x to 3.0](docs/migration-2-to-3.md).
 ## CLI Example
 
 SafeShape also ships a CLI. Use it to turn runtime contracts into generated
-artifacts. Compile an exported schema module without import-time logging, as in
+artifacts. The commands below use the locally installed binary without a global
+installation. Compile an exported schema module without import-time logging, as in
 the [quick start](docs/quick-start.md):
 
 ```sh
-safe-shape --json schema export \
+npx --no-install safe-shape --json schema export \
   --module ./dist/contracts/user.js \
   --export User \
   --schema https://json-schema.org/draft/2020-12/schema \
@@ -123,7 +124,7 @@ safe-shape --json schema export \
 ```
 
 ```sh
-safe-shape --json schema types \
+npx --no-install safe-shape --json schema types \
   --module ./dist/contracts/user.js \
   --export User \
   --name User \
@@ -134,14 +135,14 @@ Store a reviewable contract baseline and block incompatible changes in CI:
 
 ```sh
 mkdir -p .safe-shape
-safe-shape contract snapshot \
+npx --no-install safe-shape contract snapshot \
   --module ./dist/contracts/user.js \
   --export User \
   --id user \
   --format v2 \
   --out ./.safe-shape/user.contract.json
 
-safe-shape --json contract check \
+npx --no-install safe-shape --json contract check \
   --module ./dist/contracts/user.js \
   --export User \
   --against ./.safe-shape/user.contract.json \
@@ -177,16 +178,16 @@ example.
 
 ## Release Metrics
 
-Verified [3.3.0 release gate](docs/release-evidence-3.3.md):
+Verified [3.5.0 release gate and publication](docs/release-evidence-3.5.md):
 
 | Signal | Status |
 | --- | --- |
-| Packages | 8 publishable packages |
-| Package tests | 286 passing tests |
+| Packages | 10 published packages |
+| Package tests | 329 passing tests |
 | Consumer install | Tarball and published npm installation checks pass |
 | Examples | Runnable examples pass |
 | Security audit | 0 known vulnerabilities |
-| Benchmarks | 30 runtime, diagnostics, composition, connection, and compatibility scenarios |
+| Benchmarks | Runtime, diagnostics, composition, connection and compatibility checks passed |
 | Package dry run | `npm pack --workspaces --dry-run` passes |
 
 The following historical 3.0 sample used Node.js `v20.10.0` / macOS arm64.
@@ -304,14 +305,6 @@ Runnable examples live in [examples](examples/README.md):
 npm run examples:check
 ```
 
-## New in 3.2.0
-
-SafeShape 3.2.0 adds immutable object composition, checked pipelines, recursive
-TypeScript declarations and explicit producer/consumer connection checks. See the
-[implementation plan](docs/implementation-plan-next.md),
-[usage guide](docs/composable-contracts.md), and
-[Zod migration guide](docs/migration-from-zod.md).
-
 ## Project Status
 
 SafeShape is on the `3.5.0` stable release line.
@@ -319,8 +312,7 @@ All ten packages are published on npm with `latest=3.5.0`.
 The release gate passed on Node 20.10 and 24, and installation from npm was verified.
 See the [GitHub release](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.0),
 [3.5.0 release notes](docs/release-3.5.0.md), and [verified publication](docs/release-evidence-3.5.md).
-See the [3.4.0 release notes](docs/release-3.4.0.md) for endpoint catalogs, validated fetch clients, OpenAPI and API evolution checks.
-See the [3.4.1 patch notes](docs/release-3.4.1.md) and [verified publication](docs/release-evidence-3.4.1.md) for npm README and metadata improvements.
+Earlier additions and fixes are listed in the [release history](docs/releases.md).
 The release gate covers
 metadata checks, build, typecheck, tests, examples, benchmarks, consumer tarball
 installation, npm audit, and package dry-run.

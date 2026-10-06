@@ -9,10 +9,21 @@ or install `safe-shape` to include the runtime and tooling packages.
 
 ## Install Locally
 
+In your consumer project:
+
+```sh
+npm install --save-dev @safe-shape/cli
+npx --no-install safe-shape --help
+```
+
+The commands below use the local binary; npm scripts can use `safe-shape` directly.
+
+## Repository Development
+
 From the repository root:
 
 ```sh
-npm install
+npm ci
 npm run build
 npm run link:cli
 ```
@@ -30,15 +41,15 @@ intended for local development.
 ## Commands
 
 ```sh
-safe-shape --json doctor
-safe-shape schema export --module ./schema.mjs --export userSchema --out ./user.schema.json
-safe-shape schema validate --module ./schema.mjs --export userSchema --input ./user.json
-safe-shape schema types --module ./schema.mjs --export userSchema --name User --out ./user.d.ts
-safe-shape contract snapshot --module ./schema.mjs --export userSchema --id user --out ./user.contract.json
-safe-shape contract snapshot --module ./tree.mjs --export treeSchema --id tree --format v2 --out ./tree.contract.json
-safe-shape --json contract check --module ./tree.mjs --export treeSchema --against ./tree.contract.json --side input
-safe-shape --json contract check-many --manifest ./contracts.json
-safe-shape --json contract check-connections --manifest ./connections.json
+npx --no-install safe-shape --json doctor
+npx --no-install safe-shape schema export --module ./schema.mjs --export userSchema --out ./user.schema.json
+npx --no-install safe-shape schema validate --module ./schema.mjs --export userSchema --input ./user.json
+npx --no-install safe-shape schema types --module ./schema.mjs --export userSchema --name User --out ./user.d.ts
+npx --no-install safe-shape contract snapshot --module ./schema.mjs --export userSchema --id user --out ./user.contract.json
+npx --no-install safe-shape contract snapshot --module ./tree.mjs --export treeSchema --id tree --format v2 --out ./tree.contract.json
+npx --no-install safe-shape --json contract check --module ./tree.mjs --export treeSchema --against ./tree.contract.json --side input
+npx --no-install safe-shape --json contract check-many --manifest ./contracts.json
+npx --no-install safe-shape --json contract check-connections --manifest ./connections.json
 ```
 
 `--export` defaults to `default`.
@@ -132,7 +143,7 @@ The CLI does not require auth.
 Check a reviewed list of contracts in one invocation:
 
 ```sh
-safe-shape --json contract check-many --manifest ./contracts.json
+npx --no-install safe-shape --json contract check-many --manifest ./contracts.json
 ```
 
 See the [manifest and aggregate report reference](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/api/cli.md#check-multiple-contracts).
@@ -148,9 +159,9 @@ on stdout. It is incompatible with `--json` and `--out`.
 ## API workflow (3.4.0)
 
 ```sh
-safe-shape api export --module ./api.mjs --title "My API" --version 1.0.0 --out ./openapi.json
-safe-shape api snapshot --module ./api.mjs --out ./api.contract.json
-safe-shape --json api check --module ./api.mjs --against ./api.contract.json
+npx --no-install safe-shape api export --module ./api.mjs --title "My API" --version 1.0.0 --out ./openapi.json
+npx --no-install safe-shape api snapshot --module ./api.mjs --out ./api.contract.json
+npx --no-install safe-shape --json api check --module ./api.mjs --against ./api.contract.json
 ```
 
 Export OpenAPI 3.1, save immutable API snapshots, and check server updates against existing clients. Check exits with 0 for compatible changes, 2 for migration or manual review, and 1 for operational errors. See the [API workflow reference](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/api/api.md).

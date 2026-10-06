@@ -5,6 +5,8 @@
 `@safe-shape/cli` provides the `safe-shape` binary.
 
 Installing the umbrella `safe-shape` package also exposes the same binary.
+The shell examples use `npx --no-install` for a project-local installation;
+inside npm scripts, use `safe-shape` directly.
 
 Paths are relative to the current working directory unless a command explicitly
 uses manifest-relative paths. Create the parent directory before passing
@@ -15,15 +17,15 @@ See [API workflow commands](api.md) for `api export`, `api snapshot` and `api ch
 ## Commands
 
 ```sh
-safe-shape --json doctor
-safe-shape schema export --module ./schema.mjs --export userSchema
-safe-shape schema validate --module ./schema.mjs --export userSchema --input ./user.json
-safe-shape schema types --module ./schema.mjs --export userSchema --name User
-safe-shape contract snapshot --module ./schema.mjs --export userSchema --id user --out ./user.contract.json
-safe-shape contract snapshot --module ./tree.mjs --export treeSchema --id tree --format v2 --out ./tree.contract.json
-safe-shape --json contract check --module ./tree.mjs --export treeSchema --against ./tree.contract.json --side input
-safe-shape --json contract check-many --manifest ./contracts.json
-safe-shape --json contract check-connections --manifest ./connections.json
+npx --no-install safe-shape --json doctor
+npx --no-install safe-shape schema export --module ./schema.mjs --export userSchema
+npx --no-install safe-shape schema validate --module ./schema.mjs --export userSchema --input ./user.json
+npx --no-install safe-shape schema types --module ./schema.mjs --export userSchema --name User
+npx --no-install safe-shape contract snapshot --module ./schema.mjs --export userSchema --id user --out ./user.contract.json
+npx --no-install safe-shape contract snapshot --module ./tree.mjs --export treeSchema --id tree --format v2 --out ./tree.contract.json
+npx --no-install safe-shape --json contract check --module ./tree.mjs --export treeSchema --against ./tree.contract.json --side input
+npx --no-install safe-shape --json contract check-many --manifest ./contracts.json
+npx --no-install safe-shape --json contract check-connections --manifest ./connections.json
 ```
 
 ## Doctor
@@ -31,7 +33,7 @@ safe-shape --json contract check-connections --manifest ./connections.json
 `doctor` checks local runtime availability.
 
 ```sh
-safe-shape --json doctor
+npx --no-install safe-shape --json doctor
 ```
 
 The command does not require auth.
@@ -42,7 +44,7 @@ The command does not require auth.
 the SafeShape schema as JSON Schema.
 
 ```sh
-safe-shape schema export \
+npx --no-install safe-shape schema export \
   --module ./schema.mjs \
   --export userSchema \
   --schema https://json-schema.org/draft/2020-12/schema \
@@ -96,7 +98,7 @@ exporter codes, artifact paths, side, and target. The command exits with `1`.
 reads a JSON input file, and validates it through the SafeShape schema.
 
 ```sh
-safe-shape --json schema validate \
+npx --no-install safe-shape --json schema validate \
   --module ./schema.mjs \
   --export userSchema \
   --input ./user.json
@@ -114,7 +116,7 @@ cat ./user.json | safe-shape --json schema validate \
 Use `--out` to write the full validation report to a file:
 
 ```sh
-safe-shape --json schema validate \
+npx --no-install safe-shape --json schema validate \
   --module ./schema.mjs \
   --export userSchema \
   --input ./user.json \
@@ -133,7 +135,7 @@ any warnings collected before or alongside failure.
 generates a TypeScript type declaration from the SafeShape schema definition.
 
 ```sh
-safe-shape schema types \
+npx --no-install safe-shape schema types \
   --module ./schema.mjs \
   --export userSchema \
   --name User \
@@ -156,7 +158,7 @@ fingerprint:
 
 ```sh
 mkdir -p .safe-shape
-safe-shape contract snapshot \
+npx --no-install safe-shape contract snapshot \
   --module ./schema.mjs \
   --export userSchema \
   --id user \
@@ -171,7 +173,7 @@ The CLI writes snapshot v1 by default to preserve existing baselines. Pass
 fingerprints:
 
 ```sh
-safe-shape contract snapshot \
+npx --no-install safe-shape contract snapshot \
   --module ./tree.mjs \
   --export treeSchema \
   --id tree \
@@ -187,7 +189,7 @@ them without changing v1 format or fingerprint behavior.
 `contract check` compares a runtime schema with a stored snapshot:
 
 ```sh
-safe-shape --json contract check \
+npx --no-install safe-shape --json contract check \
   --module ./schema.mjs \
   --export userSchema \
   --against ./.safe-shape/user.contract.json \
@@ -282,7 +284,7 @@ and GitLab CI examples and baseline review policy.
 ## Check Multiple Contracts
 
 ```sh
-safe-shape --json contract check-many --manifest ./contracts.json > contract-report.json
+npx --no-install safe-shape --json contract check-many --manifest ./contracts.json > contract-report.json
 ```
 
 The manifest is explicit and versioned:

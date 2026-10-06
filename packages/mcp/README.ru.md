@@ -9,8 +9,16 @@ API из `safe-shape/mcp`. Core не зависит от SDK; umbrella уста�
 
 ```sh
 npm install @safe-shape/mcp @safe-shape/core
-npx --no-install safe-shape-mcp --workspace . --manifest examples/mcp.manifest.json
+npx --no-install safe-shape-mcp --help
 ```
+
+Создайте модуль схемы и `safe-shape.mcp.json` по руководству ниже, затем выполните:
+
+```sh
+npx --no-install safe-shape-mcp --workspace . --manifest safe-shape.mcp.json
+```
+
+Manifest принадлежит вашему проекту; npm-установка не создаёт файлы примеров.
 
 Экспортируйте схемы входа/выхода, проверяйте границы инструментов и контракты
 через stdio. Неверные аргументы не доходят до обработчика; неверный результат

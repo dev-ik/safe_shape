@@ -21,5 +21,5 @@ command. Review executable examples, defaults, supported domains, warnings,
 version availability and links together. Release qualification includes this check.
 
 The English roadmap retains historical detail; the Russian roadmap points to the
-current plan and labels the historical source rather than presenting old work as
+current release and labels the historical source rather than presenting old work as
 pending. Package archives include both README.md and README.ru.md.

@@ -1,5 +1,10 @@
 # SafeShape AI and MCP Implementation Plan
 
+Status: completed; [3.5.0 is published](../../release-3.5.0.md).
+This is the original execution record. The initially separate MCP installation
+was superseded by [RFC 0052](../../../rfc/0052-umbrella-mcp-entry.md)
+and the one-install policy documented in the current [MCP guide](../../mcp.md).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking. The parent implements this plan; repository exploration and implementation are not delegated.
 
 **Goal:** Ship the local MCP inspection server and validated application-tool adapter together as a backward-compatible 3.5.0 candidate.

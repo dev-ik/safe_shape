@@ -5,19 +5,21 @@
 Пакет `@safe-shape/cli` предоставляет бинарник `safe-shape`; общий пакет устанавливает
 его тоже. Авторизация не нужна. Пути относительны текущему каталогу, кроме явно
 указанных manifest-relative путей. Родительский каталог `--out` создайте заранее.
+Примеры shell используют `npx --no-install` для локальной установки проекта;
+в npm scripts используйте `safe-shape` напрямую.
 
 ## Основные команды
 
 ```sh
-safe-shape --json doctor
-safe-shape schema export --module ./schema.mjs --export userSchema
-safe-shape --json schema validate --module ./schema.mjs --export userSchema --input ./user.json
-safe-shape schema types --module ./schema.mjs --export userSchema --name User --side output
+npx --no-install safe-shape --json doctor
+npx --no-install safe-shape schema export --module ./schema.mjs --export userSchema
+npx --no-install safe-shape --json schema validate --module ./schema.mjs --export userSchema --input ./user.json
+npx --no-install safe-shape schema types --module ./schema.mjs --export userSchema --name User --side output
 mkdir -p .safe-shape
-safe-shape contract snapshot --module ./schema.mjs --export userSchema --id user --format v2 --out ./.safe-shape/user.json
-safe-shape --json contract check --module ./schema.mjs --export userSchema --against ./.safe-shape/user.json --side input --compatibility backward
-safe-shape --json contract check-many --manifest ./contracts.json
-safe-shape --json contract check-connections --manifest ./connections.json
+npx --no-install safe-shape contract snapshot --module ./schema.mjs --export userSchema --id user --format v2 --out ./.safe-shape/user.json
+npx --no-install safe-shape --json contract check --module ./schema.mjs --export userSchema --against ./.safe-shape/user.json --side input --compatibility backward
+npx --no-install safe-shape --json contract check-many --manifest ./contracts.json
+npx --no-install safe-shape --json contract check-connections --manifest ./connections.json
 ```
 
 Doctor проверяет локальную доступность runtime. Schema-команды загружают доверенный

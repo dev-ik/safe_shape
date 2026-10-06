@@ -4,20 +4,20 @@
     {
       "english": "README.md",
       "russian": "README.ru.md",
-      "englishSha256": "1600b3cf3029afcbe92af7667bc1e00259ffdc3c47f8851df8ad8682dd70b560",
-      "russianSha256": "3eb8b94a27a4510a471f1f93f5f93a83ca41f2d653a1d976206fba303e3da015"
+      "englishSha256": "2d5b84b9c3e00e272465ae63dbb058293b5a1227a56476b13b9335f147eaacd4",
+      "russianSha256": "cdc502029ce24a1bbec1a0a71823ea3439cafe4d43aa896b5beb0d149635d96b"
     },
     {
       "english": "docs/README.md",
       "russian": "docs/ru/README.md",
-      "englishSha256": "19ee6c5ef251410d0c36bd28b1062d9fb89048473da4321850a46864f8872660",
-      "russianSha256": "7b51eaba1e31c13327533659dbb16629fddbcb5adbdcb7bf8c455e1040935f0b"
+      "englishSha256": "b8a0d40bf1b20320d4876409962fa551d52d5edba819217341d736adf60b74d2",
+      "russianSha256": "536c6f33b067034bfac97865cd4953bb9d1431c3244e241a6a47dc7e26bb9888"
     },
     {
       "english": "docs/api/cli.md",
       "russian": "docs/ru/api/cli.md",
-      "englishSha256": "7c3bf1de0f31fd53a1ad1907537b46cb96cb2bb2fb505c5a00a258d5bb5b43a4",
-      "russianSha256": "266d78d50fcbbae3ed8fed585ecade658decb5a510124fdc5dc3f926c855f6a9"
+      "englishSha256": "5f022e4e0a5ee0211d13a0e765f11ddbb0a21436e5f1b44c1f1ff991c0d6590e",
+      "russianSha256": "f67c8789224278111814bb84f60962d299a262aaeb8d5ee160a0d70db71708a5"
     },
     {
       "english": "docs/api/compat.md",
@@ -46,8 +46,8 @@
     {
       "english": "docs/api/safe-shape.md",
       "russian": "docs/ru/api/safe-shape.md",
-      "englishSha256": "eeedbb75812f532da627611523dddc86943062b153c6d9f4f750042cb1cc513a",
-      "russianSha256": "b45bb83eee5337d7017e8f09ac90a238b7af1ad176254efe17d95d87f78d957d"
+      "englishSha256": "ac799f6956ca17a903163e2b1236886bf5c25ce8b03966b7cfc2ada6f9cdd760",
+      "russianSha256": "e810515c1d77a292a0750e8eb9b2ccf13824ce0bf10372d6591daa4ce7a486ee"
     },
     {
       "english": "docs/api/typescript.md",
@@ -155,13 +155,13 @@
       "english": "docs/integration.md",
       "russian": "docs/ru/integration.md",
       "englishSha256": "027c3740c4147b927d33dca421b6043dd78f594f18c3f9f3a381ab4f379ff376",
-      "russianSha256": "84297a3514dcb9677892f632b50c663f2409bb8861cd9f0f147d4cbff7db7a25"
+      "russianSha256": "c50b8a8836d6757c975f259dca73f1d37c5b64b3f400160307c6eb043b88d734"
     },
     {
       "english": "docs/migration-1-to-2.md",
       "russian": "docs/ru/migration-1-to-2.md",
       "englishSha256": "0623999334a319c4290b93e460a442caaa3ba48484faaa41d2f275a6172e4f2b",
-      "russianSha256": "2da2382cc261a4b80ba468adc307e5bd2f79bfbc5459552f8aecc566574f6af2"
+      "russianSha256": "cf17b2a8bb219d8e96ae4aa859c359f742c932e1b0c5051d201fac5685334625"
     },
     {
       "english": "docs/migration-2-to-3.md",
@@ -226,14 +226,14 @@
     {
       "english": "docs/publish-readiness.md",
       "russian": "docs/ru/publish-readiness.md",
-      "englishSha256": "a80ed200f3e90a0aec9bcc4b3b5d83dfc86a9218715918ac8e44f0e104deeed6",
-      "russianSha256": "ad9072ccd0b53c5ca8a85f61b8d92a506d3e2275232847c19504822fae4ae5c8"
+      "englishSha256": "b0137be6f3dbbb986189a114d613581130c6c91923430541611fd7cf5b60998d",
+      "russianSha256": "a3cf78bf26337f39725bdc71125d44406ebaa1258e1c488642dcf5e8467976c3"
     },
     {
       "english": "docs/quick-start.md",
       "russian": "docs/ru/quick-start.md",
-      "englishSha256": "c0a6d01783c976ade7e820406207256f9635a30ead5a4a21a50146d25720bb08",
-      "russianSha256": "2ba02f06438cd5459f511c6fe9bcd226fa5737d787b727cc8074cd91de6ec4c3"
+      "englishSha256": "dec3dc3dc737b523c48bf6c215d47390eb372039d92d9ad4da3e76a231660d72",
+      "russianSha256": "0d7443611242754eceb0e7122c805f2d3e4965ec2dffb52f143a7c2d53618bfc"
     },
     {
       "english": "docs/release-3.2.1.md",
@@ -250,14 +250,14 @@
     {
       "english": "docs/release.md",
       "russian": "docs/ru/release.md",
-      "englishSha256": "5cf9cff900b8e641dc63277dd4fca31abc78f015846c268762d1ec07e5baa7d4",
-      "russianSha256": "24c77c6c33d40fdfd80ec16a990eb69fe8bef81e748bc87a6f56adf8ee92f6bd"
+      "englishSha256": "6d4179158f7067b7eac706e9a87ad08881eb3fe31e9656cff4023b5ca72a8cac",
+      "russianSha256": "a2b6c82aa8709a081211ec3ed86e3dca8e8387c4a6646f5f72c7f491b4083f81"
     },
     {
       "english": "docs/roadmap.md",
       "russian": "docs/ru/roadmap.md",
-      "englishSha256": "789c69c151debcd5ded00d00e99eac8ef9b98ab4a6d279cf25aad1e98363345e",
-      "russianSha256": "5377de0a9a783c7218f51d6c6b28060de3bc074cdc90e101e84dadbaa07b74a8"
+      "englishSha256": "ef67deff1f97698c4bc4bee0fee2fcd5c6dde37f2ee381f71a4892810d92add6",
+      "russianSha256": "14880fe938f9e0512e4082c26bed9b3002399f32b0dd36e030c6b91240a37127"
     },
     {
       "english": "docs/testing.md",
@@ -268,8 +268,8 @@
     {
       "english": "docs/translations.md",
       "russian": "docs/ru/translations.md",
-      "englishSha256": "a5e32cbb276abf4a35dd972e4b36b9a2d58de3b68257f2f476bc1a532735c785",
-      "russianSha256": "0481205cc1c8e5935e998a20977d7e6d77fd5fa2d2cea4b3a749503bdadb42a8"
+      "englishSha256": "3fb633ace747333626f1988af72fcb31e0385656176dad46abf028022ad3c6d6",
+      "russianSha256": "b079537495f596ea232f849ba6a1a43b390dc954b52f12de1b346fd90179a6c7"
     },
     {
       "english": "docs/type-system.md",
@@ -286,8 +286,8 @@
     {
       "english": "packages/cli/README.md",
       "russian": "packages/cli/README.ru.md",
-      "englishSha256": "24a50adfc992efccd787df7018752e9af125517dab758642aedf8707b74583e3",
-      "russianSha256": "0df7db24a5a620c2783128013ebed645aeee3252ad09484eb9a0a48e41db35f4"
+      "englishSha256": "b4db7f662d0e916adc86cf676c8c697e3344eb39f6a95a74958e7635a51d288f",
+      "russianSha256": "e8f7c2b2d342bc1e51a0331bf4d7c8b95839309dceee2030d7ad9ee78a1340ec"
     },
     {
       "english": "packages/compat/README.md",
@@ -376,8 +376,8 @@
     {
       "english": "docs/mcp.md",
       "russian": "docs/ru/mcp.md",
-      "englishSha256": "3e38af9913b0dc5fc526d6ff00da5de2dacf6c915406da17dbe60c15aab4357e",
-      "russianSha256": "edcc73cb2f38e21a96514bd4658d8fbfce3f2d4e29a3d991d5fc024e83809309"
+      "englishSha256": "e3936f6972180dd72df64d14b018ed2671dfe79aacf9ededa4c91d4143835553",
+      "russianSha256": "a58589b779b398fc03816b4c71a27bc1a7c90128cc1fa3e53f0002201271a94f"
     },
     {
       "english": "docs/api/mcp.md",
@@ -388,8 +388,8 @@
     {
       "english": "packages/mcp/README.md",
       "russian": "packages/mcp/README.ru.md",
-      "englishSha256": "cd933a4a98915270d06daac849283ba4959c45dbd2d48a9adcf189953a17fb73",
-      "russianSha256": "79e473a02fa50226de7b35410131ec023030616cdf408e649bbebe598ab1b927"
+      "englishSha256": "74ff1148e3fe68bdba0f2edbc2ee2a38c15961f39c19bc612cad02b02120c8c8",
+      "russianSha256": "b54e7c668d02a058c5f6d8600335884c45fe65965000b0f24de4696ef40690b8"
     },
     {
       "english": "docs/release-3.5.0.md",
@@ -402,6 +402,12 @@
       "russian": "docs/ru/release-evidence-3.5.md",
       "englishSha256": "6b2edf6d9c087afb34db909baa52e213b0eff32bd86320a5b6733d8c12e04b07",
       "russianSha256": "bb2d7daf3aa2c02831fff91b8f84f6867972baa1a1e888242b7b3ced8e2d8612"
+    },
+    {
+      "english": "docs/releases.md",
+      "russian": "docs/ru/releases.md",
+      "englishSha256": "5240ba68a41ccddf5426dd6cbc111dc788a3ec7c05f692966c4e0bd023a73663",
+      "russianSha256": "c57a5f61dbf73bf2bc608b8f9d896e9c79f11baebabc18a643d201d43a4cee26"
     }
   ],
   "englishOnly": [

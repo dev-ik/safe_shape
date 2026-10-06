@@ -8,16 +8,26 @@
 
 ## Основные команды
 
+Установите CLI в свой проект и запускайте локальный бинарник:
+
 ```sh
-safe-shape --json doctor
-safe-shape schema export --module ./schema.mjs --export userSchema
-safe-shape --json schema validate --module ./schema.mjs --export userSchema --input ./user.json
-safe-shape schema types --module ./schema.mjs --export userSchema --name User --side output
+npm install --save-dev @safe-shape/cli
+npx --no-install safe-shape --help
+```
+
+В npm scripts можно использовать `safe-shape` напрямую; глобальная установка
+для примеров ниже не требуется.
+
+```sh
+npx --no-install safe-shape --json doctor
+npx --no-install safe-shape schema export --module ./schema.mjs --export userSchema
+npx --no-install safe-shape --json schema validate --module ./schema.mjs --export userSchema --input ./user.json
+npx --no-install safe-shape schema types --module ./schema.mjs --export userSchema --name User --side output
 mkdir -p .safe-shape
-safe-shape contract snapshot --module ./schema.mjs --export userSchema --id user --format v2 --out ./.safe-shape/user.json
-safe-shape --json contract check --module ./schema.mjs --export userSchema --against ./.safe-shape/user.json --side input --compatibility backward
-safe-shape --json contract check-many --manifest ./contracts.json
-safe-shape --json contract check-connections --manifest ./connections.json
+npx --no-install safe-shape contract snapshot --module ./schema.mjs --export userSchema --id user --format v2 --out ./.safe-shape/user.json
+npx --no-install safe-shape --json contract check --module ./schema.mjs --export userSchema --against ./.safe-shape/user.json --side input --compatibility backward
+npx --no-install safe-shape --json contract check-many --manifest ./contracts.json
+npx --no-install safe-shape --json contract check-connections --manifest ./connections.json
 ```
 
 Doctor проверяет локальную доступность runtime. Schema-команды загружают доверенный
@@ -118,9 +128,9 @@ CLI не требует auth. Схемы — доверенный код и мо
 ## API workflow (3.4.0)
 
 ```sh
-safe-shape api export --module ./api.mjs --title "My API" --version 1.0.0 --out ./openapi.json
-safe-shape api snapshot --module ./api.mjs --out ./api.contract.json
-safe-shape --json api check --module ./api.mjs --against ./api.contract.json
+npx --no-install safe-shape api export --module ./api.mjs --title "My API" --version 1.0.0 --out ./openapi.json
+npx --no-install safe-shape api snapshot --module ./api.mjs --out ./api.contract.json
+npx --no-install safe-shape --json api check --module ./api.mjs --against ./api.contract.json
 ```
 
 Экспорт OpenAPI 3.1, сохранение immutable API snapshots и проверка обновлений сервера относительно существующих клиентов. Exit codes: 0 для совместимых изменений, 2 для миграции или ручного review, 1 для operational errors. См. [API workflow](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/api/api.md).

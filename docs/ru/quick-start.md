@@ -57,7 +57,7 @@ if (!result.success) {
 
 Для async-правил используйте `await User.safeParseAsync(input)`. Как логировать
 невалидные операции и продолжать обрабатывать следующие запросы, описано в
-[руководстве по production-границам](../production-boundaries.md) (EN).
+[руководстве по production-границам](production-boundaries.md).
 
 ## Диагностика
 
@@ -93,14 +93,17 @@ issues и структурные пути. Оба helper не разворачи
 
 Скомпилируйте модуль со схемой в ESM, затем передайте CLI путь к JavaScript:
 
+`npx --no-install` запускает локальный бинарник без скачивания другой версии
+и глобальной установки. В npm scripts можно использовать `safe-shape` напрямую.
+
 ```sh
-safe-shape --json schema export \
+npx --no-install safe-shape --json schema export \
   --module ./dist/contracts/user.js \
   --export User \
   --schema https://json-schema.org/draft/2020-12/schema \
   --out ./dist/contracts/user.schema.json
 
-safe-shape --json schema types \
+npx --no-install safe-shape --json schema types \
   --module ./dist/contracts/user.js \
   --export User \
   --name User \
@@ -113,7 +116,7 @@ safe-shape --json schema types \
 
 ```sh
 mkdir -p .safe-shape
-safe-shape contract snapshot \
+npx --no-install safe-shape contract snapshot \
   --module ./dist/contracts/user.js \
   --export User \
   --id user \
@@ -124,7 +127,7 @@ safe-shape contract snapshot \
 Проверяйте обратную совместимость input-контракта в CI:
 
 ```sh
-safe-shape --json contract check \
+npx --no-install safe-shape --json contract check \
   --module ./dist/contracts/user.js \
   --export User \
   --against ./.safe-shape/user.contract.json \
@@ -137,11 +140,11 @@ CI-задаче, которая должна обнаруживать измен
 
 ## Что дальше
 
-- [Композиция объектов и проверяемые цепочки](../composable-contracts.md) (EN)
-- [Связи producer/consumer](../contract-connections.md) (EN)
-- [Переход с Zod](../migration-from-zod.md) (EN)
+- [Композиция объектов и проверяемые цепочки](composable-contracts.md)
+- [Связи producer/consumer](contract-connections.md)
+- [Переход с Zod](migration-from-zod.md)
 - [Миграция с 1.x на 2.0](migration-1-to-2.md)
-- [Полный Core API](../api/core.md) (EN)
-- [Совместимость контрактов](../api/compat.md) (EN)
-- [CLI API](../api/cli.md) (EN)
+- [Полный Core API](api/core.md)
+- [Совместимость контрактов](api/compat.md)
+- [CLI API](api/cli.md)
 - [Русская документация](README.md)

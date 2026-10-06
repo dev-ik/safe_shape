@@ -110,18 +110,20 @@ const result = await Name.safeParseAsync("x");
 
 ## CLI
 
+Команды ниже используют локальный бинарник без глобальной установки.
+
 CLI превращает runtime-контракты в проверяемые артефакты. Скомпилируйте модуль с
 экспортируемой схемой без логирования при импорте, как в
 [быстром старте](docs/ru/quick-start.md):
 
 ```sh
-safe-shape --json schema export \
+npx --no-install safe-shape --json schema export \
   --module ./dist/contracts/user.js \
   --export User \
   --schema https://json-schema.org/draft/2020-12/schema \
   --out ./dist/contracts/user.schema.json
 
-safe-shape --json schema types \
+npx --no-install safe-shape --json schema types \
   --module ./dist/contracts/user.js \
   --export User \
   --name User \
@@ -132,14 +134,14 @@ safe-shape --json schema types \
 
 ```sh
 mkdir -p .safe-shape
-safe-shape contract snapshot \
+npx --no-install safe-shape contract snapshot \
   --module ./dist/contracts/user.js \
   --export User \
   --id user \
   --format v2 \
   --out ./.safe-shape/user.contract.json
 
-safe-shape --json contract check \
+npx --no-install safe-shape --json contract check \
   --module ./dist/contracts/user.js \
   --export User \
   --against ./.safe-shape/user.contract.json \
@@ -171,6 +173,20 @@ Reporting, storage, retry и UI-политика остаются в коде п
 сценарий, рекомендации по telemetry, CI-проверка совместимости и исполняемый
 пример приведены в руководстве
 [Production Response Recovery](docs/ru/production-response-recovery.md).
+
+## Проверка релиза
+
+[Проверка и публикация 3.5.0](docs/ru/release-evidence-3.5.md):
+
+| Проверка | Результат |
+| --- | --- |
+| Пакеты | 10 опубликованных пакетов |
+| Тесты пакетов | 329 прошли |
+| Установка | Проверены tarballs и опубликованная версия npm |
+| Примеры | Исполняемые примеры прошли |
+| Audit | 0 известных уязвимостей |
+| Benchmarks | Проверки runtime, диагностики, композиции, связей и совместимости прошли |
+| Упаковка | `npm pack --workspaces --dry-run` прошёл |
 
 ## Пакеты
 
@@ -243,19 +259,10 @@ SafeShape находится на стабильной версии `3.5.0`.
 Release gate прошёл на Node 20.10 и 24, установка из npm проверена.
 См. [GitHub Release](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.0),
 [релиз 3.5.0](docs/ru/release-3.5.0.md) и [проверенную публикацию](docs/ru/release-evidence-3.5.md).
-См. [описание релиза 3.4.0](docs/ru/release-3.4.0.md): каталоги endpoints, fetch-клиент, OpenAPI и проверка изменений API.
-См. [описание patch 3.4.1](docs/ru/release-3.4.1.md) и [проверенную публикацию](docs/ru/release-evidence-3.4.1.md): npm README и metadata.
+Предыдущие возможности и исправления перечислены в [истории релизов](docs/ru/releases.md).
 Release gate проверяет
 метаданные, сборку, типы, тесты, примеры, benchmarks, установку tarball в
 тестовый consumer-проект, npm audit и package dry-run.
-
-## Новое в 3.2.0
-
-В SafeShape 3.2.0 добавлены композиция объектов, проверяемые цепочки преобразований,
-рекурсивные декларации TypeScript и проверки связей producer/consumer. См.
-[план реализации](docs/implementation-plan-next.md),
-[руководство](docs/ru/composable-contracts.md) и
-[переход с Zod](docs/ru/migration-from-zod.md).
 
 ## Новое в 3.5.0
 

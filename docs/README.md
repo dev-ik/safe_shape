@@ -3,19 +3,17 @@
 **English** | [Русский](ru/README.md)
 
 SafeShape documentation is organized by the task you need to complete.
+Current stable release: **3.5.0**, published on npm.
 
 ## Start Here
 
-- [3.5.0 release notes](release-3.5.0.md) and [qualification evidence](release-evidence-3.5.md): AI contracts and MCP.
+- [3.5.0 release notes](release-3.5.0.md) and [verified publication](release-evidence-3.5.md): AI contracts and MCP.
 - [SafeShape and MCP](mcp.md): local coding-agent integration and application-tool validation.
 
-- [3.4.1 patch](release-3.4.1.md): npm documentation and metadata.
-- [3.4.0 release notes](release-3.4.0.md): changes, upgrade and qualification status.
-- [Checked output bounds](checked-output.md): 3.3.0 export and connection proofs.
-- [3.3 implementation plan](implementation-plan-3.3.md): runtime efficiency, checked outputs and complete current EN/RU guides.
+- [Checked output bounds](checked-output.md): exact export and connection proofs.
 
 - [Production boundaries](production-boundaries.md): reject invalid operations, isolate logger failures and keep subsequent requests running.
-- [Composable contracts](composable-contracts.md), [producer/consumer connections](contract-connections.md), and [migration from Zod](migration-from-zod.md): available in 3.2.0.
+- [Composable contracts](composable-contracts.md), [producer/consumer connections](contract-connections.md), and [migration from Zod](migration-from-zod.md).
 
 - [Quick start](quick-start.md): install SafeShape, validate input, inspect
   diagnostics, and create a contract baseline.
@@ -28,7 +26,7 @@ SafeShape documentation is organized by the task you need to complete.
   diagnostics, and explicit async parsing
   and the recommended upgrade order.
 
-- [Endpoint catalogs, clients, OpenAPI and API checks](api/api.md): 3.4 additive workflow.
+- [Endpoint catalogs, clients, OpenAPI and API checks](api/api.md).
 
 ## API Reference
 
@@ -37,6 +35,7 @@ SafeShape documentation is organized by the task you need to complete.
 - [Contract snapshots and compatibility](api/compat.md)
 - [CLI](api/cli.md)
 - [HTTP helpers](api/http.md)
+- [Endpoint catalogs and API tooling](api/api.md)
 - [JSON Schema](api/json-schema.md)
 - [TypeScript generation](api/typescript.md)
 - [Validation reports](api/validation.md)
@@ -64,12 +63,17 @@ SafeShape documentation is organized by the task you need to complete.
 - [Performance](performance.md)
 - [Roadmap](roadmap.md)
 - [3.0 to 3.1 migration notes](migration-3.0-to-3.1.md)
+- [Contract counterexamples](counterexamples.md)
+- [Markdown contract review](contract-review.md)
+
+## Release History and Archived Plans
+
+- [Release history](releases.md): shipped versions, features and publication records.
+- [3.3 implementation plan](implementation-plan-3.3.md)
 - [3.1 release quality contract](release-quality-3.1.md)
 - [3.1 release roadmap](roadmap-3.1.md)
 - [3.1 implementation plan](implementation-plan-3.1.md)
 - [Historical 3.2 working roadmap, shipped in 3.1](roadmap-3.2.md)
-- [Contract counterexamples](counterexamples.md)
-- [Markdown contract review](contract-review.md)
 - [3.1.0 release record](release-candidate-3.1.0.md)
 - [3.2.0 release notes and verified publication](release-candidate-3.2.0.md)
 - [3.2.1 documentation patch](release-3.2.1.md)

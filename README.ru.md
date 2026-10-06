@@ -237,7 +237,7 @@ npm run examples:check
 
 ## Статус проекта
 
-SafeShape находится на стабильной версии `3.4.1`. Все девять пакетов опубликованы.
+SafeShape готовит релиз `3.5.0`; все десять пакетов проходят локальную проверку. Публикация ожидается.
 См. [описание релиза 3.4.0](docs/ru/release-3.4.0.md): каталоги endpoints, fetch-клиент, OpenAPI и проверка изменений API.
 См. [описание patch 3.4.1](docs/ru/release-3.4.1.md) и [проверенную публикацию](docs/ru/release-evidence-3.4.1.md): npm README и metadata.
 Release gate проверяет
@@ -251,3 +251,5 @@ Release gate проверяет
 [план реализации](docs/implementation-plan-next.md),
 [руководство](docs/ru/composable-contracts.md) и
 [переход с Zod](docs/ru/migration-from-zod.md).
+
+- [AI-контракты и MCP](docs/ru/mcp.md)

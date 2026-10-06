@@ -313,9 +313,11 @@ TypeScript declarations and explicit producer/consumer connection checks. See th
 
 ## Project Status
 
-SafeShape is on the `3.4.1` stable release line. All nine packages are published.
+SafeShape is preparing the `3.5.0` release; all ten packages are being qualified locally. Publication is pending.
 See the [3.4.0 release notes](docs/release-3.4.0.md) for endpoint catalogs, validated fetch clients, OpenAPI and API evolution checks.
 See the [3.4.1 patch notes](docs/release-3.4.1.md) and [verified publication](docs/release-evidence-3.4.1.md) for npm README and metadata improvements.
 The release gate covers
 metadata checks, build, typecheck, tests, examples, benchmarks, consumer tarball
 installation, npm audit, and package dry-run.
+
+- [AI contracts and MCP](docs/mcp.md)

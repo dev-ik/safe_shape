@@ -1,10 +1,10 @@
 # @safe-shape/api
 
-[English](https://github.com/dev-ik/safe_shape/blob/v3.4.1/packages/api/README.md) | **Русский**
+[English](https://github.com/dev-ik/safe_shape/blob/v3.5.0/packages/api/README.md) | **Русский**
 
 Каталоги endpoints, проверяемый fetch-клиент, OpenAPI 3.1 и совместимость API.
 
-См. [API reference](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/ru/api/api.md). Для браузера используйте
+См. [API reference](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/api/api.md). Для браузера используйте
 `@safe-shape/api/client`, для Node tooling — корневой entry.
 
 Добавлено в SafeShape 3.4.0. Совместимость существующих runtime API и snapshot defaults сохранена.
@@ -51,4 +51,4 @@ const comparison = compareApiSnapshots(baseline, createApiSnapshot(api));
 console.log(openapi.openapi, comparison.decision); // 3.1.0, compatible
 ```
 
-Клиент обращается к существующему HTTP-серверу. Запросы и ответы валидируются, тип response data выводится по status. Для браузера используйте `@safe-shape/api/client`; OpenAPI и snapshot tools используют Node root entry. Только JSON transport: без router, cookies, multipart и retries. См. [полный reference](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/ru/api/api.md): wire schemas, warnings, cancellation и правила совместимости.
+Клиент обращается к существующему HTTP-серверу. Запросы и ответы валидируются, тип response data выводится по status. Для браузера используйте `@safe-shape/api/client`; OpenAPI и snapshot tools используют Node root entry. Только JSON transport: без router, cookies, multipart и retries. См. [полный reference](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/api/api.md): wire schemas, warnings, cancellation и правила совместимости.

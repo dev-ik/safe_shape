@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
-import { mkdirSync, readFileSync, rmSync } from "node:fs";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -33,6 +34,10 @@ for (const packageDirectory of packageDirectories) {
 const packages = packageDirectories.map((packageDirectory) =>
   JSON.parse(readFileSync(join(packageDirectory, "package.json"), "utf8")),
 );
+const archives = packages.map(({ name, version }) => `${name.replace(/^@/, "").replace("/", "-")}-${version}.tgz`).sort();
+writeFileSync(join(outputDirectory, "SHA256SUMS"), archives.map((name) =>
+  `${createHash("sha256").update(readFileSync(join(outputDirectory, name))).digest("hex")}  ${name}`,
+).join("\n") + "\n", "utf8");
 console.log(
   `Prepared release artifacts for ${packages
     .map(({ name, version }) => `${name}@${version}`)

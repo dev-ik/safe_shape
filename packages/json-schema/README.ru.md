@@ -1,6 +1,6 @@
 # JSON Schema API
 
-[English](https://github.com/dev-ik/safe_shape/blob/v3.4.1/packages/json-schema/README.md) | **Русский**
+[English](https://github.com/dev-ik/safe_shape/blob/v3.5.0/packages/json-schema/README.md) | **Русский**
 
 `@safe-shape/json-schema` экспортирует схемы SafeShape в неизменяемые JSON Schema.
 
@@ -87,4 +87,4 @@ InferInput/InferOutput и неизменяемость сохраняются. �
 выходов pipelines; safe-результат содержит warning `json_schema.output.bound`.
 Она не доказывает производимость каждого допустимого значения. Непрозрачные
 финальные transforms и реальные custom-правила по-прежнему отклоняются.
-Standard-адаптер и CLI остаются в точном режиме. См. [выходные границы](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/ru/checked-output.md).
+Standard-адаптер и CLI остаются в точном режиме. См. [выходные границы](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/checked-output.md).

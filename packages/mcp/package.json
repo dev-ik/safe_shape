@@ -1,6 +1,6 @@
 {
   "name": "@safe-shape/mcp",
-  "version": "3.4.1",
+  "version": "3.5.0",
   "description": "SafeShape contracts and validated tools for MCP agents.",
   "type": "module",
   "publishConfig": {
@@ -21,10 +21,10 @@
     "README.ru.md"
   ],
   "dependencies": {
-    "@safe-shape/core": "3.4.1",
-    "@safe-shape/validation": "3.4.1",
-    "@safe-shape/json-schema": "3.4.1",
-    "@safe-shape/compat": "3.4.1",
+    "@safe-shape/core": "3.5.0",
+    "@safe-shape/validation": "3.5.0",
+    "@safe-shape/json-schema": "3.5.0",
+    "@safe-shape/compat": "3.5.0",
     "@modelcontextprotocol/sdk": "1.32.1"
   },
   "scripts": {

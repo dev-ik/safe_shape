@@ -1,12 +1,12 @@
 # @safe-shape/compat
 
-**English** | [Русский](https://github.com/dev-ik/safe_shape/blob/v3.4.1/packages/compat/README.ru.md)
+**English** | [Русский](https://github.com/dev-ik/safe_shape/blob/v3.5.0/packages/compat/README.ru.md)
 
 Deterministic contract snapshots and conservative compatibility analysis for
 SafeShape runtime contracts.
 
 The 3.3.0 adds live-schema `checkSchemaConnection()` with explicit
-output-bound evidence. See [semantics](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/checked-output.md).
+output-bound evidence. See [semantics](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/checked-output.md).
 
 ```ts
 import { object, string } from "@safe-shape/core";
@@ -42,7 +42,7 @@ Enum and literal changes use exact finite-value containment. Literal membership
 checks native string pattern/format and numeric `multipleOf` constraints before
 reporting `safe`. `never` is the bottom contract and `unknown` is the top
 contract. See the normative
-[compatibility matrix](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/compatibility-matrix.md).
+[compatibility matrix](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/compatibility-matrix.md).
 
 Snapshot v1 rejects recursive `lazy()` references explicitly. Use
 `createContractSnapshotV2()` and `parseContractSnapshotV2()` for recursive
@@ -83,7 +83,7 @@ Fixed tuples compare with exact-length homogeneous arrays. Union removals use
 finite or disjoint witnesses, and permissive object shape changes distinguish
 universal identity properties from narrower or opaque behavior.
 
-See [`docs/api/compat.md`](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/api/compat.md) for the snapshot format,
+See [`docs/api/compat.md`](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/api/compat.md) for the snapshot format,
 compatibility modes, and report semantics.
 
 ## Bounded counterexamples
@@ -91,7 +91,7 @@ compatibility modes, and report semantics.
 `createContractCounterexamples(previousSnapshot, nextSnapshot, options?)` adds
 synthetic input witnesses for supported scalar and finite composite roots. Results are deeply immutable;
 unsupported domains and exhausted searches return explicit unavailable reasons.
-See [semantics and examples](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/counterexamples.md). Introduced in
+See [semantics and examples](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/counterexamples.md). Introduced in
 3.1.0; it does not change comparison reports.
 
 Since 3.2.0, supported counterexample roots also include tuples and
@@ -107,5 +107,5 @@ of a witness never proves compatibility.
 
 Use CLI `contract check-connections --manifest connections.json` to check a
 reviewed list without changing its snapshots. See the
-[connection guide](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/contract-connections.md) for the manifest, output
+[connection guide](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/contract-connections.md) for the manifest, output
 projection, opaque behavior and exit codes. These APIs are available since 3.2.0.

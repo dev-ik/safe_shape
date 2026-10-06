@@ -1,6 +1,6 @@
 # @safe-shape/mcp
 
-**English** | [Русский](https://github.com/dev-ik/safe_shape/blob/v3.4.1/packages/mcp/README.ru.md)
+**English** | [Русский](https://github.com/dev-ik/safe_shape/blob/v3.5.0/packages/mcp/README.ru.md)
 
 Runtime contracts for AI tools and a local MCP inspection server. Node >=20.10, ESM.
 Install this package explicitly; SafeShape core and umbrella remain SDK-independent.
@@ -16,4 +16,4 @@ invalid results never become successful responses. Trusted schema modules run
 with process permissions; path checks are not a JavaScript sandbox. Deadlines
 are cooperative. No automatic retries or baseline writes.
 
-[Guide](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/mcp.md) · [API](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/api/mcp.md)
+[Guide](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/mcp.md) · [API](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/api/mcp.md)

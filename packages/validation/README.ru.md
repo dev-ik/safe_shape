@@ -1,6 +1,6 @@
 # Отчёты валидации
 
-[English](https://github.com/dev-ik/safe_shape/blob/v3.4.1/packages/validation/README.md) | **Русский**
+[English](https://github.com/dev-ik/safe_shape/blob/v3.5.0/packages/validation/README.md) | **Русский**
 
 `@safe-shape/validation` преобразует результаты parsing в JSON-friendly отчёты.
 

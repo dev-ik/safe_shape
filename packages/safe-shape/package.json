@@ -1,6 +1,6 @@
 {
   "name": "safe-shape",
-  "version": "3.4.1",
+  "version": "3.5.0",
   "description": "Umbrella package for SafeShape runtime contracts and tooling.",
   "type": "module",
   "engines": {
@@ -18,14 +18,14 @@
     "README.ru.md"
   ],
   "dependencies": {
-    "@safe-shape/api": "3.4.1",
-    "@safe-shape/cli": "3.4.1",
-    "@safe-shape/compat": "3.4.1",
-    "@safe-shape/core": "3.4.1",
-    "@safe-shape/http": "3.4.1",
-    "@safe-shape/json-schema": "3.4.1",
-    "@safe-shape/typescript": "3.4.1",
-    "@safe-shape/validation": "3.4.1"
+    "@safe-shape/api": "3.5.0",
+    "@safe-shape/cli": "3.5.0",
+    "@safe-shape/compat": "3.5.0",
+    "@safe-shape/core": "3.5.0",
+    "@safe-shape/http": "3.5.0",
+    "@safe-shape/json-schema": "3.5.0",
+    "@safe-shape/typescript": "3.5.0",
+    "@safe-shape/validation": "3.5.0"
   },
   "scripts": {
     "build": "npm run build --workspace @safe-shape/core && npm run build --workspace @safe-shape/compat && npm run build --workspace @safe-shape/http && npm run build --workspace @safe-shape/json-schema && npm run build --workspace @safe-shape/typescript && npm run build --workspace @safe-shape/validation && npm run build --workspace @safe-shape/cli && npm run build --workspace @safe-shape/api && tsc -p tsconfig.build.json",

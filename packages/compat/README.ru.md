@@ -1,6 +1,6 @@
 # Совместимость контрактов
 
-[English](https://github.com/dev-ik/safe_shape/blob/v3.4.1/packages/compat/README.md) | **Русский**
+[English](https://github.com/dev-ik/safe_shape/blob/v3.5.0/packages/compat/README.md) | **Русский**
 
 `@safe-shape/compat` создаёт детерминированные snapshots и консервативно
 сравнивает версии контрактов.
@@ -72,7 +72,7 @@ Helper не генерирует миграции и не принимает н�
 
 ## Правила
 
-Нормативная [матрица](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/ru/compatibility-matrix.md) задаёт правила для всех видов схем.
+Нормативная [матрица](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/compatibility-matrix.md) задаёт правила для всех видов схем.
 Нативные ограничения сравниваются как множества допустимых значений.
 Enum/literal проверяются точно, включая pattern, format и multipleOf цели.
 После проверки opaque-ограничений never содержится в любой цели, unknown содержит
@@ -116,14 +116,14 @@ full — к обоим. Сохраняются status, fingerprint, side и ис
 
 `createContractCounterexamples` добавляет конкретные свидетельства в ограниченном
 поддержанном домене; отсутствие значения не доказывает безопасность. См.
-[контрпримеры](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/ru/counterexamples.md).
+[контрпримеры](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/counterexamples.md).
 
 ## Связи producer/consumer
 
 С 3.2 `checkContractConnection(producerSnapshotV2, consumerSnapshotV2)` сравнивает
 output производителя с input потребителя. ContractConnectionReport содержит
 идентичности, comparison, migration и counterexample с реально производимым
-значением либо явной причиной отсутствия. См. [связи](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/ru/contract-connections.md).
+значением либо явной причиной отсутствия. См. [связи](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/contract-connections.md).
 
 В версии 3.3.0 `checkSchemaConnection(producer, consumer, { producerId?, consumerId? })`
 анализирует живые схемы по верхней границе выхода. Значения id по умолчанию:
@@ -131,4 +131,4 @@ output производителя с input потребителя. ContractConne
 producer fingerprint относится к границе. Только доказанное включение даёт
 compatible, недоказанное — unknown/manual-review, контрпример не строится.
 Callbacks не исполняются, lazy-getters могут разрешаться. Старые snapshot API
-не меняются. См. [проверяемые выходы](https://github.com/dev-ik/safe_shape/blob/v3.4.1/docs/ru/checked-output.md).
+не меняются. См. [проверяемые выходы](https://github.com/dev-ik/safe_shape/blob/v3.5.0/docs/ru/checked-output.md).

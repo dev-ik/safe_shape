@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { mkdtemp, writeFile, symlink, rm } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
+import { mkdir, mkdtemp, writeFile, symlink, rm } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import * as api from '../src/index.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
@@ -12,6 +11,7 @@ import { existsSync } from 'node:fs';
 test('stdio loads explicit manifest and shuts down without non-protocol stdout', async () => {
   assert.ok((api as any).createSafeShapeMcpServer);
   const root = resolve('../..');
+  await mkdir(join(root, '.tmp'), { recursive: true });
   const directory = await mkdtemp(join(root, '.tmp/mcp-'));
   try {
     await writeFile(join(directory, 'schema.mjs'), `import {object,string} from '@safe-shape/core'; export default object({name:string()});`);
@@ -53,6 +53,7 @@ test('stdio negotiates the explicit 2025-06-18 interoperability baseline', async
 
 test('manifest rejects escapes, symlinks, invalid references and duplicate IDs before any import', async () => {
   const root = resolve('../..');
+  await mkdir(join(root, '.tmp'), { recursive: true });
   const directory = await mkdtemp(join(root, '.tmp/mcp-path-'));
   const outside = await mkdtemp(join(root, '.tmp/mcp-outside-'));
   const marker = join(directory, 'executed');

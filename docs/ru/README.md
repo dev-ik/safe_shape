@@ -7,9 +7,11 @@
 Исторические release records и нормативные RFC/ADR отмечены как английские источники.
 Текущий стабильный релиз: **3.5.1**, опубликован в npm. См. [GitHub Release](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.1).
 
+Документация исходников обновлена для **4.0.0**; эта версия пока не опубликована.
+
 ## Начало работы
 
-- [Patch 3.5.1](release-3.5.1.md) и [результаты проверки](release-evidence-3.5.1.md): исправления документации.
+- [Релиз 4.0.0](release-4.0.0.md), [проверка](release-evidence-4.0.0.md), [миграция с 3.x](migration-3-to-4.md) и [прямое сравнение OpenAPI](openapi-comparison.md).
 - [SafeShape и MCP](mcp.md): подключение coding-агента и проверка инструментов приложения.
 
 - [Быстрый старт](quick-start.md) и [интеграция](integration.md).
@@ -47,7 +49,7 @@
 ## Разработка и выпуск
 
 - [CI](ci.md), [тестирование](testing.md), [производительность](performance.md), [benchmarks](benchmarks.md).
-- [Критерии качества](release-quality-3.1.md).
+- [Критерии качества](release-quality-4.0.md).
 - [Процесс релиза](release.md) и [готовность к публикации](publish-readiness.md).
 - [Текущий план развития](roadmap.md).
 - [Поддержка переводов](translations.md).

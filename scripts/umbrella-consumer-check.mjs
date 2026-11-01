@@ -1,3 +1,4 @@
+import { assertIndependentDependencies } from "./dependency-check.mjs";
 import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import { createHash } from "node:crypto";
@@ -32,6 +33,7 @@ export async function checkUmbrellaInstall({ rootDir, workspaceDir, tarballDir, 
     await mkdir(app, { recursive: true });
     await writeFile(resolve(app, "package.json"), JSON.stringify({ name: "umbrella-only-consumer", private: true, type: "module" }));
     await run("npm", ["--cache", resolve(rootDir, ".npm-cache"), "install", "--ignore-scripts", "--audit=false", "--fund=false", "--fetch-retries=0", `--@safe-shape:registry=http://127.0.0.1:${server.address().port}`, resolve(tarballDir, `safe-shape-${version}.tgz`)], app);
+    await assertIndependentDependencies(app);
     const project = JSON.parse(await readFile(resolve(app, "package.json"), "utf8"));
     assert.deepEqual(Object.keys(project.dependencies), ["safe-shape"]);
     assert.equal(JSON.parse(await readFile(resolve(app, "node_modules/@safe-shape/mcp/package.json"), "utf8")).version, version);

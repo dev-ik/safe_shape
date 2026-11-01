@@ -21,8 +21,10 @@ json-schema, typescript, validation, api; api → core/http/json-schema/compat; 
 Core не зависит от HTTP, compat или exporters. Не переносите Node tooling в
 browser runtime. Новые архитектурные решения требуют ADR.
 
-Browser entry `@safe-shape/api/client` не загружает Node tooling.
+Для прямого сравнения документов пакет api также зависит от yaml.
+Browser entry `@safe-shape/api/client` не загружает Node tooling и YAML parser.
 
-MCP зависит от core/validation/json-schema/compat и официального MCP SDK.
-Core не зависит от MCP/SDK. Umbrella зависит от MCP для установки; его API
+MCP зависит только от core/validation/json-schema/compat; протокол реализован
+внутри пакета, входные сообщения проверяет core.
+Ни один пакет не устанавливает Zod или MCP SDK. Core не зависит от MCP. Umbrella зависит от MCP для установки; его API
 загружаются только через `safe-shape/mcp`, основной импорт сохраняет прежний граф.

@@ -117,9 +117,6 @@ assert.equal(recovered.kind, 'recovered'); assert.equal(recovered.data.name, 'ca
   report.integrations.production = "passed: installed request/response boundaries, next-request recovery, unexpected exceptions, sync/async/pending logger failures";
 
   console.log("quality: declaration consumers and compiler fixtures");
-  // SDK installs Zod transitively; benchmarks must still use the pinned fixture.
-  await rm(join(ci, "node_modules/zod"), { recursive: true, force: true });
-  await symlink(join(here, "node_modules/zod"), join(ci, "node_modules/zod"));
   for (const file of ["types.ts", "tsconfig.json"]) await writeFile(join(ci, file), await readFile(join(here, file)));
   for (const compiler of ["typescript", "typescript-current"]) {
     const text = run(process.execPath, [join(here, `node_modules/${compiler}/bin/tsc`), "-p", join(ci, "tsconfig.json"), "--extendedDiagnostics"]);
@@ -131,35 +128,35 @@ assert.equal(recovered.kind, 'recovered'); assert.equal(recovered.data.name, 'ca
   await writeFile(join(baseTypes, "package.json"), '{"type":"module"}');
   await writeFile(join(baseTypes, "tsconfig.json"), await readFile(join(here, "tsconfig.json")));
   for (let repetition = 0; repetition < 5; repetition++) for (const size of [5, 100, 20]) {
-    for (const library of repetition % 2 ? ["zod", "baseline", "safe"] : ["safe", "baseline", "zod"]) {
-      const object = library === "zod" ? "strictObject" : "object";
-      const module = library === "zod" ? "zod" : "@safe-shape/core";
+    for (const library of repetition % 2 ? ["baseline", "safe"] : ["safe", "baseline"]) {
+      const object = "object";
+      const module = "@safe-shape/core";
       const app = library === "baseline" ? baseTypes : ci;
       let schema = `${object}({ ${Array.from({ length: size === 20 ? 2 : size }, (_, i) => `field${i}: string()`).join(", ")} })`;
       if (size === 20) for (let i = 0; i < 20; i++) schema = `${object}({ nested: ${schema} })`;
-      await writeFile(join(app, "types.ts"), `import { ${object}, string, type ${library === 'zod' ? 'infer as OutputOf' : 'InferOutput as OutputOf'} } from '${module}'; export const schema = ${schema}; export type Output = OutputOf<typeof schema>; export function identity(value: Output): Output { return value; }`);
+      await writeFile(join(app, "types.ts"), `import { ${object}, string, type InferOutput as OutputOf } from '${module}'; export const schema = ${schema}; export type Output = OutputOf<typeof schema>; export function identity(value: Output): Output { return value; }`);
       const diagnostics = run(process.execPath, [tsc, "-p", join(app, "tsconfig.json"), "--extendedDiagnostics"]);
       report.types.push({ compiler: "typescript", library, repetition, fixture: size === 20 ? "depth-20" : `fields-${size}`, diagnostics });
     }
   }
 
   const modules = { safe: pathToFileURL(join(ci, "node_modules/@safe-shape/core/dist/index.js")).href,
-    baseline: pathToFileURL(join(base, "packages/core/dist/index.js")).href, zod: pathToFileURL(join(here, "node_modules/zod/index.js")).href };
-  for (const library of ["safe", "baseline", "zod"]) {
-    const bundle = await build({ entryPoints: [join(here, library === "zod" ? "bundle-zod.mjs" : "bundle-safe.mjs")], bundle: true, write: false, minify: true, platform: "browser", format: "esm", metafile: true,
-      ...(library === "zod" ? {} : { alias: { "@safe-shape/core": fileURLToPath(modules[library]) } }) });
+    baseline: pathToFileURL(join(base, "packages/core/dist/index.js")).href };
+  for (const library of ["safe", "baseline"]) {
+    const bundle = await build({ entryPoints: [join(here, "bundle-safe.mjs")], bundle: true, write: false, minify: true, platform: "browser", format: "esm", metafile: true,
+      alias: { "@safe-shape/core": fileURLToPath(modules[library]) } });
     report.bundles.push({ library, bytes: bundle.outputFiles[0].contents.length, gzipBytes: gzipSync(bundle.outputFiles[0].contents).length });
   }
   const names = ["constraint", "nested", "optional-nullable", "array", "tagged", "union", "record", "recursive", "transform", "async"];
   console.log("quality: five isolated samples per library/scenario");
   for (let repetition = 0; repetition < 5; repetition++) {
-    for (const name of names) for (const library of repetition % 2 ? ["zod", "baseline", "safe"] : ["safe", "baseline", "zod"]) {
+    for (const name of names) for (const library of repetition % 2 ? ["baseline", "safe"] : ["safe", "baseline"]) {
       report.samples.push({ library, repetition, ...JSON.parse(run(process.execPath, ["--expose-gc", join(here, "measure.mjs"), library, modules[library], name])) });
     }
     console.log(`quality: sample round ${repetition + 1}/5 complete`);
   }
   const median = (values) => [...values].sort((a, b) => a - b)[Math.floor(values.length / 2)];
-  for (const name of names) for (const library of ["safe", "baseline", "zod"]) {
+  for (const name of names) for (const library of ["safe", "baseline"]) {
     const samples = report.samples.filter((sample) => sample.library === library && sample.name === name);
     const summary = { name, library };
     for (const metric of ["importMs", "constructionMs", "firstParseMs", "validMs", "invalidMs", "issuesMs", "formattedMs", "heapBytes"]) {
@@ -175,7 +172,7 @@ assert.equal(recovered.kind, 'recovered'); assert.equal(recovered.data.name, 'ca
   }
   report.newFeatureSamples = [];
   for (let repetition = 0; repetition < 5; repetition++) for (const name of ["composition", "pipeline"]) {
-    for (const library of repetition % 2 ? ["zod", "safe"] : ["safe", "zod"]) {
+    for (const library of ["safe"]) {
       report.newFeatureSamples.push({ library, repetition, ...JSON.parse(run(process.execPath, ["--expose-gc", join(here, "measure.mjs"), library, modules[library], name])) });
     }
   }
@@ -206,7 +203,7 @@ assert.equal(recovered.kind, 'recovered'); assert.equal(recovered.data.name, 'ca
     }
   }
   // Import precedes fixture selection and is the same operation for every name.
-  report.importSummary = ["safe", "baseline", "zod"].map((library) => {
+  report.importSummary = ["safe", "baseline"].map((library) => {
     const values = report.samples.filter((sample) => sample.library === library).map((sample) => sample.importMs);
     return { library, samples: values.length, median: median(values), min: Math.min(...values), max: Math.max(...values) };
   });

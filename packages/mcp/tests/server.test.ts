@@ -1,11 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { object, string, number } from '@safe-shape/core';
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
+import { Client, InMemoryTransport } from './client.js';
 import * as api from '../src/index.js';
 
-test('SDK client discovers six tools and performs export/invalid/corrected/compare workflow', async () => {
+test('wire client discovers six tools and performs export/invalid/corrected/compare workflow', async () => {
   const create = (api as any).createSafeShapeMcpServer;
   assert.equal(typeof create, 'function');
   const registry = api.createMcpContractRegistry([

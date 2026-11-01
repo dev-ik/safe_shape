@@ -5,7 +5,7 @@
 `safe-shape` is the umbrella package for projects that want the complete
 SafeShape runtime and tooling surface from one dependency. MCP is installed
 transitively and exposed only through `safe-shape/mcp`; the main import does not
-load MCP or its SDK. See the [MCP API](mcp.md).
+load MCP. See the [MCP API](mcp.md).
 
 The package also re-exports `describeOutputBound`, `SchemaOutputBound`,
 `checkSchemaConnection`, `SchemaConnectionOptions` and `SchemaConnectionReport`.

@@ -3,7 +3,7 @@ import { object, string, integer, unknown as unknownSchema, enum as enumSchema, 
 import { toJsonSchema, safeToJsonSchema } from '@safe-shape/json-schema';
 import { validateSchemaAsync } from '@safe-shape/validation';
 import { compareContractsV2, createMigrationDiagnostics } from '@safe-shape/compat';
-import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { McpToolDefinition } from './tool.js';
 import type { McpContractRegistry } from './types.js';
 import { McpOperationError } from './json.js';
 import { defineMcpTool, safeToMcpToolDefinition } from './tool.js';
@@ -31,11 +31,11 @@ const envelope = union([
   object({ ok: literal(true), operation: string(), result: unknownSchema() }),
   object({ ok: literal(false), operation: string(), error: object({ code: string(), message: string(), issues: unknownSchema().optional() }) }),
 ]);
-export function inspectionDefinitions(): readonly Tool[] {
+export function inspectionDefinitions(): readonly (McpToolDefinition & { readonly annotations: Readonly<Record<string, boolean>> })[] {
   const schema = toJsonSchema(envelope);
   return Object.freeze((Object.keys(inspectionSchemas) as (keyof typeof inspectionSchemas)[]).sort().map(name => ({
-    name, description: messages[name], inputSchema: toJsonSchema(inspectionSchemas[name]) as Tool['inputSchema'],
-    outputSchema: { ...schema, type: 'object' } as NonNullable<Tool['outputSchema']>,
+    name, description: messages[name], inputSchema: toJsonSchema(inspectionSchemas[name]),
+    outputSchema: { ...schema, type: 'object' },
     annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
   })));
 }

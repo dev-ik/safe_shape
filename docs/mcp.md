@@ -10,7 +10,8 @@ and replace `safe-shape` schema imports below with `@safe-shape/core`, and
 `safe-shape/mcp` imports with `@safe-shape/mcp`.
 The local inspection server and validated application-tool adapter ship together.
 Node >=20.10 and ESM are required. Core has no MCP dependency. The umbrella
-installs MCP/SDK transitively but its main import does not load them.
+installs MCP transitively but its main import does not load it. No Zod or MCP
+SDK dependency is installed. See [migration to 4.0](migration-3-to-4.md).
 
 ```sh
 npm install safe-shape
@@ -129,7 +130,7 @@ Optional manifest `limits` keys: `requestBytes` (1048576), `depth` (128),
 `responseBytes` (4194304), `concurrency` (16), `deadlineMs` (30000).
 Values are positive safe integers; deadlines must fit the Node timer range.
 Responses are not truncated. A response budget too small for diagnostics closes
-the transport. Stdio framing checks bytes/depth before SDK JSON parsing.
+the transport. Stdio framing checks bytes/depth before JSON parsing.
 
 Cancellation/deadlines are cooperative and cannot terminate synchronous code,
 force custom async rules to settle or roll back side effects. Capacity stays
@@ -145,8 +146,12 @@ node examples/mcp-workflow.mjs node ./packages/mcp/dist/cli.js
 ```
 
 These files are [repository examples](../examples/README.md), not npm package files.
-The second is an official SDK-client stdio smoke test, not a real-agent test.
-The interoperability baseline is MCP 2025-06-18; SDK-supported revisions and
-actual tested clients are recorded separately in release evidence.
+The second is an independent JSON-RPC stdio smoke test. It does not replace a
+real-agent walkthrough. The supported protocol revision is MCP 2025-06-18.
+Initialization advertises tools only; supported methods are initialize, ping,
+tools/list and tools/call, with initialized and cancelled notifications. Other
+requests return method-not-found; resources, prompts, subscriptions and HTTP
+transport are not advertised. A client offering another revision receives
+2025-06-18 and must decide whether it supports that revision.
 
 See the [API reference](api/mcp.md) and [release workflow](release.md).

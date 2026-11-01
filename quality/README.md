@@ -8,14 +8,14 @@ The fixed comparison matrix covers ASCII string constraints, strict nested
 objects, optional/nullable members, arrays, tagged and ordinary unions, records,
 finite recursive values, output transforms, and resolved asynchronous rules.
 Valid and invalid acceptance and successful outputs are asserted independently.
-Library-specific diagnostic formats are not required to match. SafeShape
-warnings, graph comparison, and snapshots are tested separately; Zod is not the
-semantic authority for them. Ordinary Zod is used, not Mini or compiled parsing.
+The 4.0 runner compares the current SafeShape candidate with the published 3.1.0
+baseline. Warnings, graph comparison and snapshots are tested separately.
+No competitor library is installed or executed; historical reports are retained.
 
 Before measuring: five isolated processes per library/scenario, alternating
 order; 2,000 warmup and 20,000 validated measured parses; 10,000 retained schemas
 for heap sampling. Measures include validation assertions and async harness
-overhead in both libraries. This is paired workload evidence, not pure parser
+overhead in both versions. This is paired workload evidence, not pure parser
 nanosecond timing. Raw samples, spread, and source identity are retained.
 
 The new batch workflow budget is 5 seconds for 50 recursive checks sharing a schema module and baseline on this
@@ -47,9 +47,9 @@ same 20% budget. Per-scenario import summaries remain diagnostic. See
 [ADR 0034](../adr/0034-release-performance-measurement.md); historical failures
 remain recorded and the updated method requires fresh candidate checks.
 
-The 3.2.0 qualification retains existing budgets against published 3.1.0.
-New composition and checked-pipeline scenarios compare SafeShape with pinned
-Zod in five alternating isolated samples; each 20,000-parse valid/invalid
+Qualification retains existing budgets against published 3.1.0.
+Composition and checked-pipeline scenarios measure the candidate in five
+isolated samples; each 20,000-parse valid/invalid
 workload has a predeclared 5-second median budget. Reports retain per-call
 measurements and all samples. The benchmark runner separately budgets 1,000
 connection checks and 10,000 checked pipeline parses at 5 seconds each. These
@@ -58,8 +58,7 @@ fixtures now exercise composition, pipelines and producer/consumer connections.
 
 Invalid-input measurements now include three separate operations: acceptance
 only (`invalidMs`), recursive issue/path/message consumption (`issuesMs`), and
-native formatting (`formattedMs`: SafeShape formatValidationError, Zod error
-message). Every mode includes parsing; formatting is intentionally vendor-specific
-and is not an equal-output comparison. Nothing is deferred out of the measured
+native formatting (`formattedMs`: SafeShape formatValidationError). Every mode
+includes parsing and consumes the complete result. Nothing is deferred out of the measured
 operation. Both added metrics use the same predeclared 20% regression budget
 against 3.1 and 5-second feature-workload budget as existing parse metrics.

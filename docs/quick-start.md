@@ -146,3 +146,6 @@ Commit reviewed baselines. Do not regenerate them inside the CI check job.
 - [Contract compatibility](api/compat.md)
 - [CLI API](api/cli.md)
 - [Documentation home](README.md)
+
+Compare YAML/JSON contracts [directly as OpenAPI](openapi-comparison.md).
+When upgrading an existing project, see [migration from 3.x to 4.0](migration-3-to-4.md).

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { Readable } from 'node:stream';
 
-test('framing enforces byte/depth limits before SDK parsing across chunks', async () => {
+test('framing enforces byte/depth limits before JSON parsing across chunks', async () => {
   let framing: any;
   try { framing = await import('../src/stdio.js' as string); } catch {}
   assert.equal(typeof framing?.createBoundedInput, 'function');

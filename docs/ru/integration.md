@@ -86,13 +86,22 @@ introspection и exporters. В этом репозитории release:check в�
 и проверки API. Umbrella содержит те же экспорты. Для браузера используйте
 `@safe-shape/api/client` без Node tooling. См. [API reference](api/api.md).
 
-## AI-контракты и MCP (3.5.0)
+## Прямое сравнение OpenAPI (4.0.0)
+
+Для существующих контрактов OpenAPI YAML/JSON версия 4.0.0 добавляет прямое сравнение:
+`compareOpenApi(previousYaml, nextYaml)` из `@safe-shape/api` или `safe-shape`.
+Адаптер передаёт доказательства схем в compat; вручную поддерживать каталог
+SafeShape не нужно. Проверяйте `report.decision` и `report.issues`: неподдерживаемая
+семантика требует ручной проверки. См. [сравнение OpenAPI](api/api.md).
+
+## AI-контракты и MCP (4.0.0)
 
 Установите `safe-shape` одной командой и импортируйте MCP API из `safe-shape/mcp`.
 Отдельный `@safe-shape/mcp` доступен для минимальных установок. Пакет предоставляет stdio
 executable `safe-shape-mcp` и пять публичных конструкторов/адаптеров для
 discovery/экспорта/валидации/сравнения контрактов и границ инструментов приложения.
-Core не зависит от SDK; основной импорт umbrella не загружает MCP/SDK.
+Пакеты SafeShape не устанавливают Zod или MCP SDK; основной импорт umbrella не загружает MCP.
+См. [миграцию с 3.x](migration-3-to-4.md) и [прямое сравнение OpenAPI](openapi-comparison.md).
 Установка umbrella теперь включает их транзитивно. Задайте фиксированный
 manifest доверенных модулей; агент вызывает инструменты по ID с inline JSON.
 См. [MCP](mcp.md): установка, конфигурация Codex, шесть инструментов, лимиты и

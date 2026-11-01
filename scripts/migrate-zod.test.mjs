@@ -7,7 +7,7 @@ import { spawnSync } from "node:child_process";
 import ts from "typescript";
 import { migrateZodSource } from "./migrate-zod.mjs";
 
-test("migration preserves supported runtime acceptance and explicit object policies", async () => {
+test("migration produces the declared acceptance and explicit object policies without loading source libraries", async () => {
   const source = `import { z } from "zod";
 export const User = z.object({ id: z.string(), age: z.number().min(0).max(100).optional() });
 export const Names = z.array(z.string()).min(1).max(3);
@@ -19,18 +19,16 @@ export type User = z.infer<typeof User>;`;
   await mkdir(resolve(".tmp"), { recursive: true });
   const directory = await mkdtemp(resolve(".tmp/migration-"));
   try {
-    const originalPath = join(directory, "original.mjs");
     const convertedPath = join(directory, "converted.mjs");
-    const original = source.replace('"zod"', JSON.stringify(pathToFileURL(resolve("quality/node_modules/zod/index.js")).href));
-    for (const [file, contents] of [[originalPath, original], [convertedPath, result.source]]) await writeFile(file, ts.transpileModule(contents, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText);
-    const before = await import(pathToFileURL(originalPath).href);
+    await writeFile(convertedPath, ts.transpileModule(result.source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText);
     const after = await import(pathToFileURL(convertedPath).href);
     const inputs = [null, false, 0, "", {}, { id: "a" }, { id: "a", age: 20, extra: true }, { id: "a", age: -1 }, { id: "a", age: "20" }, [], ["a"], ["a", "b", "c", "d"], { type: "a", extra: true }, { type: "b", extra: true }];
-    for (const name of ["User", "Names", "Event"]) for (const input of inputs) {
-      const expected = before[name].safeParse(input);
+    const accepted = { User: new Map([[5, { id: "a" }], [6, { id: "a", age: 20 }]]), Names: new Map([[10, ["a"]]]), Event: new Map([[13, { type: "b", extra: true }]]) };
+    for (const name of ["User", "Names", "Event"]) for (const [index, input] of inputs.entries()) {
+      const expected = accepted[name];
       const actual = after[name].safeParse(input);
-      assert.equal(actual.success, expected.success);
-      if (actual.success) assert.deepEqual(actual.data, expected.data);
+      assert.equal(actual.success, expected.has(index), `${name} input ${index}`);
+      if (actual.success) assert.deepEqual(actual.data, expected.get(index));
     }
     const typed = join(directory, "converted.ts");
     await writeFile(typed, result.source + '\nconst user: User = { id: "a" };\n// @ts-expect-error age stays numeric\nconst invalid: User = { id: "a", age: "1" };\n');

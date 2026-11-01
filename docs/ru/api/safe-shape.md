@@ -40,4 +40,4 @@ checkSchemaConnection; см. [проверяемые выходы](../checked-ou
 Umbrella также переэкспортирует [API workflow](api.md).
 
 MCP устанавливается транзитивно вместе с umbrella и доступен через
-`safe-shape/mcp`; основной импорт не загружает MCP/SDK. См. [MCP API](mcp.md). Общий пакет также переэкспортирует `@safe-shape/api`.
+`safe-shape/mcp`; основной импорт не загружает MCP. См. [MCP API](mcp.md). Общий пакет также переэкспортирует `@safe-shape/api`.

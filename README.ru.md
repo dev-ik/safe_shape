@@ -176,13 +176,13 @@ Reporting, storage, retry и UI-политика остаются в коде п
 
 ## Проверка релиза
 
-[Проверка и публикация 3.5.1](docs/ru/release-evidence-3.5.1.md):
+Локальная [проверка candidate 4.0.0](docs/ru/release-evidence-4.0.0.md); публикация и remote CI ожидаются:
 
 | Проверка | Результат |
 | --- | --- |
-| Пакеты | 10 опубликованных пакетов |
-| Тесты пакетов | 329 прошли |
-| Установка | Проверены tarballs и опубликованная версия npm |
+| Пакеты | 10 пакетов подготовлены с версией 4.0.0 |
+| Тесты пакетов | 356 прошли |
+| Установка | Проверены tarballs и установка только umbrella |
 | Примеры | Исполняемые примеры прошли |
 | Audit | 0 известных уязвимостей |
 | Benchmarks | Проверки runtime, диагностики, композиции, связей и совместимости прошли |
@@ -254,7 +254,8 @@ npm run examples:check
 
 ## Статус проекта
 
-SafeShape находится на стабильной версии `3.5.1`.
+SafeShape готовит релиз `4.0.0`; прямое сравнение OpenAPI YAML/JSON доступно в исходниках.
+См. [описание 4.0.0](docs/ru/release-4.0.0.md). Опубликованная стабильная версия пока 3.5.1.
 Все десять пакетов опубликованы в npm с `latest=3.5.1` и provenance.
 Статус публикации и архивы доступны в
 [GitHub Release](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.1).
@@ -264,10 +265,19 @@ Release gate проверяет
 метаданные, сборку, типы, тесты, примеры, benchmarks, установку tarball в
 тестовый consumer-проект, npm audit и package dry-run.
 
-## Исправления документации 3.5.1
+## Прямое сравнение OpenAPI (4.0.0)
 
-Patch исправляет навигацию по текущей версии, EN/RU-ссылки, команды локального
-CLI и примеры настройки MCP. Поведение схем и инструментов не меняется.
+`compareOpenApi(previous, next)` принимает YAML, JSON-строки или объекты OpenAPI:
+
+```ts
+import { compareOpenApi } from 'safe-shape';
+const report = compareOpenApi(previousYaml, nextYaml);
+console.log(report.decision, report.findings, report.issues);
+```
+
+Сравниваются методы/пути, параметры, запросы и ответы. Доказательства выполняет
+SafeShape; неподдерживаемые конструкции дают manual-review.
+См. [руководство](docs/ru/openapi-comparison.md) и [миграцию с 3.x](docs/ru/migration-3-to-4.md).
 
 ## AI-контракты и MCP
 
@@ -275,4 +285,5 @@ CLI и примеры настройки MCP. Поведение схем и и�
 локальный stdio-сервер с шестью инструментами проверки контрактов.
 
 MCP входит в `npm install safe-shape`; его API загружаются через `safe-shape/mcp`.
-Основной импорт не загружает SDK, но установка umbrella включает его.
+Основной импорт не загружает MCP. SafeShape 4.0 использует собственную реализацию MCP;
+пакеты не устанавливают Zod или MCP SDK. См. [миграцию на 4.0](docs/ru/migration-3-to-4.md).

@@ -2,6 +2,9 @@
 
 **English** | [Русский](ru/release-quality-3.1.md)
 
+
+For 4.0, dependency requirements are superseded by the [current quality contract](release-quality-4.0.md). The historical release contract is retained below.
+
 Status: automated qualification and all local constituent release gates passed; independent walkthrough and final versioned CI remain open.
 
 Last updated: 2026-09-10

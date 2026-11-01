@@ -3,8 +3,7 @@ import test from 'node:test';
 import { mkdir, mkdtemp, writeFile, symlink, rm } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import * as api from '../src/index.js';
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+import { Client, StdioClientTransport } from './client.js';
 import { loadMcpManifest } from '../src/manifest.js';
 import { existsSync } from 'node:fs';
 
@@ -34,7 +33,7 @@ test('stdio negotiates the explicit 2025-06-18 interoperability baseline', async
   const root = resolve('../..');
   const transport = new StdioClientTransport({ command: process.execPath, args: [join(root, 'packages/mcp/dist/cli.js'), '--workspace', root, '--manifest', 'examples/mcp.manifest.json'], stderr: 'pipe' });
   const replies = new Map<number, (value: any) => void>();
-  transport.onmessage = message => { if ('id' in message && typeof message.id === 'number') replies.get(message.id)?.(message); };
+  transport.onmessage = message => { if (message && typeof message === 'object' && 'id' in message && typeof message.id === 'number') replies.get(message.id)?.(message); };
   const request = async (id: number, method: string, params?: Record<string, unknown>) => {
     const response = new Promise<any>(resolve => { replies.set(id, resolve); });
     await transport.send({ jsonrpc: '2.0', id, method, ...(params === undefined ? {} : { params }) });

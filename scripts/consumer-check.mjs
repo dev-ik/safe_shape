@@ -1,3 +1,4 @@
+import { assertIndependentDependencies } from "./dependency-check.mjs";
 import assert from "node:assert/strict";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
@@ -60,6 +61,8 @@ await run("npm", [
   ...packages.map((packageInfo) => resolve(tarballDir, packageInfo.tarball)),
 ], appDir);
 
+await assertIndependentDependencies(appDir);
+
 for (const packageInfo of packages) {
   const russianReadme = await readFile(resolve(appDir, "node_modules", packageInfo.name, "README.ru.md"), "utf8");
   assert.match(russianReadme, /Русский/);
@@ -74,6 +77,8 @@ await run(process.execPath, [resolve(appDir, "checked-output.mjs")], appDir);
 
 await writeFile(resolve(appDir, "api-workflow.mjs"), await readFile(resolve(rootDir, "examples/api-workflow.mjs")));
 await run(process.execPath, [resolve(appDir, "api-workflow.mjs")], appDir);
+await writeFile(resolve(appDir, "openapi-comparison.mjs"), await readFile(resolve(rootDir, "examples/openapi-comparison.mjs")));
+await run(process.execPath, [resolve(appDir, "openapi-comparison.mjs")], appDir);
 
 const cliPath = resolve(appDir, "node_modules", ".bin", "safe-shape");
 const doctor = await run(cliPath, ["--json", "doctor"], appDir);

@@ -178,3 +178,7 @@ The CLI build normalizes `dist/cli.js` to executable mode `0755`. The metadata
 gate checks this on POSIX hosts so a clean checkout and a previously installed
 workspace produce the same archive permissions. Installed consumer checks run
 the actual `safe-shape` executable.
+
+For 4.0.0, the gate also runs `npm run dependencies:check`: root/quality lockfiles
+and installed archives must contain no Zod or MCP SDK. Quality measurements use
+only the SafeShape candidate and baseline; historical measurements are not recreated.

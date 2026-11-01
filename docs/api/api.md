@@ -112,6 +112,73 @@ validation as a replacement for runtime contracts. See the
 
 ## API evolution
 
+### Direct OpenAPI comparison (4.0.0)
+
+```ts
+import { readFile } from "node:fs/promises";
+import { compareOpenApi } from "@safe-shape/api"; // also exported by safe-shape
+
+const report = compareOpenApi(
+  await readFile("./previous.openapi.yaml", "utf8"),
+  await readFile("./next.openapi.yaml", "utf8"),
+);
+console.log(report.decision, report.findings, report.issues);
+process.exitCode = report.compatible ? 0 : 2;
+```
+
+`compareOpenApi(previous: unknown, next: unknown, options?: OpenApiCompareOptions)`
+accepts YAML/JSON strings or parsed OpenAPI 3.0.x/3.1.x objects. It imports schemas
+internally and delegates proofs to `@safe-shape/compat`. No manual SafeShape
+catalog or snapshot is needed. It performs no filesystem/network I/O.
+
+The immutable `OpenApiCompatibilityReport` contains `compatible`, `decision`,
+`findings` and `issues`. Decisions are compatible, migration-required and
+manual-review. Each `OpenApiCompatibilityFinding` contains endpoint (`METHOD path`),
+code, status, document path, message and optional underlying GraphCompatibilityReport.
+Codes are openapi.operation.added, openapi.operation.removed,
+openapi.request.changed, openapi.response.changed and openapi.transport.changed.
+`OpenApiCompareIssue` contains source (previous/next), code, path and message;
+codes are openapi.document.invalid and openapi.feature.unsupported. Import failures
+return manual-review and no partial findings. Invalid formatPolicy options throw
+TypeError. This bounded subset adapter is not a complete OpenAPI validator.
+
+Operations match by exact method/path; operationId changes are annotations. Path
+renames appear as removal/addition. Path-level parameters are inherited with
+operation-level overrides; header names are case-insensitive. Requests use backward
+containment, responses forward. Checks cover parameter/body requiredness, concrete JSON
+media types, response headers and explicit/range/default statuses (in that priority).
+Server/security or serialization changes require manual review. This compares
+declared values, not business behavior or application availability.
+
+Supported schemas: typed primitives, scalar enum/const, properties/required,
+boolean additionalProperties (permissive by default), pure dictionaries, arrays,
+anyOf/allOf, local JSON Pointer refs including guarded recursion, 3.0 nullable,
+3.1 type arrays/boolean schemas, native lengths, inclusive numeric bounds,
+multipleOf and ECMAScript Unicode-mode patterns. Titles/descriptions are retained;
+defaults never insert values. The value domain is JSON with JavaScript finite numbers.
+Unprovable relationships remain manual-review.
+
+Formats require explicit interpretation. The default `formatPolicy: "reject"`
+returns issues. Choose `"annotation"` for documentation-only formats, or
+`"safe-shape"` for native email/uuid/date/date-time semantics. Other formats,
+including int32/int64, require annotation mode or manual review. Annotation mode
+does not enforce numeric widths or detect format-only changes.
+
+Unsupported assertions are never dropped: oneOf, exclusive bounds, uniqueItems,
+readOnly/writeOnly projections, typed additionalProperties alongside named fields,
+external refs, custom dialects and untyped type-specific constraints return issues.
+Callbacks, links, webhooks, XML/non-JSON media, content encodings, media wildcards/parameters and
+GET/HEAD/TRACE bodies also require review. Unreferenced components are not compared.
+Authentication and server configuration is compared conservatively as data.
+
+YAML uses 1.2, duplicate-key checks, a 100-alias expansion limit and no custom tags.
+Input is copied without getters; cyclic/non-JSON data is rejected. Limits per
+document: 5 million text characters, 100,000 data values, depth 128 and 20,000
+schema conversions. These are import limits, not resource isolation; patterns
+remain trusted contract code. See the [runnable YAML example](../../examples/openapi-comparison.mjs).
+
+### SafeShape catalogs and snapshots
+
 `createApiSnapshot(api)` creates immutable `ApiSnapshot` in API_SNAPSHOT_FORMAT
 (safe-shape.api/v1). It includes a deterministic SHA-256 fingerprint and
 ApiEndpointSnapshot entries with v2 request/response schema snapshots.

@@ -66,3 +66,7 @@ Quality tooling изолирован. Нужен локальный baseline-т�
 теги, проверяет Node 20.10.0/24 и сохраняет JSON report. Local success не означает
 remote CI или независимый developer walkthrough. Новые изменения требуют
 проверки именно итогового versioned candidate, а не старых результатов.
+
+Для 4.0.0 gate также запускает `npm run dependencies:check`: root/quality lock-файлы
+и установленные архивы не должны содержать Zod или MCP SDK. Quality runner
+использует только SafeShape candidate и baseline; исторические замеры не пересоздаются.

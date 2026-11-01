@@ -178,13 +178,13 @@ example.
 
 ## Release Metrics
 
-Verified [3.5.1 release gate and publication](docs/release-evidence-3.5.1.md):
+Local [4.0.0 candidate verification](docs/release-evidence-4.0.0.md); publication and remote CI are pending:
 
 | Signal | Status |
 | --- | --- |
-| Packages | 10 published packages |
-| Package tests | 329 passing tests |
-| Consumer install | Tarball and published npm installation checks pass |
+| Packages | 10 packages prepared at 4.0.0 |
+| Package tests | 356 passing tests |
+| Consumer install | Tarball and umbrella-only installation checks pass |
 | Examples | Runnable examples pass |
 | Security audit | 0 known vulnerabilities |
 | Benchmarks | Runtime, diagnostics, composition, connection and compatibility checks passed |
@@ -307,7 +307,8 @@ npm run examples:check
 
 ## Project Status
 
-SafeShape is on the `3.5.1` stable release line.
+SafeShape is preparing the `4.0.0` release; direct OpenAPI YAML/JSON comparison is available in the source.
+See the [4.0.0 notes](docs/release-4.0.0.md). The published stable release remains 3.5.1.
 All ten packages are published on npm with `latest=3.5.1` and provenance.
 Publication status and downloadable archives are recorded in the
 [GitHub release](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.1).
@@ -317,10 +318,19 @@ The release gate covers
 metadata checks, build, typecheck, tests, examples, benchmarks, consumer tarball
 installation, npm audit, and package dry-run.
 
-## Documentation Patch 3.5.1
+## Direct OpenAPI comparison (4.0.0)
 
-This patch corrects current-version navigation, EN/RU links, local CLI commands
-and MCP setup examples. It does not change schema or tool behavior.
+`compareOpenApi(previous, next)` accepts YAML, JSON strings or OpenAPI objects:
+
+```ts
+import { compareOpenApi } from 'safe-shape';
+const report = compareOpenApi(previousYaml, nextYaml);
+console.log(report.decision, report.findings, report.issues);
+```
+
+It compares methods/paths, parameters, requests and responses. SafeShape performs
+the compatibility proofs; unsupported constructs produce manual-review issues.
+See the [guide](docs/openapi-comparison.md) and [migration from 3.x](docs/migration-3-to-4.md).
 
 ## AI Contracts and MCP
 
@@ -328,4 +338,5 @@ and MCP setup examples. It does not change schema or tool behavior.
 stdio server with six contract inspection tools.
 
 MCP is included by `npm install safe-shape`; use `safe-shape/mcp` to load its APIs.
-The main import does not load the SDK, but the umbrella installation includes it.
+The main import does not load MCP. SafeShape 4.0 uses its own MCP protocol implementation;
+no package installs Zod or the MCP SDK. See the [4.0 migration guide](docs/migration-3-to-4.md).

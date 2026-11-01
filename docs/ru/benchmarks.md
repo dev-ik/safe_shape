@@ -31,3 +31,7 @@ v1 narrowing — 41065, v2 recursive widening — 11343. Это историче
 новые composition/pipeline сценарии и bundle. Zod оставался быстрее в parse-нагрузках;
 выполнение собственных regression budgets не доказывает паритет.
 Для следующей 3.3 см. [текущее свидетельство (EN)](../release-evidence-3.3.md).
+
+Начиная с 4.0.0 quality runner сравнивает только SafeShape candidate и baseline 3.1.0.
+Zod удалён из зависимостей и исполнения benchmark. Упомянутые выше замеры
+конкурирующей библиотеки относятся к историческим релизам.

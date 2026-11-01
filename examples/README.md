@@ -140,6 +140,10 @@ After building, run `node examples/api-workflow.mjs` for a catalog, validated
 client, OpenAPI export and API compatibility check without network access.
 See the [API reference](../docs/api/api.md).
 
+Run `node examples/openapi-comparison.mjs` to compare OpenAPI YAML directly:
+request tightening is detected by `compareOpenApi` without manually defining
+SafeShape schemas.
+
 ## AI tools and MCP
 
 After building the repository, run:
@@ -151,5 +155,6 @@ node examples/mcp-workflow.mjs node ./packages/mcp/dist/cli.js
 
 The first checks application-tool input/output validation. The second launches
 the stdio server with the repository manifest and exercises inspection tools
-through the official SDK. It is a client smoke test, not a real-agent walkthrough.
+through an independent JSON-RPC wire client. No SDK is installed or imported.
+It is a protocol smoke test, not a real-agent walkthrough.
 For setup in your own npm project, use the [MCP guide](../docs/mcp.md).

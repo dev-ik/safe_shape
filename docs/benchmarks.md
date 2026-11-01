@@ -58,3 +58,7 @@ See the [versioned comparison](release-polish-3.2.0.md) for all shared workloads
 new composition/pipeline scenarios, bundle sizes and an investigation of invalid
 parse costs. The recorded Zod speed advantage remains visible; passing internal
 budgets is not a claim of universal performance parity.
+
+Starting with 4.0.0, the quality runner compares only the SafeShape candidate
+and 3.1.0 baseline. Zod is removed from dependencies and benchmark execution.
+Competitor measurements linked above belong to historical releases.

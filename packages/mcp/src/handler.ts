@@ -1,4 +1,4 @@
-import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import type { McpCallToolResult as CallToolResult } from './protocol.js';
 import { validateSchemaAsync } from '@safe-shape/validation';
 import type { McpTool } from './tool.js';
 import { copyJson, jsonBytes, McpOperationError, publicError } from './json.js';

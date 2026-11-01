@@ -308,13 +308,22 @@ Install `@safe-shape/api` for endpoint catalogs, validated fetch clients, OpenAP
 and whole-API checks. The umbrella includes the same exports. Browser clients
 use `@safe-shape/api/client` to avoid Node tooling. See the [API reference](api/api.md).
 
-## AI contracts and MCP (3.5.0)
+## Direct OpenAPI comparison (4.0.0)
+
+For existing OpenAPI YAML/JSON contracts, 4.0.0 adds direct comparison through
+`compareOpenApi(previousYaml, nextYaml)` from `@safe-shape/api` or `safe-shape`.
+The adapter delegates schema proofs to compat without requiring a manually
+maintained SafeShape catalog. Check both `report.decision` and `report.issues`;
+unsupported semantics require manual review. See the [OpenAPI comparison reference](api/api.md#direct-openapi-comparison-400).
+
+## AI contracts and MCP (4.0.0)
 
 Install `safe-shape` once and import MCP APIs from `safe-shape/mcp`. The dedicated
 `@safe-shape/mcp` package remains available for narrower installs. It provides the
 `safe-shape-mcp` stdio executable and five public constructors/adapters for
 contract discovery/export/validation/comparison and application-tool boundaries.
-Core has no SDK dependency; the main umbrella import does not load MCP/SDK.
+No SafeShape package installs Zod or the MCP SDK; the main umbrella import does not load MCP.
+See [migration from 3.x](migration-3-to-4.md) and [direct OpenAPI comparison](openapi-comparison.md).
 The umbrella installation now includes them transitively. Configure a fixed
 trusted-module manifest; agents call tools by ID and inline JSON. See the
 [MCP guide](mcp.md) for installation, Codex configuration, six inspection tools,

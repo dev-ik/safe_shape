@@ -199,6 +199,8 @@ if (production.error) throw production.error;
 assert.equal(production.status, 0, production.stdout + production.stderr);
 const apiWorkflow = spawnSync(process.execPath, [resolve(rootDir, "examples/api-workflow.mjs")], { cwd: rootDir, encoding: "utf8" });
 assert.equal(apiWorkflow.status, 0, apiWorkflow.stderr || apiWorkflow.stdout);
+const openApiComparison = spawnSync(process.execPath, [resolve(rootDir, "examples/openapi-comparison.mjs")], { cwd: rootDir, encoding: "utf8" });
+assert.equal(openApiComparison.status, 0, openApiComparison.stderr || openApiComparison.stdout);
 for (const file of ["mcp-tool-boundary.mjs", "mcp-workflow.mjs"]) {
   const args = file === "mcp-workflow.mjs"
     ? [process.execPath, resolve(rootDir, "packages/mcp/dist/cli.js")]

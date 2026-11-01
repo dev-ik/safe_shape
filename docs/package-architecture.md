@@ -11,15 +11,15 @@ Packages:
 - `@safe-shape/json-schema`: JSON Schema export built on core schema descriptions.
 - `@safe-shape/typescript`: TypeScript declaration generation built on core schema descriptions.
 - `@safe-shape/validation`: JSON-friendly validation reports built on core schemas.
-- `@safe-shape/api`: endpoint catalogs and fetch clients, OpenAPI and API compatibility; depends on core/http/json-schema/compat. Its browser `./client` entry excludes Node tooling.
-- `@safe-shape/mcp`: independently available stdio server and validated application tools, built on core/validation/json-schema/compat and the official MCP SDK.
+- `@safe-shape/api`: endpoint catalogs and fetch clients, OpenAPI and API compatibility; depends on core/http/json-schema/compat and yaml for direct document comparison. Its browser `./client` entry excludes Node tooling and YAML parsing.
+- `@safe-shape/mcp`: independently available stdio server and validated application tools, built on core/validation/json-schema/compat with a package-owned MCP protocol validated by core.
 - `@safe-shape/cli`: command-line tooling built on api, compat, core, json-schema, typescript, and validation.
 
 Dependency direction:
 
-- `mcp -> core/validation/json-schema/compat` and official MCP SDK
-- `safe-shape -> mcp` for installation; only `safe-shape/mcp` loads its API/SDK.
-- `core` has no MCP/SDK dependency; the umbrella root import graph is unchanged.
+- `mcp -> core/validation/json-schema/compat`; no external runtime dependency
+- `safe-shape -> mcp` for installation; only `safe-shape/mcp` loads its API.
+- `core` has no MCP dependency; the umbrella root import graph is unchanged.
 
 - `safe-shape -> api`
 - `api -> core/http/json-schema/compat`

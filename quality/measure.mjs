@@ -26,7 +26,7 @@ const modes = [
   }],
   ["formattedMs", fixture.invalid, (result) => {
     verify(result, fixture, false);
-    const formatted = library === "zod" ? result.error.message : api.formatValidationError(result.error);
+    const formatted = api.formatValidationError(result.error);
     if (typeof formatted !== "string" || !formatted.length) throw new Error("Missing formatted diagnostics");
   }],
 ];

@@ -107,6 +107,73 @@ schemas для SafeShape-aware tooling. OpenAPI validation не заменяет
 
 ## Изменения API
 
+### Прямое сравнение OpenAPI (4.0.0)
+
+```ts
+import { readFile } from "node:fs/promises";
+import { compareOpenApi } from "@safe-shape/api"; // также экспортируется из safe-shape
+
+const report = compareOpenApi(
+  await readFile("./previous.openapi.yaml", "utf8"),
+  await readFile("./next.openapi.yaml", "utf8"),
+);
+console.log(report.decision, report.findings, report.issues);
+process.exitCode = report.compatible ? 0 : 2;
+```
+
+`compareOpenApi(previous: unknown, next: unknown, options?: OpenApiCompareOptions)`
+принимает строки YAML/JSON или разобранные объекты OpenAPI 3.0.x/3.1.x. Импорт схем
+выполняется внутри, доказательства строит `@safe-shape/compat`. Вручную создавать
+каталог SafeShape или snapshot не нужно. Функция не читает файлы и не обращается к сети.
+
+Неизменяемый `OpenApiCompatibilityReport` содержит compatible, decision, findings
+и issues. Решения: compatible, migration-required и manual-review.
+`OpenApiCompatibilityFinding` содержит endpoint (`METHOD path`), code, status,
+путь в документе, message и необязательный исходный GraphCompatibilityReport.
+Коды: openapi.operation.added, openapi.operation.removed, openapi.request.changed,
+openapi.response.changed и openapi.transport.changed. `OpenApiCompareIssue` содержит
+source (previous/next), code, path и message; коды — openapi.document.invalid и
+openapi.feature.unsupported. Ошибка импорта возвращает manual-review без частичных
+findings. Неверный formatPolicy вызывает TypeError. Адаптер поддерживает ограниченное
+подмножество спецификации и не является полным валидатором OpenAPI.
+
+Операции сопоставляются по точным методу/пути; operationId — аннотация. Переименование
+пути выглядит как удаление/добавление. Параметры уровня пути наследуются и могут
+переопределяться операцией; регистр имён заголовков не важен. Запросы сравниваются
+backward, ответы — forward. Проверяются обязательность параметров/тела, конкретные JSON
+media types, заголовки ответов и статусы: точный, диапазон, default (в этом порядке).
+Изменения servers/security или сериализации требуют manual-review. Сравниваются
+объявленные значения, а не бизнес-поведение или доступность приложения.
+
+Поддерживаются типизированные примитивы, скалярные enum/const, properties/required,
+булев additionalProperties (по умолчанию разрешён), чистые словари, массивы,
+anyOf/allOf, локальные JSON Pointer refs с продуктивной рекурсией, nullable в 3.0,
+массивы type/булевы схемы в 3.1, ограничения длины, включительные числовые границы,
+multipleOf и ECMAScript-паттерны в Unicode-режиме. Title/description сохраняются;
+default не подставляет значения. Домен — JSON с конечными числами JavaScript.
+Недоказуемое отношение остаётся manual-review.
+
+Для format нужно явно выбрать интерпретацию. По умолчанию `formatPolicy: "reject"`
+возвращает issues. `"annotation"` трактует format только как документацию;
+`"safe-shape"` включает нативную семантику email/uuid/date/date-time. Другие форматы,
+включая int32/int64, требуют annotation или ручной проверки. Annotation не проверяет
+разрядность чисел и не выявляет изменения только format.
+
+Неподдерживаемые ограничения не отбрасываются: oneOf, исключительные границы,
+uniqueItems, проекции readOnly/writeOnly, типизированный additionalProperties вместе
+с именованными полями, внешние refs, другие диалекты и ограничения без явного type
+возвращают issues. Callbacks, links, webhooks, XML/не-JSON media, content encoding, wildcard/параметры
+media type и тела GET/HEAD/TRACE также требуют проверки. Неиспользуемые components
+не сравниваются. Конфигурация аутентификации и серверов сравнивается как данные.
+
+Используется YAML 1.2 с проверкой повторных ключей, лимитом раскрытия alias 100 и без
+пользовательских тегов. Вход копируется без вызова getters; циклы и не-JSON значения
+отклоняются. Лимиты документа: 5 млн символов, 100 000 значений, глубина 128 и 20 000
+преобразований схем. Это ограничения импорта, а не изоляция ресурсов; паттерны
+остаются доверенным кодом контракта. См. [пример YAML](../../../examples/openapi-comparison.mjs).
+
+### Каталоги и snapshots SafeShape
+
 createApiSnapshot(api) создаёт immutable ApiSnapshot формата API_SNAPSHOT_FORMAT
 (safe-shape.api/v1), детерминированный SHA-256 fingerprint и ApiEndpointSnapshot
 с v2 request/response snapshots. ParseApiSnapshot вызывается как

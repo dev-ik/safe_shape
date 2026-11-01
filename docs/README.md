@@ -5,9 +5,11 @@
 SafeShape documentation is organized by the task you need to complete.
 Current stable release: **3.5.1**, published on npm. See the [GitHub release](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.1).
 
+Source documentation now targets **4.0.0**; this version is not yet published.
+
 ## Start Here
 
-- [3.5.1 patch notes](release-3.5.1.md) and [release evidence](release-evidence-3.5.1.md): documentation corrections.
+- [Release 4.0.0](release-4.0.0.md), [evidence](release-evidence-4.0.0.md), [migration from 3.x](migration-3-to-4.md), and [direct OpenAPI comparison](openapi-comparison.md).
 - [SafeShape and MCP](mcp.md): local coding-agent integration and application-tool validation.
 
 - [Checked output bounds](checked-output.md): exact export and connection proofs.
@@ -70,7 +72,7 @@ Current stable release: **3.5.1**, published on npm. See the [GitHub release](ht
 
 - [Release history](releases.md): shipped versions, features and publication records.
 - [3.3 implementation plan](implementation-plan-3.3.md)
-- [3.1 release quality contract](release-quality-3.1.md)
+- [3.1 release quality contract](release-quality-4.0.md)
 - [3.1 release roadmap](roadmap-3.1.md)
 - [3.1 implementation plan](implementation-plan-3.1.md)
 - [Historical 3.2 working roadmap, shipped in 3.1](roadmap-3.2.md)

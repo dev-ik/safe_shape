@@ -307,12 +307,11 @@ npm run examples:check
 
 ## Project Status
 
-SafeShape is preparing the `4.0.0` release; direct OpenAPI YAML/JSON comparison is available in the source.
-See the [4.0.0 notes](docs/release-4.0.0.md). The published stable release remains 3.5.1.
-All ten packages are published on npm with `latest=3.5.1` and provenance.
+This README documents SafeShape `4.0.0`. It includes direct OpenAPI comparison
+and independent MCP without Zod. See the [4.0.0 notes](docs/release-4.0.0.md),
+[migration guide](docs/migration-3-to-4.md), and [evidence](docs/release-evidence-4.0.0.md).
 Publication status and downloadable archives are recorded in the
-[GitHub release](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.1).
-See the [3.5.1 patch notes](docs/release-3.5.1.md) and [release evidence](docs/release-evidence-3.5.1.md).
+[GitHub release](https://github.com/dev-ik/safe_shape/releases/tag/v4.0.0).
 Earlier additions and fixes are listed in the [release history](docs/releases.md).
 The release gate covers
 metadata checks, build, typecheck, tests, examples, benchmarks, consumer tarball

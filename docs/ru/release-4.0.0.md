@@ -2,7 +2,8 @@
 
 [English](../release-4.0.0.md) | **Русский**
 
-Подготовленный релиз; пока не опубликован. Все десять пакетов имеют версию 4.0.0.
+Все десять пакетов имеют версию 4.0.0. Статус публикации и артефакты — в
+[GitHub Release](https://github.com/dev-ik/safe_shape/releases/tag/v4.0.0).
 По-прежнему нужны Node >=20.10 и ESM.
 
 `compareOpenApi(previous, next)` принимает OpenAPI YAML, JSON-строки или разобранные

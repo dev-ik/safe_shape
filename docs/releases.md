@@ -2,8 +2,7 @@
 
 **English** | [Русский](ru/releases.md)
 
-Current stable release: **3.5.1**, published on npm. See the [GitHub release](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.1).
-Prepared next release: [4.0.0 — direct OpenAPI comparison and independent MCP](release-4.0.0.md), not yet published.
+This snapshot targets **4.0.0**. See the [changes](release-4.0.0.md), [verification](release-evidence-4.0.0.md), and [publication status](https://github.com/dev-ik/safe_shape/releases/tag/v4.0.0).
 
 Install SafeShape with `npm install safe-shape`.
 Older version numbers below identify when features shipped; they are not

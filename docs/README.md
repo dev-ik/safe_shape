@@ -3,9 +3,7 @@
 **English** | [Русский](ru/README.md)
 
 SafeShape documentation is organized by the task you need to complete.
-Current stable release: **3.5.1**, published on npm. See the [GitHub release](https://github.com/dev-ik/safe_shape/releases/tag/v3.5.1).
-
-Source documentation now targets **4.0.0**; this version is not yet published.
+Documentation targets **4.0.0**. Publication status is recorded in the [GitHub release](https://github.com/dev-ik/safe_shape/releases/tag/v4.0.0).
 
 ## Start Here
 
